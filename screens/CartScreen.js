@@ -1,4 +1,4 @@
-import {View, Text, Pressable, ScrollView, SafeAreaView, StyleSheet, Platform, FlatList, Button} from 'react-native';
+import {View, Text, Pressable, ScrollView, SafeAreaView, StyleSheet, Platform, FlatList, Image} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import {getCart} from '../api/apiServices';
 
@@ -37,6 +37,20 @@ const CartScreen = () => {
                     </View>
                 )}
             />
+            <View style={{marginHorizontal:10}}>
+                {cart?.map((item, index) => (
+                    <View>
+                        <Pressable>
+                            <View>
+                                <Image style={styles.pokemonImage} source={{uri: item?.image}}/>
+                            </View>
+                            <View>
+                                <Text>{item?.name}</Text>
+                            </View>
+                        </Pressable>
+                    </View>
+                ))}
+            </View>
             <Text style={styles.total}>Total: ${cart.totalPrice}</Text>
             <Pressable title="Proceed to Checkout" style={styles.checkoutButton} onPress={handleCheckout} >
                 <Text>Proceed to Buy ({cart.length}) Items</Text>
@@ -86,6 +100,11 @@ const styles = StyleSheet.create({
         marginLeft: "auto",
         marginRight: "auto",
         padding: 15
+    },
+    productImage:{
+        width:140,
+        height:140,
+        resizeMode:"contain"
     }
 });
 
