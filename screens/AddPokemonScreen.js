@@ -131,18 +131,11 @@ const AddPokemonScreen = () => {
     };
 
     async function submitPokemon() {
-    
-        // const regex = /^[1-9]*$/;
-        // if (selectedAbilities.length === 0 || !regex.test(selectedAttack) || !regex.test(selectedDefense)
-        //     || !regex.test(selectedHP) || !regex.test(selectedSpecialAttack) || !regex.test(selectedSpecialDefense) ||
-        //     !regex.test(amount) || !regex.test(pokemonLevel) || pokemonLevel > 100) {
-        //     Alert.alert('Invalid Input', 'Make sure to input correct details');
-        //     return;
-        // }
 
         if (!validateInput()) {
             return;
         }
+
         console.log(IP_ADDRESS);
         const image = isShiny ? chosenPokemon.imgShiny : chosenPokemon.imgDefault;
         const stats = {
@@ -281,22 +274,6 @@ const AddPokemonScreen = () => {
                             </Pressable>
                         )}
                     />
-                    // <ScrollView nestedScrollEnabled>
-                    //     {filteredPokemons.map((poke) => (
-
-                    //         <Pressable style={styles.pokemonList} key={poke.name} onPress={() => handleChosenPokemon(poke)}>
-                    //             <Text style={styles.pokemonName}>{presentableWord(poke.name)}</Text>
-                    //         </Pressable>))}
-                    // </ScrollView>
-
-                    // filteredPokemons.map((poke) => (
-
-                    //     <Pressable style={styles.pokemonList} key={poke.name} onPress={() => handleChosenPokemon(poke)}>
-                    //         <Text style={styles.pokemonName}>{presentableWord(poke.name)}</Text>
-                    //     </Pressable>
-
-
-                    // ))
 
                 )
             )}
@@ -450,7 +427,7 @@ const AddPokemonScreen = () => {
                                     keyboardType='numeric'
                                     value={price}
                                     onChangeText={(v) => setPrice(v.trim())}
-                                    placeholder="Enter Pokemon's Price..."
+                                    placeholder="Enter Amount Of Pokemon You Want To Sell..."
 
                                 />
                                 <CurrencyPD

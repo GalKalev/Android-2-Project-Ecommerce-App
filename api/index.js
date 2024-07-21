@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 const jwt = require("jsonwebtoken");
 
 
-
 //! TO DO: username: galA and password: gal318657632 to env
 mongoose.connect("mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp", {
   useNewUrlParser: true,
@@ -108,8 +107,8 @@ app.post('/login', async (req, res) => {
 
 app.post('/addPokemon', async (req, res) => {
   try {
-    console.log('addPokemon');
-    const{user} = req;
+    // Saving the Pokemon to database to be sold
+    // const { user } = req;
     console.log(user);
     const {
       name,
@@ -125,6 +124,24 @@ app.post('/addPokemon', async (req, res) => {
       types,
       price,
       amount } = req.body;
+    const newPokemon = new Product({
+      user: user,
+      name: name,
+      url: url,
+      price: price,
+      image: img,
+      quantity: amount,
+      details: {
+        isShiny: isShiny,
+        abilities: abilities,
+        moves: moves,
+        species: species,
+        stats: stats,
+        types: types,
+      }
+    });
+
+    await newPokemon.save();
     console.log(`Received Pokemon: ${name}, ${url}, ${img}, ${gender}, ${level}, ${isShiny}, ${abilities}, ${moves}, ${species}, ${stats.hp}, ${types}, ${price}, ${amount}`);
 
     // const pokemon = new Pokemon(user)
