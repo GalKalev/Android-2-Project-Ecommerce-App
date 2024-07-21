@@ -61,55 +61,6 @@ const RegisterScreen = () => {
                     setPassword={setPassword}
                 />
 
-                {/* <View style={styles.registerTextBox}>
-                    <Text style={styles.registerText}>
-                        Register To Your Account
-                    </Text>
-                </View>
-
-
-                <View style={styles.registerNameInput}>
-                    <View style={styles.registerInput}>
-                        <Ionicons style={styles.registerInputIcon}
-                            name="person"
-                            size={24}
-                            color="gray" />
-                        <TextInput style={[styles.registerInputText, { fontSize: name ? 16 : 16 }]}
-                            value={name}
-                            onChangeText={(text) => setName(text)}
-                            placeholder="Enter your name" />
-                    </View>
-                </View>
-
-
-
-                <View style={styles.registerEmailInput}>
-                    <View style={styles.registerInput}>
-                        <MaterialIcons style={styles.registerInputIcon}
-                            name="email"
-                            size={24}
-                            color="gray" />
-                        <TextInput style={[styles.registerInputText, { fontSize: email ? 16 : 16 }]}
-                            value={email}
-                            onChangeText={(text) => setEmail(text)}
-                            placeholder="Enter your Email" />
-                    </View>
-                </View>
-
-                <View style={styles.registerPasswordInput}>
-                    <View style={styles.registerInput}>
-                        <AntDesign style={styles.registerInputIcon}
-                            name="lock"
-                            size={24}
-                            color="gray" />
-                        <TextInput style={[styles.registerInputText, { fontSize: password ? 16 : 16 }]}
-                            value={password}
-                            onChangeText={(text) => setPassword(text)}
-                            secureTextEntry={true}
-                            placeholder="Enter your Password" />
-                    </View>
-                </View> */}
-
                 <View style={styles.buttons}>
                     <Text>Keep me logged in</Text>
                     <Text style={styles.forgotPasswordBtn}>Forgot Password</Text>

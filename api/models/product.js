@@ -1,9 +1,5 @@
 const mongoose = require('mongoose');
 
-const baseOptions = {
-    discriminatorKey: 'productType',
-}
-
 const productSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -12,29 +8,37 @@ const productSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        require: true
+        required: true
     },
     url:{
         type:String,
-        require:true
+        required:true
     },
     price: {
         type: Number,
-        require: true
+        required: true
     },
     image: {
         type: String,
-        require: true
+        required: true
     },
     quantity: {
         type: Number,
-        require: true
+        required: true
     },
+
+    details: {
+        type: mongoose.Schema.Types.Mixed,
+        required:true
+    }, 
+
     createdAt: {
         type: Date,
         default: Date.now
-    }
-}, baseOptions)
+    },
+
+    
+})
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

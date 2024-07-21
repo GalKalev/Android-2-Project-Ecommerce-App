@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
@@ -10,12 +10,21 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import ProductScreen from '../screens/ProductScreen';
+// import { cart } from '../screens/HomeScreen';
 
 
 const StackNavigator = () => {
 
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
+  // console.log(cart)
+
+  // const [cartQuantity, setCartQuantity] = useState()
+
+  // useEffect(() => {
+  //   console.log('navi cart:' + cart)
+  // },[cart])
 
   function BottomTabs() {
     return (
@@ -51,6 +60,7 @@ const StackNavigator = () => {
               ) : (
                 <Ionicons name="person-outline" size={24} color="black" />
               ),
+              
             
           }}
 
@@ -69,6 +79,7 @@ const StackNavigator = () => {
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
+              // tabBarBadge:cartQuantity
             
           }}
 
@@ -84,8 +95,9 @@ const StackNavigator = () => {
         
         {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
-        {/* <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   )
