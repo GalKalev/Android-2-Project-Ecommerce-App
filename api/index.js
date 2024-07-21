@@ -4,23 +4,20 @@ require('dotenv').config({ path: '../.env' })
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const crypto = require("crypto");
 const nodemailer = require("nodemailer");
-
+const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = 1400;
-const cors = require("cors");
-app.use(cors());
+const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
 
+app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const jwt = require("jsonwebtoken");
-
-
 //! TO DO: username: galA and password: gal318657632 to env
-mongoose.connect("mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp", {
+mongoose.connect(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
@@ -39,7 +36,10 @@ const User = require("./models/user");
 const Order = require("./models/order");
 const Product = require("./models/product");
 const Pokemon = require('./models/pokemon');
+const Cart = require('./models/cart');
 
+
+//---------- Register Method ----------
 app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -77,7 +77,7 @@ app.post("/register", async (req, res) => {
 });
 
 
-// Endpoint for login
+// ---------- Login Method ----------
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -105,11 +105,18 @@ app.post('/login', async (req, res) => {
   }
 });
 
-app.post('/addPokemon', async (req, res) => {
+
+//---------- Pokemon Stock Methods ----------
+// Add new Pokemon to Products list
+app.post('/Pokemon', async (req, res) => {
   try {
-    // Saving the Pokemon to database to be sold
-    // const { user } = req;
-    console.log(user);
+
+    console.log('addPokemon');
+    const{userId} = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
     const {
       name,
       url,
@@ -143,16 +150,165 @@ app.post('/addPokemon', async (req, res) => {
 
     await newPokemon.save();
     console.log(`Received Pokemon: ${name}, ${url}, ${img}, ${gender}, ${level}, ${isShiny}, ${abilities}, ${moves}, ${species}, ${stats.hp}, ${types}, ${price}, ${amount}`);
+    if(!name||!url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount){
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    const newPokemon = new Pokemon( {
+      user: userId,
+      name,
+      url,
+      img,
+      gender,
+      level,
+      isShiny,
+      abilities,
+      moves,
+      species,
+      stats,
+      types,
+      price,
+      amount
+    })
+
+    await newPokemon.save();
+    console.log(`new Pokemon added: ${newPokemon}`);
 
     // const pokemon = new Pokemon(user)
     res.status(201).json({ message: "Pokemon added successfully" });
 
   } catch (e) {
-    res.status(500).json({ message: 'Adding product Failed' });
+    res.status(500).json({ message: 'Adding Pokemon Failed' });
     console.log(`Error adding pokemon: ${e.message}`);
   }
 })
 
+// Get all Available Pokemons in Store
+app.get('/Pokemon',async (req,res)=>{
+  try{
+    const products = await Product.find({});
+    res.status(200).json(products);
+  } catch (error){
+    res.status(500).json({message:"Fetching products failed"});
+    console.log(`Error fetching Pokemons: ${error.message}`);
+  }
+})
 
 
+//---------- Cart Methods ----------
+// Add Pokemon to user's cart
+app.post('/cart/add', async (req,res)=>{
+  try{
+    const {userId, productId, quantity} = req.body;
+    if(!userId || !productId || !quantity || quantity < 0){
+      return res.status(400).json({ message: 'Invalid product - missing fields' });
+    }
+
+    let cart = await Cart.findOne({user:userId});
+    if(!cart){
+      cart = new Cart({user:userId});
+    }
+
+    const product = await Product.findById(productId);
+    if(!product){
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Check if product already in cart. If  so - get its index and add quantity. Else - add the product to cart
+    const productIndex = cart.products.findIndex((p=>p.product.equals(productId)));
+    if(productIndex>-1){
+      cart.products[productIndex].quantity+=quantity;
+    } else {
+      cart.products.push({product:productId,quantity});
+    }
+
+    // Update total price
+    cart.totalPrice = cart.products.reduce((prevTotal,item) => {
+      const product = cart.products.find(p=>p.product.equals(item.product));
+      return prevTotal + (product ? product.price * item.quantity : 0);
+    },0);
+
+    await cart.save();
+
+    res.status(201).json({message:`${cart.products.length} products added successfully`});
+  } catch (error) {
+    console.log(f`Error adding product to cart: ${error}`);
+    res.status(500).json({message:`Failed to add product to cart`})
+  }
+})
+
+// Get user's cart
+app.get('/cart/:userId', async (req,res)=>{
+  try{
+    const {userId} = req.params;
+    const cart = await Cart.findOne({user:userId}).populate('products.product');
+
+    if(!cart){
+      return res.status(404).json({message:'Cart not found'});
+    }
+  } catch (error){
+    console.log(`Error get cart: ${error}`);
+    return res.status(500).json({message:'Failed to retrieve cart'})
+  }
+})
+
+// Remove product from cart
+app.post('/cart/remove', async (req, res) => {
+  try {
+    const { userId, productId } = req.body;
+
+    if (!userId || !productId) {
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    cart.products = cart.products.filter(p => !p.product.equals(productId));
+
+    // Update total price
+    cart.totalPrice = cart.products.reduce((total, item) => {
+      const product = cart.products.find(p => p.product.equals(item.product));
+      return total + (product ? product.price * item.quantity : 0);
+    }, 0);
+
+    await cart.save();
+
+    res.status(200).json({ message: 'Product removed from cart', cart });
+  } catch (error) {
+    console.log('Error removing product from cart:', error);
+    res.status(500).json({ message: 'Failed to remove product from cart' });
+  }
+});
+
+
+//---------- Checkout Methods ----------
+// Checkout cart for user
+app.post('checkout', async (req,res)=>{
+  try{
+    const {userId} = req.body;
+    if(!userId){
+      return res.status(400).json({message: 'User ID required'});
+    }
+
+    const cart = await Cart.findOne({user: userId});
+    if(!cart){
+      return res.status(404).json({message:'Cart not found'});
+    }
+
+    //TODO: Handle checkout logic (create order, payment details, remove from stock...)
+
+    // Clear the cart
+    cart.products = [];
+    cart.totalPrice = 0;
+    await cart.save();
+
+    res.status(200).json({ message: 'Checkout successful' });
+    } catch (error) {
+      console.log('Error during checkout:', error);
+      res.status(500).json({ message: 'Checkout failed' });
+    }
+})
 

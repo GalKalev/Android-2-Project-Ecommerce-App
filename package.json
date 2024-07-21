@@ -41,7 +41,6 @@
     "react-native-svg": "15.2.0",
     "react-native-swiper": "^1.6.0",
     "react-native-toast-message": "^2.2.0",
-    "victory-native": "^41.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

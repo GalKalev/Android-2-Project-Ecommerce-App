@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
+import CartScreen from '../screens/CartScreen';
 import AddPokemonScreen from '../screens/AddPokemonScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Entypo } from '@expo/vector-icons';
@@ -68,7 +69,7 @@ const StackNavigator = () => {
 
         <Tab.Screen
           name='Cart'
-          component={HomeScreen}
+          component={CartScreen}
           options={{
             tabBarLabel: "Cart",
             tabBarLabelStyle: { color: '#008E97' },
@@ -92,12 +93,17 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
+
+       
+
         
         {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+
       </Stack.Navigator>
     </NavigationContainer>
   )
