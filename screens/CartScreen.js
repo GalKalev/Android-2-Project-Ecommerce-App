@@ -26,31 +26,36 @@ const CartScreen = () => {
     //const total = cart ?.map((product)=> product.price *product.quantity).reduce((curr, prev) => curr + prev, 0);
     return(
         <SafeAreaView style={styles.cartScreenContainer}>
-            <FlatList
-                data={cart.products}
-                keyExtractor={(item) => item.product._id}
-                renderItem={({ item }) => (
-                    <View style={styles.item}>
-                        <Text>{item.product.name}</Text>
-                        <Text>Quantity: {item.quantity}</Text>
-                        <Text>Price: ${item.product.price}</Text>
-                    </View>
-                )}
-            />
-            <View style={{marginHorizontal:10}}>
-                {cart?.map((item, index) => (
-                    <View>
-                        <Pressable>
-                            <View>
-                                <Image style={styles.pokemonImage} source={{uri: item?.image}}/>
-                            </View>
-                            <View>
-                                <Text>{item?.name}</Text>
-                            </View>
-                        </Pressable>
-                    </View>
-                ))}
-            </View>
+            {/*<FlatList*/}
+            {/*    data={cart.products}*/}
+            {/*    keyExtractor={(item) => item.product._id}*/}
+            {/*    renderItem={({ item }) => (*/}
+            {/*        <View style={styles.item}>*/}
+            {/*            <Text>{item.product.name}</Text>*/}
+            {/*            <Text>Quantity: {item.quantity}</Text>*/}
+            {/*            <Text>Price: ${item.product.price}</Text>*/}
+            {/*        </View>*/}
+            {/*    )}*/}
+            {/*/>*/}
+            <ScrollView>
+                <View style={{marginHorizontal:10}}>
+                    {cart?.map((item, index) => (
+                        <View>
+                            <Pressable>
+                                <View>
+                                    <Image style={styles.pokemonImage} source={{uri: item?.image}}/>
+                                </View>
+                                <View>
+                                    <Text>{item.product.name}</Text>
+                                    <Text>Quantity: {item.quantity}</Text>
+                                    <Text>Price: ${item.product.price}</Text>
+                                </View>
+                            </Pressable>
+                        </View>
+                    ))}
+                </View>
+            </ScrollView>
+
             <Text style={styles.total}>Total: ${cart.totalPrice}</Text>
             <Pressable title="Proceed to Checkout" style={styles.checkoutButton} onPress={handleCheckout} >
                 <Text>Proceed to Buy ({cart.length}) Items</Text>
@@ -101,11 +106,11 @@ const styles = StyleSheet.create({
         marginRight: "auto",
         padding: 15
     },
-    productImage:{
-        width:140,
-        height:140,
-        resizeMode:"contain"
-    }
+    // productImage:{
+    //     width:140,
+    //     height:140,
+    //     resizeMode:"contain"
+    // }
 });
 
 export default CartScreen;
