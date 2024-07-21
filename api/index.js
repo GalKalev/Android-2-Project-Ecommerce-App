@@ -16,7 +16,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
 //! TO DO: username: galA and password: gal318657632 to env
 mongoose.connect(URI, {
   useNewUrlParser: true,
@@ -111,6 +110,7 @@ app.post('/login', async (req, res) => {
 // Add new Pokemon to Products list
 app.post('/Pokemon', async (req, res) => {
   try {
+
     console.log('addPokemon');
     const{userId} = req.body;
     if (!userId) {
@@ -131,6 +131,24 @@ app.post('/Pokemon', async (req, res) => {
       types,
       price,
       amount } = req.body;
+    const newPokemon = new Product({
+      user: user,
+      name: name,
+      url: url,
+      price: price,
+      image: img,
+      quantity: amount,
+      details: {
+        isShiny: isShiny,
+        abilities: abilities,
+        moves: moves,
+        species: species,
+        stats: stats,
+        types: types,
+      }
+    });
+
+    await newPokemon.save();
     console.log(`Received Pokemon: ${name}, ${url}, ${img}, ${gender}, ${level}, ${isShiny}, ${abilities}, ${moves}, ${species}, ${stats.hp}, ${types}, ${price}, ${amount}`);
     if(!name||!url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount){
       return res.status(400).json({ message: 'All fields are required' });
