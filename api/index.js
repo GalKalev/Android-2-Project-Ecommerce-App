@@ -1,15 +1,11 @@
 
-require('dotenv').config({ path: '../.env' })
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const nodemailer = require("nodemailer");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
 
 const app = express();
-const PORT = 1400;
+//const PORT = 1400;
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
 
 app.use(cors());
@@ -28,8 +24,8 @@ mongoose.connect(URI, {
 
 
 
-app.listen(PORT, () => {
-  console.log(`Server is running at ${process.env.IP_ADDRESS}:${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(`Server is running at ${process.env.IP_ADDRESS}:${process.env.PORT}`);
 });
 
 const User = require("./models/user");
@@ -44,10 +40,10 @@ app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    console.log(`req: ${req.body.email}`);
+    console.log(`req: ${email}`);
     if (!name || !email || !password) {
       console.log("undefined values");
-      return
+      return res.status(400).json({ message: "Name, email, or password are missing" });
     }
 
     // Check if the email is already registered
@@ -68,7 +64,7 @@ app.post("/register", async (req, res) => {
 
     res.status(201).json({
       message:
-        "Registration successful. Please check your email for verification.",
+          "Registration successful. Please check your email for verification.",
     });
   } catch (error) {
     console.log("Error during registration:", error); // Debugging statement
@@ -110,7 +106,6 @@ app.post('/login', async (req, res) => {
 // Add new Pokemon to Products list
 app.post('/Pokemon', async (req, res) => {
   try {
-
     console.log('addPokemon');
     const{userId} = req.body;
     if (!userId) {
@@ -131,50 +126,32 @@ app.post('/Pokemon', async (req, res) => {
       types,
       price,
       amount } = req.body;
-    const newPokemon = new Product({
-      user: user,
-      name: name,
-      url: url,
-      price: price,
-      image: img,
-      quantity: amount,
-      details: {
-        isShiny: isShiny,
-        abilities: abilities,
-        moves: moves,
-        species: species,
-        stats: stats,
-        types: types,
-      }
-    });
 
-    await newPokemon.save();
-    console.log(`Received Pokemon: ${name}, ${url}, ${img}, ${gender}, ${level}, ${isShiny}, ${abilities}, ${moves}, ${species}, ${stats.hp}, ${types}, ${price}, ${amount}`);
-    if(!name||!url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount){
+    if (!name || !url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const newPokemon = new Pokemon( {
+    const newPokemon = new Pokemon({
       user: userId,
       name,
       url,
-      img,
-      gender,
-      level,
-      isShiny,
-      abilities,
-      moves,
-      species,
-      stats,
-      types,
       price,
-      amount
-    })
+      image: img,
+      quantity: amount,
+      details: {
+        isShiny,
+        abilities,
+        moves,
+        species,
+        stats,
+        types,
+      },
+      gender,
+      level
+    });
 
     await newPokemon.save();
     console.log(`new Pokemon added: ${newPokemon}`);
-
-    // const pokemon = new Pokemon(user)
     res.status(201).json({ message: "Pokemon added successfully" });
 
   } catch (e) {
@@ -232,7 +209,7 @@ app.post('/cart/add', async (req,res)=>{
 
     res.status(201).json({message:`${cart.products.length} products added successfully`});
   } catch (error) {
-    console.log(f`Error adding product to cart: ${error}`);
+    console.log(`Error adding product to cart: ${error}`);
     res.status(500).json({message:`Failed to add product to cart`})
   }
 })
@@ -306,9 +283,9 @@ app.post('checkout', async (req,res)=>{
     await cart.save();
 
     res.status(200).json({ message: 'Checkout successful' });
-    } catch (error) {
-      console.log('Error during checkout:', error);
-      res.status(500).json({ message: 'Checkout failed' });
-    }
+  } catch (error) {
+    console.log('Error during checkout:', error);
+    res.status(500).json({ message: 'Checkout failed' });
+  }
 })
 

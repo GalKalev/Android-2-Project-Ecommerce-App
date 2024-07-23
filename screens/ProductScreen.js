@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign, Foundation } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import RadarChart from '../components/RadarChart';
+import {addToCart} from "../api/apiServices";
 
 
 const ProductScreen = () => {
@@ -99,7 +100,7 @@ const ProductScreen = () => {
 
             {/* Add to cart button */}
             <View style={styles.addToCartContainer}>
-                <Pressable>
+                <Pressable onPress={addToCart}>
                     <Text style={{ color: 'white', fontSize: 17 }}>ADD TO CART</Text>
                     <Text style={{ color: 'white' }}>{item.quantity} left</Text>
                 </Pressable>
