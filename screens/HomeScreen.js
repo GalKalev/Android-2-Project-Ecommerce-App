@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, Keyboard, Animated } from 'react-native';
 import axios from 'axios';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign, Feather } from '@expo/vector-icons'; // Assuming you're using Expo icons
 import { IP_ADDRESS } from '@env';
 import FloatingButton from '../components/FloatingButton';
@@ -14,6 +15,11 @@ import Product from '../components/Product';
 // export const [cart, setCart] = useState([]);
 
 const HomeScreen = () => {
+
+    // TODO: uncomment when all the user info is passed
+    // const route = useRoute();
+    // const { user } = route.params;
+    // console.log("home:", user);
 
     const [pokemonList, setPokemonList] = useState([])
     const [searchPokemons, setSearchPokemons] = useState([]);
@@ -31,7 +37,7 @@ const HomeScreen = () => {
     // UseState for filter
     const [isFilterOpen, setFilter] = useState(false);
 
-  
+
 
     // Animation opening/closing the filter
     const animation = useRef(new Animated.Value(0)).current;
@@ -386,14 +392,14 @@ const HomeScreen = () => {
                                         {filteredPokemon.map((poke, index) => {
 
                                             return (
-                                              <View key={poke.id}>
+                                                <View key={poke.id}>
 
-                                                <Product
-                                                    item={poke}
-                                                    screen={'Home Page'}
+                                                    <Product
+                                                        item={poke}
+                                                        screen={'Home Page'}
                                                     // setCart={setCart}
                                                     // cart={cart}
-                                                />
+                                                    />
                                                 </View>
 
                                             )

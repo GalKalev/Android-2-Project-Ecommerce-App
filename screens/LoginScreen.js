@@ -7,11 +7,13 @@ import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
 import { IP_ADDRESS } from '@env';
+import Loading from "../components/Loading";
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const[isLoading, setLoading] = useState(false)
 
     const navigation = useNavigation();
 
@@ -21,12 +23,13 @@ const LoginScreen = () => {
             email: email,
             password: password
         }
-        console.log(user);
+        
 
         try{
+            setLoading(true);
             const response = await axios.post(`http://${IP_ADDRESS}:1400/login`,user);
-            console.log(`login user: ${response.data}`);
-            navigation.replace('Main');
+
+            navigation.replace('Main',{user});
         }catch(error){
             if (error.response) {
                 // The request was made and the server responded with a status code outside the range of 2xx
@@ -42,9 +45,17 @@ const LoginScreen = () => {
                 Alert.alert("Login Error ", "An error occurred during login");
               }
         
+        }finally{
+            setLoading(false);
         }
 
 
+    }
+
+    if(isLoading){
+        return(
+            <Loading/>
+        )
     }
 
 

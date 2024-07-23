@@ -25,6 +25,7 @@ const RegisterScreen = () => {
         };
         try{
             const response = await axios.post(`http://${IP_ADDRESS}:1400/register`,user);
+            navigation.replace('Main',{user});
             Alert.alert("Registration successful");
         }catch(error){
             if (error.response) {
