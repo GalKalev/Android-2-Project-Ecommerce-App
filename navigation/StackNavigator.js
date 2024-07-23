@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import { useNavigation, useRoute, NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -12,22 +12,19 @@ import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import ProductScreen from '../screens/ProductScreen';
-// import { cart } from '../screens/HomeScreen';
+
+
 
 
 const StackNavigator = () => {
 
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
-  // console.log(cart)
-
-  // const [cartQuantity, setCartQuantity] = useState()
-
-  // useEffect(() => {
-  //   console.log('navi cart:' + cart)
-  // },[cart])
 
   function BottomTabs() {
+    // const route = useRoute();
+    // const { user } = route.params;
+    // console.log("tab:" + user.gmail);
     return (
       <Tab.Navigator>
         <Tab.Screen
@@ -37,14 +34,15 @@ const StackNavigator = () => {
             tabBarLabel: "Home",
             tabBarLabelStyle: { color: '#008E97' },
             headerShown: false,
-            tabBarIcon: ({ focused }) => 
+            tabBarIcon: ({ focused }) =>
               focused ? (
                 <Entypo name="home" size={24} color="#008E97" />
               ) : (
                 <AntDesign name="home" size={24} color="black" />
               ),
-            
+
           }}
+          // initialParams={{user}}
 
         />
 
@@ -55,14 +53,14 @@ const StackNavigator = () => {
             tabBarLabel: "Profile",
             tabBarLabelStyle: { color: '#008E97' },
             headerShown: false,
-            tabBarIcon: ({ focused }) => 
+            tabBarIcon: ({ focused }) =>
               focused ? (
                 <Ionicons name="person" size={24} color="#008E97" />
               ) : (
                 <Ionicons name="person-outline" size={24} color="black" />
               ),
-              
-            
+
+
           }}
 
         />
@@ -74,14 +72,14 @@ const StackNavigator = () => {
             tabBarLabel: "Cart",
             tabBarLabelStyle: { color: '#008E97' },
             headerShown: false,
-            tabBarIcon: ({ focused }) => 
+            tabBarIcon: ({ focused }) =>
               focused ? (
                 <AntDesign name="shoppingcart" size={24} color="#008E97" />
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
-              // tabBarBadge:cartQuantity
-            
+            // tabBarBadge:cartQuantity
+
           }}
 
         />
@@ -93,10 +91,6 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-
-       
-
-        
         {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
