@@ -12,6 +12,7 @@ import { Entypo } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import ProductScreen from '../screens/ProductScreen';
+import CheckoutScreen from '../screens/CheckoutScreen';
 
 
 
@@ -97,6 +98,7 @@ const StackNavigator = () => {
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>

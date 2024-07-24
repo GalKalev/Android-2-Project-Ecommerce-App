@@ -4,6 +4,7 @@ import Loading from '../components/Loading';
 import { getCart } from '../api/apiServices';
 import ProductCart from '../components/ProductCart';
 import CurrencyPD from '../components/CurrencyPD';
+import { useNavigation } from '@react-navigation/native';
 
 const CartScreen = () => {
     // TODO: uncomment when all the user info is passed and add user to cart useState
@@ -14,6 +15,8 @@ const CartScreen = () => {
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
+
+    const navigator = useNavigation();
 
     const deleteProductCart = (item) => {
         //TODO: remove product from database as well
@@ -143,7 +146,9 @@ const CartScreen = () => {
 
 
     const handleCheckout = () => {
-        navigator.navigate('Checkout');
+        //TODO: add user to navigate
+        navigator.navigate('Checkout', {cart});
+        // navigator.navigate('Checkout', {cart, user});
     };
 
     if (isLoading) {
