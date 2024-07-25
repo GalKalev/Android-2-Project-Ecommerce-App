@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
+import { checkLogin } from '../api/apiServices';
 import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
 
@@ -18,38 +19,23 @@ const LoginScreen = () => {
     const navigation = useNavigation();
 
 
-    const handleLogin = async() => {
-        const user = {
-            email: email,
-            password: password
-        }
-        
-
-        try{
-            setLoading(true);
-            const response = await axios.post(`http://${IP_ADDRESS}:1400/login`,user);
-
-            navigation.replace('Main',{user});
-        }catch(error){
-            if (error.response) {
-                // The request was made and the server responded with a status code outside the range of 2xx
-                console.log("Server responded with an error: ", error.response.data);
+    const handleLogin = async () => {
+        try {
+            const loginSuccess = await checkLogin(email, password);
+            if (loginSuccess === 0) {
+                navigation.replace('Main');
+            } else if (loginSuccess === 1) {
                 Alert.alert("Login Error", error.response.data.message || "An error occurred during registration");
-              } else if (error.request) {
-                // The request was made but no response was received
-                console.log("No response received: ", error.request);
+            } else if (loginSuccess === 2) {
                 Alert.alert("Login Error ", "No response from the server");
-              } else {
-                // Something happened in setting up the request that triggered an Error
-                console.log("Error setting up request: ", error.message);
+
+            } else {
                 Alert.alert("Login Error ", "An error occurred during login");
-              }
-        
-        }finally{
-            setLoading(false);
+            }
+        } catch (error) {
+            Alert.alert("Login Error", "An unexpected error occurred");
+            console.error("Login error: ", error);
         }
-
-
     }
 
     if(isLoading){

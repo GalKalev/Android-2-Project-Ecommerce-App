@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
-import { IP_ADDRESS } from '@env';
+import { registerUser } from "../api/apiServices";
 
 const RegisterScreen = () => {
 
@@ -17,33 +17,38 @@ const RegisterScreen = () => {
 
     const navigation = useNavigation();
 
-    const handleRegister = async() => {
-        const user = {
-            name: name,
-            email: email,
-            password: password
-        };
-        try{
-            const response = await axios.post(`http://${IP_ADDRESS}:1400/register`,user);
-            navigation.replace('Main',{user});
-            Alert.alert("Registration successful");
-        }catch(error){
+    const handleRegister = async () => {
+        try {
+            const registrationStatus = await registerUser(name, email, password);
+            if (registrationStatus === 201) {
+                Alert.alert("Registration successful");
+                navigation.replace('Main'); // Navigate to the main screen
+            } else if (registrationStatus === 400) {
+                Alert.alert("Registration Error", "Email already registered or missing fields");
+            } else if (registrationStatus === 1) {
+                Alert.alert("Server Error", "The server responded with an error");
+            } else if (registrationStatus === 2) {
+                Alert.alert("Network Error", "No response from the server");
+            } else if (registrationStatus === 3) {
+                Alert.alert("Request Error", "An error occurred while setting up the request");
+            } else {
+                Alert.alert("Unknown Error", "An unknown error occurred during registration");
+            }
+        } catch (error) {
             if (error.response) {
                 // The request was made and the server responded with a status code outside the range of 2xx
                 console.log("Server responded with an error: ", error.response.data);
                 Alert.alert("Registration Error", error.response.data.message || "An error occurred during registration");
-              } else if (error.request) {
+            } else if (error.request) {
                 // The request was made but no response was received
                 console.log("No response received: ", error.request);
-                Alert.alert("Registration Error 1", "No response from the server");
-              } else {
+                Alert.alert("Registration Error", "No response from the server");
+            } else {
                 // Something happened in setting up the request that triggered an Error
                 console.log("Error setting up request: ", error.message);
-                Alert.alert("Registration Error 2", "An error occurred during registration: " + error.message);
-              }
-        
+                Alert.alert("Registration Error", "An error occurred during registration: " + error.message);
+            }
         }
-   
     };
 
 

@@ -1,22 +1,17 @@
-
-require('dotenv').config({ path: '../.env' })
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const nodemailer = require("nodemailer");
 const cors = require("cors");
-const jwt = require("jsonwebtoken");
+const { PORT, IP_ADDRESS } = require('@env');
 
 const app = express();
-const PORT = 1400;
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//! TO DO: username: galA and password: gal318657632 to env
+//TODO: username: galA and password: gal318657632 to env
 mongoose.connect(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -28,8 +23,8 @@ mongoose.connect(URI, {
 
 
 
-app.listen(PORT, () => {
-  console.log(`Server is running at ${process.env.IP_ADDRESS}:${PORT}`);
+app.listen(1400, () => {
+  console.log(`Server is running at ${IP_ADDRESS}:${PORT}`);
 });
 
 const User = require("./models/user");
@@ -38,16 +33,16 @@ const Product = require("./models/product");
 const Pokemon = require('./models/pokemon');
 const Cart = require('./models/cart');
 
-
+// app.get("/health", (req, res) => {res.send("hello")})
 //---------- Register Method ----------
 app.post("/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    console.log(`req: ${req.body.email}`);
+    console.log(`req: ${email}`);
     if (!name || !email || !password) {
       console.log("undefined values");
-      return
+      return res.status(400).json({ message: "Name, email, or password are missing" });
     }
 
     // Check if the email is already registered
@@ -66,13 +61,13 @@ app.post("/register", async (req, res) => {
     // Debugging statement to verify data
     console.log("New User Registered:", newUser);
 
-    res.status(201).json({
+    return res.status(201).json({
       message:
-        "Registration successful. Please check your email for verification.",
+          "Registration successful. Please check your email for verification.",
     });
   } catch (error) {
     console.log("Error during registration:", error); // Debugging statement
-    res.status(500).json({ message: "Registration failed" });
+    return res.status(500).json({ message: "Registration failed" });
   }
 });
 
@@ -95,12 +90,12 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    res.status(201).json({ message: "Login successful" });
+    return res.status(201).json({ message: "Login successful" });
 
 
   } catch (error) {
-    res.status(500).json({ message: 'Login Failed' });
     console.log(error);
+    return res.status(500).json({ message: 'Login Failed' });
   }
 });
 
@@ -109,9 +104,11 @@ app.post('/login', async (req, res) => {
 // Add new Pokemon to Products list
 app.post('/Pokemon', async (req, res) => {
   try {
-
     console.log('addPokemon');
-    const { userId } = req.body;
+
+    const {userId} = req.body;
+    console.log(`userId = ${userId}`)
+
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
@@ -130,66 +127,52 @@ app.post('/Pokemon', async (req, res) => {
       types,
       price,
       amount } = req.body;
-    const newPokemon = new Product({
-      user: user,
-      name: name,
-      url: url,
-      price: price,
-      image: img,
-      quantity: amount,
-      details: {
-        isShiny: isShiny,
-        abilities: abilities,
-        moves: moves,
-        species: species,
-        stats: stats,
-        types: types,
-      }
-    });
 
-    await newPokemon.save();
-    console.log(`Received Pokemon: ${name}, ${url}, ${img}, ${gender}, ${level}, ${isShiny}, ${abilities}, ${moves}, ${species}, ${stats.hp}, ${types}, ${price}, ${amount}`);
+
     if (!name || !url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // const newPokemon = new Pokemon({
-    //   user: userId,
-    //   name,
-    //   url,
-    //   img,
-    //   gender,
-    //   level,
-    //   isShiny,
-    //   abilities,
-    //   moves,
-    //   species,
-    //   stats,
-    //   types,
-    //   price,
-    //   amount
-    // })
+    const newPokemon = new Pokemon({
+      user: userId,
+      name,
+      url,
+      price,
+      image: img,
+      quantity: amount,
+      details: {
+        isShiny,
+        abilities,
+        moves,
+        species,
+        stats,
+        types,
+      },
+      gender,
+      level
+    });
+
 
     await newPokemon.save();
     console.log(`new Pokemon added: ${newPokemon}`);
-
-    // const pokemon = new Pokemon(user)
-    res.status(201).json({ message: "Pokemon added successfully" });
+    return res.status(201).json({ message: "Pokemon added successfully" });
 
   } catch (e) {
-    res.status(500).json({ message: 'Adding Pokemon Failed' });
     console.log(`Error adding pokemon: ${e.message}`);
+    return res.status(500).json({ message: 'Adding Pokemon Failed' });
   }
 })
 
 // Get all Available Pokemons in Store
-app.get('/Pokemon', async (req, res) => {
-  try {
+app.get('/Pokemon',async (req,res)=>{
+  try{
+    console.debug("trying fetching Pokemons");
     const products = await Product.find({});
-    res.status(200).json(products);
-  } catch (error) {
-    res.status(500).json({ message: "Fetching products failed" });
+    return res.status(200).json(products);
+  } catch (error){
+
     console.log(`Error fetching Pokemons: ${error.message}`);
+    return res.status(500).json({message:"Fetching products failed"});
   }
 })
 
@@ -231,8 +214,9 @@ app.post('/cart/add', async (req, res) => {
 
     res.status(201).json({ message: `${cart.products.length} products added successfully` });
   } catch (error) {
-    console.log(f`Error adding product to cart: ${error}`);
-    res.status(500).json({ message: `Failed to add product to cart` })
+    console.log(`Error adding product to cart: ${error}`);
+    res.status(500).json({message:`Failed to add product to cart`});
+
   }
 })
 
@@ -275,10 +259,10 @@ app.post('/cart/remove', async (req, res) => {
 
     await cart.save();
 
-    res.status(200).json({ message: 'Product removed from cart', cart });
+    return res.status(200).json({ message: 'Product removed from cart', cart });
   } catch (error) {
     console.log('Error removing product from cart:', error);
-    res.status(500).json({ message: 'Failed to remove product from cart' });
+    return res.status(500).json({ message: 'Failed to remove product from cart' });
   }
 });
 
@@ -304,10 +288,11 @@ app.post('checkout', async (req, res) => {
     cart.totalPrice = 0;
     await cart.save();
 
-    res.status(200).json({ message: 'Checkout successful' });
+    return res.status(200).json({ message: 'Checkout successful' });
   } catch (error) {
     console.log('Error during checkout:', error);
-    res.status(500).json({ message: 'Checkout failed' });
+    return res.status(500).json({ message: 'Checkout failed' });
+
   }
 })
 
