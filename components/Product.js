@@ -16,7 +16,7 @@ const Product = ({ item, setCart, cart, screen }) => {
     }
 
     const handleItemPressed = () => {
-        navigation.navigate('ProductScreen', {item : item, prevScreen: screen});
+        navigation.navigate('ProductScreen', { item: item, prevScreen: screen });
     }
     return (
         <View style={[styles.container, { borderColor: item.isShiny ? 'gold' : "black" }]}>
@@ -29,7 +29,7 @@ const Product = ({ item, setCart, cart, screen }) => {
 
             )}
 
-            <Pressable style={{ alignItems: 'center' }} 
+            <Pressable style={{ alignItems: 'center' }}
                 onPress={handleItemPressed}
             >
                 <View style={{ borderBlockColor: 'black', borderBottomWidth: 0.17 }}>
@@ -50,24 +50,30 @@ const Product = ({ item, setCart, cart, screen }) => {
                 </View>
                 <View>
 
-
-
                     <Text style={styles.itemName}>
                         {presentableWord(item.name)}
                     </Text>
+
+                    <View style={styles.userNameContainer}>
+                        <Ionicons name="person" size={18} color="white" style={{backgroundColor:'black', borderRadius:10}} />
+                        <Text style={styles.userNameText}>{item.user}</Text>
+                    </View>
+                    
+
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
                         <View style={styles.priceContainer}>
-                            
+
                             <Text style={styles.priceText}>
                                 {item.price}
-                                </Text>
+                            </Text>
                             <CurrencyPD style={styles.currency} />
                         </View>
 
-                        <Text style={[styles.quantity, {color: item.quantity <= 3 ? 'red' : 'gray'}]}>
+                        <Text style={[styles.quantity, { color: item.quantity <= 3 ? 'red' : 'gray' }]}>
                             {item.quantity} left
-                            </Text>
+                        </Text>
                     </View>
+                    
                 </View>
 
                 <Pressable style={styles.addToCardBtn}
@@ -130,8 +136,23 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         marginTop: 7,
-        alignSelf:'center',
-        marginBottom:15
+        alignSelf: 'center',
+        marginBottom: 15
+    },
+    userNameContainer:{
+        flexDirection:'row',
+        borderRadius:10,
+        borderWidth:1,
+        borderColor:'black',
+        alignItems:'center',
+        justifyContent:'center',
+        marginBottom:5,
+        alignSelf:'flex-end',
+        paddingRight:3
+    },
+    userNameText:{
+        fontSize:15,
+        marginLeft:3
     },
     priceContainer: {
         flexDirection: 'row',

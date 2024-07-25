@@ -77,7 +77,7 @@ const RadarChart = ({ data, labels, size }) => {
                                 <SvgText
                                     x={x}
                                     y={y + 15} // Adjust the value here to control the distance between the label and the value
-                                    fontSize="10"
+                                    fontSize="12.5"
                                     textAnchor="middle"
                                     alignmentBaseline="middle"
                                     fill="red"

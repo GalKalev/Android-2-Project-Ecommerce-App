@@ -7,11 +7,14 @@ import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
 import { checkLogin } from '../api/apiServices';
+import { IP_ADDRESS } from '@env';
+import Loading from "../components/Loading";
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const[isLoading, setLoading] = useState(false)
 
     const navigation = useNavigation();
 
@@ -33,6 +36,12 @@ const LoginScreen = () => {
             Alert.alert("Login Error", "An unexpected error occurred");
             console.error("Login error: ", error);
         }
+    }
+
+    if(isLoading){
+        return(
+            <Loading/>
+        )
     }
 
 

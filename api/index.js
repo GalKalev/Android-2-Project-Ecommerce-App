@@ -77,7 +77,6 @@ app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
-
     // Check if the user exist
     const user = await User.findOne({ email });
 
@@ -109,6 +108,7 @@ app.post('/Pokemon', async (req, res) => {
 
     const {userId} = req.body;
     console.log(`userId = ${userId}`)
+
     if (!userId) {
       return res.status(400).json({ message: 'User ID is required' });
     }
@@ -127,6 +127,7 @@ app.post('/Pokemon', async (req, res) => {
       types,
       price,
       amount } = req.body;
+
 
     if (!name || !url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
@@ -151,6 +152,7 @@ app.post('/Pokemon', async (req, res) => {
       level
     });
 
+
     await newPokemon.save();
     console.log(`new Pokemon added: ${newPokemon}`);
     return res.status(201).json({ message: "Pokemon added successfully" });
@@ -168,6 +170,7 @@ app.get('/Pokemon',async (req,res)=>{
     const products = await Product.find({});
     return res.status(200).json(products);
   } catch (error){
+
     console.log(`Error fetching Pokemons: ${error.message}`);
     return res.status(500).json({message:"Fetching products failed"});
   }
@@ -176,58 +179,59 @@ app.get('/Pokemon',async (req,res)=>{
 
 //---------- Cart Methods ----------
 // Add Pokemon to user's cart
-app.post('/cart/add', async (req,res)=>{
-  try{
-    const {userId, productId, quantity} = req.body;
-    if(!userId || !productId || !quantity || quantity < 0){
+app.post('/cart/add', async (req, res) => {
+  try {
+    const { userId, productId, quantity } = req.body;
+    if (!userId || !productId || !quantity || quantity < 0) {
       return res.status(400).json({ message: 'Invalid product - missing fields' });
     }
 
-    let cart = await Cart.findOne({user:userId});
-    if(!cart){
-      cart = new Cart({user:userId});
+    let cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      cart = new Cart({ user: userId });
     }
 
     const product = await Product.findById(productId);
-    if(!product){
+    if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
     // Check if product already in cart. If  so - get its index and add quantity. Else - add the product to cart
-    const productIndex = cart.products.findIndex((p=>p.product.equals(productId)));
-    if(productIndex>-1){
-      cart.products[productIndex].quantity+=quantity;
+    const productIndex = cart.products.findIndex((p => p.product.equals(productId)));
+    if (productIndex > -1) {
+      cart.products[productIndex].quantity += quantity;
     } else {
-      cart.products.push({product:productId,quantity});
+      cart.products.push({ product: productId, quantity });
     }
 
     // Update total price
-    cart.totalPrice = cart.products.reduce((prevTotal,item) => {
-      const product = cart.products.find(p=>p.product.equals(item.product));
+    cart.totalPrice = cart.products.reduce((prevTotal, item) => {
+      const product = cart.products.find(p => p.product.equals(item.product));
       return prevTotal + (product ? product.price * item.quantity : 0);
-    },0);
+    }, 0);
 
     await cart.save();
 
-    res.status(201).json({message:`${cart.products.length} products added successfully`});
+    res.status(201).json({ message: `${cart.products.length} products added successfully` });
   } catch (error) {
     console.log(`Error adding product to cart: ${error}`);
-    res.status(500).json({message:`Failed to add product to cart`})
+    res.status(500).json({message:`Failed to add product to cart`});
+
   }
 })
 
 // Get user's cart
-app.get('/cart/:userId', async (req,res)=>{
-  try{
-    const {userId} = req.params;
-    const cart = await Cart.findOne({user:userId}).populate('products.product');
+app.get('/cart/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const cart = await Cart.findOne({ user: userId }).populate('products.product');
 
-    if(!cart){
-      return res.status(404).json({message:'Cart not found'});
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
     }
-  } catch (error){
+  } catch (error) {
     console.log(`Error get cart: ${error}`);
-    return res.status(500).json({message:'Failed to retrieve cart'})
+    return res.status(500).json({ message: 'Failed to retrieve cart' })
   }
 })
 
@@ -265,16 +269,16 @@ app.post('/cart/remove', async (req, res) => {
 
 //---------- Checkout Methods ----------
 // Checkout cart for user
-app.post('checkout', async (req,res)=>{
-  try{
-    const {userId} = req.body;
-    if(!userId){
-      return res.status(400).json({message: 'User ID required'});
+app.post('checkout', async (req, res) => {
+  try {
+    const { userId } = req.body;
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID required' });
     }
 
-    const cart = await Cart.findOne({user: userId});
-    if(!cart){
-      return res.status(404).json({message:'Cart not found'});
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
     }
 
     //TODO: Handle checkout logic (create order, payment details, remove from stock...)
@@ -288,6 +292,7 @@ app.post('checkout', async (req,res)=>{
   } catch (error) {
     console.log('Error during checkout:', error);
     return res.status(500).json({ message: 'Checkout failed' });
+
   }
 })
 
