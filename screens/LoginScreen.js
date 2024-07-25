@@ -6,7 +6,6 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
-import { IP_ADDRESS } from '@env';
 import { checkLogin } from '../api/apiServices';
 
 const LoginScreen = () => {

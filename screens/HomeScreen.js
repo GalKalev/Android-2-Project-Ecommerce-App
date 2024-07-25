@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, Keyboard, Animated } from 'react-native';
-import axios from 'axios';
 import { AntDesign, Feather } from '@expo/vector-icons'; // Assuming you're using Expo icons
-import { IP_ADDRESS } from '@env';
 import FloatingButton from '../components/FloatingButton';
 import SearchInput from '../components/SearchInput';
 import { presentableWord } from '../utils/consts';

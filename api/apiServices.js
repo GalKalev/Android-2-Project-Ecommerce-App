@@ -1,8 +1,9 @@
 import axios from 'axios';
-import {Alert} from "react-native";
-// import {PORT} from './index'
+import { IP_ADDRESS,PORT } from '@env';
+// const { PORT, IP_ADDRESS } = require('@env');
 
-const API_URL = `http://${process.env.IP_ADDRESS}:${process.env.PORT}`;
+const API_URL = `http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+console.log(`API URL: ${API_URL}`);
 
 // Function to handle login
 export const checkLogin = async(email,password) => {
@@ -64,8 +65,6 @@ export const registerUser = async (name, email, password) => {
 // Function to get all products
 export async function fetchPokemons() {
     try {
-        setIsLoading(true);
-
         //! Fetch product from database
         //! Fetch products from user's cart ??
 
@@ -251,7 +250,7 @@ export async function fetchPokemons() {
         }
 
     } catch (error) {
-        console.log(`Error fetching Pokémon: ${error.message}`);
+        console.log(`Error fetching Pokémons: ${JSON.stringify(error)}`);
         return null;
     }
 }

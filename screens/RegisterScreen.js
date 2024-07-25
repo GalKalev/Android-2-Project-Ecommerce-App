@@ -7,7 +7,6 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
-import { IP_ADDRESS } from '@env';
 import { registerUser } from "../api/apiServices";
 
 const RegisterScreen = () => {
