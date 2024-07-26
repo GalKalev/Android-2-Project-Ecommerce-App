@@ -1,8 +1,10 @@
 import axios from 'axios';
 import { IP_ADDRESS,PORT } from '@env';
+import Toast from "react-native-toast-message";
+import {Alert} from "react-native";
 // const { PORT, IP_ADDRESS } = require('@env');
 
-const API_URL = `http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
 console.log(`API URL: ${API_URL}`);
 
 // Function to handle login
@@ -15,22 +17,43 @@ export const checkLogin = async(email,password) => {
 
     try{
         const response = await axios.post(`${API_URL}/login`,user);
-        console.log(`login user: ${response.data}`);
-        return 0;
+        if(response.status === 200){
+            console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
+            const userId = response.data.userId;
+            const email = response.data.email;
+            const name = response.data.name;
+            return {
+                success: true,
+                data: { userId, email, name },
+                message: "Login successful"
+            };
+        }
+        else{
+            console.log('Error login user');
+            return {
+                success: false,
+                data: null,
+                message: "Error logging in user"
+            };
+        }
     }catch(error){
+        let message="";
         if (error.response) {
             // The request was made and the server responded with a status code outside the range of 2xx
-            console.log("Server responded with an error: ", error.response.data);
-            return 1;
+            message = `Server responded with an error: ${error.response.data.message}`;
         } else if (error.request) {
             // The request was made but no response was received
-            console.log("No response received: ", error.request);
-            return 2;
+            message = "No response received from server";
         } else {
             // Something happened in setting up the request that triggered an Error
-            console.log("Error setting up request: ", error.message);
-            return 3;
+            message = `Error setting up request: ${error.message}`;
         }
+        console.log(message);
+        return {
+            success: false,
+            data: null,
+            message: message
+        };
     }
 }
 
@@ -255,6 +278,17 @@ export async function fetchPokemons() {
     }
 }
 
+export async function addPokemon(pokemon){
+    try {
+        console.debug(pokemon);
+        const response = await axios.post(`${API_URL}/pokemon`, pokemon);
+        console.log("pokemon added successfully");
+        return response.status;
+    } catch (error) {
+        console.log('error uploading pokemon to sell: ' + error.message);
+        throw error;
+    }
+}
 
 // Function to get all products
 // export const getProducts = async () => {
