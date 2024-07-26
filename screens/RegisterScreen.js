@@ -7,6 +7,9 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
+import { IP_ADDRESS } from '@env';
+import { useUser } from '../utils/UserContext';
+import Loading from "../components/Loading";
 import { registerUser } from "../api/apiServices";
 
 const RegisterScreen = () => {
@@ -14,6 +17,8 @@ const RegisterScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const[isLoading, setLoading] = useState(false);
+    const {setUser} = useUser();
 
     const navigation = useNavigation();
 
@@ -46,12 +51,20 @@ const RegisterScreen = () => {
             } else {
                 // Something happened in setting up the request that triggered an Error
                 console.log("Error setting up request: ", error.message);
-                Alert.alert("Registration Error", "An error occurred during registration: " + error.message);
-            }
+                Alert.alert("Registration Error 2", "An error occurred during registration: " + error.message);
+              }
+        
+        }finally{
+            setLoading(false)
+
         }
     };
 
 
+    if(isLoading){
+        return(<Loading
+        loading={isLoading}/>)
+    }
     return (
         <SafeAreaView style={styles.container}>
             <Logo/>

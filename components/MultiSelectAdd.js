@@ -1,3 +1,4 @@
+
 import { View, Text, StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { MultiSelect } from 'react-native-element-dropdown';
@@ -6,9 +7,9 @@ import { presentableWord } from '../utils/consts';
 
 const MultiSelectAdd = ({ data, selected, setSelected, placeholder }) => {
 
-  const configData = data.map((d, index) => ({label: d, value: index, presentableLabel: presentableWord(d)}));
+  const configData = data.map((d, index) => ({ label: d, value: index, presentableLabel: presentableWord(d) }));
   const [itemsList, setItemsList] = useState([]);
-
+ 
   return (
     <MultiSelect
       style={styles.dropdown}

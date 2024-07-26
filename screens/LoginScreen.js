@@ -9,12 +9,14 @@ import LogRegForm from "../components/LogRegForm";
 import { checkLogin } from '../api/apiServices';
 import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
+import { useUser } from '../utils/UserContext';
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const[isLoading, setLoading] = useState(false)
+    const[isLoading, setLoading] = useState(false);
+    const {setUser} = useUser();
 
     const navigation = useNavigation();
 
@@ -31,11 +33,36 @@ const LoginScreen = () => {
             Alert.alert("Login Error", "An unexpected error occurred");
             console.error("Login error: ", error);
         }
+
+        try{
+            setLoading(true);
+            const response = await axios.post(`http://${IP_ADDRESS}:1400/login`,user);
+
+            navigation.replace('Main');
+        }catch(error){
+            if (error.response) {
+                // The request was made and the server responded with a status code outside the range of 2xx
+                console.log("Server responded with an error: ", error.response.data);
+                Alert.alert("Login Error", error.response.data.message || "An error occurred during registration");
+              } else if (error.request) {
+                // The request was made but no response was received
+                console.log("No response received: ", error.request);
+                Alert.alert("Login Error ", "No response from the server");
+              } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error setting up request: ", error.message);
+                Alert.alert("Login Error ", "An error occurred during login");
+              }
+        
+        }finally{
+            setLoading(false);
+        }
+
     }
 
     if(isLoading){
         return(
-            <Loading/>
+            <Loading isLoading={isLoading}/>
         )
     }
 

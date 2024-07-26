@@ -14,9 +14,19 @@ import { Ionicons } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
 import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
+import { useUser } from '../utils/UserContext';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import {addPokemon} from "../api/apiServices";
 
+
 const AddPokemonScreen = () => {
+
+    const route = useRoute();
+    const { item } = route.params;
+    const { user } = useUser();
+
+    const navigator = useNavigation();
+
     const [pokemonsList, setPokemonList] = useState([]);
     const [searchPokemon, setSearchPokemon] = useState('');
     const [filteredPokemons, setFilteredPokemons] = useState([]);
@@ -104,35 +114,37 @@ const AddPokemonScreen = () => {
 
     const validateInput = () => {
         const regex = /^[1-9]\d*$/;
-    
+
         const isPositiveInteger = (value) => regex.test(value);
         const isValidAbility = (abilities) => abilities.length > 0;
         const isValidLevel = (level) => isPositiveInteger(level) && level <= 100;
-    
+
         if (!isValidAbility(selectedAbilities)) {
             Alert.alert('Invalid Input', 'Abilities must be selected');
             return false;
         }
-    
+
         const stats = [selectedAttack, selectedDefense, selectedHP, selectedSpecialAttack, selectedSpecialDefense, amount];
-    
+
         for (let stat of stats) {
             if (!isPositiveInteger(stat)) {
                 Alert.alert('Invalid Input', 'Stats must be positive integers');
                 return false;
             }
         }
-    
+
         if (!isValidLevel(pokemonLevel)) {
             Alert.alert('Invalid Input', 'Pokemon level must be between 1 and 100');
             return false;
         }
-    
+
         return true;
     };
 
     async function submitPokemon() {
-
+        if (item) {
+            //TODO: keep the id and not make a new pokemon
+        }
         if (!validateInput()) {
             return;
         }
@@ -148,19 +160,20 @@ const AddPokemonScreen = () => {
         }
 
         const soldPokemon = {
+            user: user.userId,
             name: chosenPokemon.name,
-            url:  chosenPokemon.url,
+            url: chosenPokemon.url,
             img: image,
             gender: gender,
             level: pokemonLevel,
             isShiny: isShiny,
             abilities: selectedAbilities,
             moves: selectedPokemonMoves,
-            species:chosenPokemon.species,
-            stats:stats,
+            species: chosenPokemon.species,
+            stats: stats,
             types: chosenPokemon.types,
-            price:price,
-            amount:amount
+            price: price,
+            amount: amount
 
         }
 
@@ -172,10 +185,10 @@ const AddPokemonScreen = () => {
                             text1:'Pokemon Is Up For Sale',
                             visibilityTime:2000
                         });
+              navigator.reset('Main');
             }
             else{
-                console.log("not able to add pokemon...")
-                Alert.alert('Error', 'Please try again later')
+                Throw error;
             }
         } catch (e) {
             console.log('error uploading pokemon to sell: ' + e.message);
@@ -210,15 +223,36 @@ const AddPokemonScreen = () => {
                     return 0;
                 });
                 setPokemonList(sortedPokemonData);
+                if (item) {
+                    setSearchPokemon(item.name);
+                    setGender(item.gender);
+                    setSelectedHP(item.stats.hp);
+                    setSelectedAttack(item.stats.attack);
+                    setSelectedDefense(item.stats.defense);
+                    setSelectedSpecialAttack(item.stats.specialAttack);
+                    setSelectedSpecialDefense(item.stats.specialDefense);
+                    setSelectedSpeed(item.stats.speed);
+                    setSelectedAbilities(item.abilities);
+                    setSelectedPokemonMoves(item.moves);
+                    setPokemonLevel(item.level);
+                    setIsShiny(item.isShiny);
+                    setPrice(item.price);
+                    setAmount(item.quantity);
+
+                    // Fetch the Pokémon details if not already fetched
+                    handleChosenPokemon(item);
+                }
+                // console.log(item.name);
             } catch (error) {
                 console.log(`Error fetching Pokémon: ${error.message}`);
+                Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
             } finally {
                 setIsLoading(false);
             }
         }
 
         fetchPokemons();
-    }, []);
+    }, [selectedAttack]);
 
     if (isLoading) {
         return (
@@ -235,15 +269,19 @@ const AddPokemonScreen = () => {
                     Sell Your Pokemon
                 </Text>
 
+                {item ? (
+                    <></>
+                ) : (
+                    <SearchInput
+                        styleSearchContainer={styles.searchContainer}
+                        styleSearchBar={styles.searchBar}
+                        stylesInput={styles.input}
+                        handleSearchInput={handleSearchInput}
+                        placeholder={"Pick a pokemon you want to sell..."}
+                        value={searchPokemon}
+                    />
 
-                <SearchInput
-                    styleSearchContainer={styles.searchContainer}
-                    styleSearchBar={styles.searchBar}
-                    stylesInput={styles.input}
-                    handleSearchInput={handleSearchInput}
-                    placeholder={"Pick a pokemon you want to sell..."}
-                    value={searchPokemon}
-                />
+                )}
 
 
             </View>
@@ -262,9 +300,8 @@ const AddPokemonScreen = () => {
                     <FlatList
                         style={{
                             position: 'absolute',
-                            top: 136, // Adjust this value based on the height of your input
+                            top: 136, 
                             left: 5,
-                            // right: 10,
                             maxHeight: 200,
                             width: 350,
                             borderColor: 'gray',
@@ -329,7 +366,7 @@ const AddPokemonScreen = () => {
                                     onChangeText={handleLevelChange}
                                     value={pokemonLevel}
                                     keyboardType="numeric"
-                                    placeholder="Enter pokemon's level"
+                                    placeholder={"Enter pokemon's level"}
                                     placeholderTextColor="#999"
                                 />
                             </Pressable>
@@ -418,7 +455,7 @@ const AddPokemonScreen = () => {
                                 keyboardType='numeric'
                                 value={amount}
                                 onChangeText={(v) => setAmount(v.trim())}
-                                placeholder="Enter Pokemon's Price..."
+                                placeholder="Enter Amount Of Pokemon You Want To Sell..."
                             />
                         </View>
                         <View style={styles.sectionContainer}>
@@ -433,7 +470,8 @@ const AddPokemonScreen = () => {
                                     keyboardType='numeric'
                                     value={price}
                                     onChangeText={(v) => setPrice(v.trim())}
-                                    placeholder="Enter Amount Of Pokemon You Want To Sell..."
+
+                                    placeholder="Enter Pokemon's Price..."
 
                                 />
                                 <CurrencyPD

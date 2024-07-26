@@ -9,16 +9,16 @@ import ImageSlider from '../components/ImageSlider'
 import Loading from '../components/Loading';
 import FIlterOptions from '../components/FIlterOptions'
 import Product from '../components/Product';
+import { useUser } from '../utils/UserContext';
 import {fetchPokemons} from "../api/apiServices";
 
-// export const [cart, setCart] = useState([]);
 
 const HomeScreen = () => {
 
     // TODO: uncomment when all the user info is passed
     // const route = useRoute();
-    // const { user } = route.params;
     // console.log("home:", user);
+    const {user} = useUser();
 
     const [pokemonList, setPokemonList] = useState([])
     const [searchPokemons, setSearchPokemons] = useState([]);
@@ -118,7 +118,7 @@ const HomeScreen = () => {
 
     if (isLoading || pokemonList.length === 0) {
         return (
-            <Loading />
+            <Loading  loading={isLoading}/>
         )
     }
 
@@ -213,6 +213,7 @@ const HomeScreen = () => {
                                                     <Product
                                                         item={poke}
                                                         screen={'Home Page'}
+                                                        user={user}
                                                     // setCart={setCart}
                                                     // cart={cart}
                                                     />
