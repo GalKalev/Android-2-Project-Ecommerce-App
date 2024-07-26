@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
+import { checkLogin } from '../api/apiServices';
 import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
 import { useUser } from '../utils/UserContext';
@@ -20,12 +21,18 @@ const LoginScreen = () => {
     const navigation = useNavigation();
 
 
-    const handleLogin = async() => {
-        const user = {
-            email: email,
-            password: password
+    const handleLogin = async () => {
+        try {
+            const loginSuccess = await checkLogin(email, password);
+            if (loginSuccess.success === true) {
+                navigation.replace('Main');
+            } else {
+                Alert.alert("Login Error", error.response.data.message || "An error occurred during login");
+            }
+        } catch (error) {
+            Alert.alert("Login Error", "An unexpected error occurred");
+            console.error("Login error: ", error);
         }
-        
 
         try{
             setLoading(true);
@@ -50,7 +57,6 @@ const LoginScreen = () => {
         }finally{
             setLoading(false);
         }
-
 
     }
 

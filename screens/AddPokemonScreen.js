@@ -16,6 +16,7 @@ import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
 import { useUser } from '../utils/UserContext';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import {addPokemon} from "../api/apiServices";
 
 
 const AddPokemonScreen = () => {
@@ -177,13 +178,18 @@ const AddPokemonScreen = () => {
         }
 
         try {
-            const response = await axios.post(`http://${IP_ADDRESS}:1400/addPokemon`, soldPokemon);
-            Toast.show({
-                type: 'success',
-                text1: 'Pokemon Is Up For Sale',
-                visibilityTime: 2000
-            });
-            navigator.reset('Main');
+            const response = addPokemon(soldPokemon);
+            if(response.status === 201){
+                Toast.show({
+                            type:'success',
+                            text1:'Pokemon Is Up For Sale',
+                            visibilityTime:2000
+                        });
+              navigator.reset('Main');
+            }
+            else{
+                Throw error;
+            }
         } catch (e) {
             console.log('error uploading pokemon to sell: ' + e.message);
             Alert.alert('Error', 'Please try again later')

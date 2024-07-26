@@ -5,6 +5,7 @@ import { AntDesign, Foundation } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import { Ionicons } from '@expo/vector-icons';
 import RadarChart from '../components/RadarChart';
+import {addToCart} from "../api/apiServices";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useUser } from '../utils/UserContext';
