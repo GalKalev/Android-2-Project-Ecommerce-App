@@ -9,16 +9,16 @@ import { presentableWord } from '../utils/consts';
 import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CurrencyPD from '../components/CurrencyPD';
+import { useUser } from '../utils/UserContext';
 
 const CheckoutScreen = () => {
     const [isLoading, setLoading] = useState(false);
     const steps = ['Address', 'Payment', 'Confirmation'];
     const [currentStep, setCurrentStep] = useState(0);
     const navigator = useNavigation();
-    const route = useRoute();
+    // const route = useRoute();
     // TODO: add user to params
-    const { cart } = route.params
-    // const { cart , user} = route.params
+    const { cart , user} = useUser()
 
     // First step values
     const [regions, setRegions] = useState([]);

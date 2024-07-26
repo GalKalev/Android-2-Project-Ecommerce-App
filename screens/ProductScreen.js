@@ -7,13 +7,16 @@ import { Ionicons } from '@expo/vector-icons';
 import RadarChart from '../components/RadarChart';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
-// import backg from '../images/'
+import { useUser } from '../utils/UserContext';
+import { Alert } from 'react-native';
+
 
 
 const ProductScreen = () => {
     const route = useRoute();
     const navigation = useNavigation();
     const { item, prevScreen } = route.params;
+    const { user } = useUser();
 
     const screenWidth = Dimensions.get('window').width;
 
@@ -34,12 +37,31 @@ const ProductScreen = () => {
         //TODO: add to cart 
     }
 
+    const handleEditItem = () => {
+        navigation.navigate('AddPokemon', { item: item });
+    }
+
+    const handleDeleteItem = () => {
+        //TODO: delete product from database
+        Alert.alert(`Delete ${presentableWord(item.name)} from the store?`, 'Click OK to delete', [
+            {
+                text: 'OK',
+                onPress: () => console.log(`delete product: ${item._id}, ${item.name} click`)
+            },
+            {
+                text: 'CANCEL',
+                style: 'cancel'
+            }
+
+        ])
+
+    }
 
 
     return (
         <SafeAreaView style={styles.container}>
             <View>
-                
+
                 {/* Back to previous screen  */}
                 <View style={styles.backContainer}>
                     <Pressable onPress={handleBackPress}>
@@ -48,14 +70,14 @@ const ProductScreen = () => {
                     <Text style={{ fontSize: 20, marginLeft: 5 }}>| {prevScreen}</Text>
                 </View>
 
-                
+
                 <ScrollView contentContainerStyle={[styles.infoContainer]}>
                     <Pressable>
                         <View>
                             <ImageBackground
                                 style={styles.imageBackground}
-                                source={item.isShiny ? backgroundShiny:{ uri: 'https://img.freepik.com/free-vector/gradient-zoom-effect-background_23-2149751078.jpg?size=626&ext=jpg' }}>
-                   
+                                source={item.isShiny ? backgroundShiny : { uri: 'https://img.freepik.com/free-vector/gradient-zoom-effect-background_23-2149751078.jpg?size=626&ext=jpg' }}>
+
                                 <View>
                                     <Image style={styles.image} source={{ uri: item.img }} />
                                 </View>
@@ -73,15 +95,15 @@ const ProductScreen = () => {
                             <Text style={styles.level}>LV: {item.level}</Text>
                             <View>
                                 <Text style={styles.name}>{presentableWord(item.name)}</Text>
-                                <View style={{flexDirection:'row', alignItems:'center'}}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     {item.types.map((type, index) => (
                                         <View key={type}>
                                             <Text>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
                                         </View>
-                                        
+
                                     ))}
-                                  
-                               
+
+
                                 </View>
                             </View>
 
@@ -90,7 +112,7 @@ const ProductScreen = () => {
                             ) : (
                                 <Foundation name="male-symbol" size={35} color="blue" style={styles.gender} />
                             )}
-                           
+
                         </View>
 
 
@@ -100,12 +122,12 @@ const ProductScreen = () => {
                             </View>
 
                             <View style={styles.abilitiesMovesTypesContainer}>
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom:10}}>
+                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
                                     <Text style={styles.abilitiesMovesTypesText}>ABILITIES</Text>
                                     {item.abilities.map((ability) => (
-                                        <View key={ability} style={[styles.abilitiesMovesList, {borderColor:"#8D32F4",borderWidth:1}]}>       
+                                        <View key={ability} style={[styles.abilitiesMovesList, { borderColor: "#8D32F4", borderWidth: 1 }]}>
                                             <Entypo name="light-bulb" size={20} color="black" />
-                                            <Text style={{fontSize:14}}>{presentableWord(ability)}</Text>
+                                            <Text style={{ fontSize: 14 }}>{presentableWord(ability)}</Text>
                                         </View>
 
                                     ))}
@@ -114,9 +136,9 @@ const ProductScreen = () => {
                                 <View>
                                     <Text style={styles.abilitiesMovesTypesText}>MOVES</Text>
                                     {item.moves.map((move) => (
-                                        <View key={move} style={[styles.abilitiesMovesList, {borderColor:'#6EF432',borderWidth:1}]}>
-                                             <FontAwesome6 name="hand-back-fist" size={20} color="black" />
-                                            <Text style={{fontSize:14}}>{presentableWord(move)}</Text>
+                                        <View key={move} style={[styles.abilitiesMovesList, { borderColor: '#6EF432', borderWidth: 1 }]}>
+                                            <FontAwesome6 name="hand-back-fist" size={20} color="black" />
+                                            <Text style={{ fontSize: 14 }}>{presentableWord(move)}</Text>
                                         </View>
                                     ))}
                                 </View>
@@ -127,13 +149,34 @@ const ProductScreen = () => {
 
             </View>
 
-            {/* Add to cart button */}
-            <View style={styles.addToCartContainer}>
-                <Pressable style={{flexDirection:'row', alignItems:'center'}} onPress={handelAddToCart}>
-                    <Text style={{ color: 'white', fontSize: 17, marginRight:5 }}>ADD TO CART</Text>
-                    <Text style={{ color: 'white' }}>({item.quantity} left)</Text>
-                </Pressable>
-            </View>
+            
+            {/* If the user uploaded the product, they can not add to cart but can edit or delete the product  */}
+            {user.id === item.user.id ? (
+                <View style={[styles.addToCartContainer, { flexDirection: 'row', backgroundColor: 'white', borderColor: 'black', borderTopWidth: 1 }]}>
+                    <Pressable style={{ width: '50%', alignItems: 'center', backgroundColor: 'black', borderColor: 'black', borderRightWidth: 1 }} onPress={handleEditItem}>
+                        <Text style={{ alignSelf: 'center', color: 'white', fontSize: 17, padding: 10, }}>EDIT</Text>
+                    </Pressable>
+                    <Pressable style={{ width: '50%', alignItems: 'center', backgroundColor: 'orange' }} onPress={handleDeleteItem}>
+                        <Text style={{ alignSelf: 'center', color: 'white', fontSize: 17, padding: 10 }}>DELETE</Text>
+                    </Pressable>
+
+
+
+                </View>
+            ) : (
+               // Add to cart button
+                <View style={styles.addToCartContainer}>
+                    <Pressable style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handelAddToCart}>
+
+                        <Text style={{ color: 'white', fontSize: 17, marginRight: 5 }}>ADD TO CART</Text>
+                        <Text style={{ color: 'white' }}>({item.quantity} left)</Text>
+                    </Pressable>
+                </View>
+            )}
+
+
+
+
         </SafeAreaView>
     );
 };
@@ -141,11 +184,11 @@ const ProductScreen = () => {
 const styles = StyleSheet.create({
     container: {
         paddingTop: Platform.OS === 'android' ? 40 : 0,
-        backgroundColor:'white',
+        backgroundColor: 'white',
         flex: 1,
     },
     imageBackground: {
-  
+
     },
     backContainer: {
         flexDirection: 'row',
@@ -173,7 +216,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         borderWidth: 1,
         padding: 15,
-        paddingTop:18
+        paddingTop: 18
     },
     userNameContainer: {
         flexDirection: 'row',
@@ -196,7 +239,7 @@ const styles = StyleSheet.create({
     },
     name: {
         fontSize: 25,
-        fontWeight:'bold'
+        fontWeight: 'bold'
     },
     level: {
         fontSize: 18
@@ -208,29 +251,29 @@ const styles = StyleSheet.create({
 
     },
     abilitiesMovesTypesContainer: {
-        borderLeftColor:'black',
-        borderLeftWidth:1,
-        width:100,
-        flexWrap:'wrap',
-        marginRight:6
+        borderLeftColor: 'black',
+        borderLeftWidth: 1,
+        width: 100,
+        flexWrap: 'wrap',
+        marginRight: 6
 
     },
     abilitiesMovesTypesText: {
         fontSize: 17,
         padding: 3,
-        alignSelf:'center',
+        alignSelf: 'center',
 
     },
-    abilitiesMovesList:{
-        alignSelf:'center',
+    abilitiesMovesList: {
+        alignSelf: 'center',
         // backgroundColor:"#FFE9E9",
-        borderRadius:14,
+        borderRadius: 14,
         // borderColor:'#FFCBCB',
-        borderWidth:1,
-        padding:2,
-        marginBottom:5,
-        flexDirection:'row',
-        alignItems:'center'
+        borderWidth: 1,
+        padding: 2,
+        marginBottom: 5,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     addToCartContainer: {
         alignItems: 'center',
@@ -239,6 +282,9 @@ const styles = StyleSheet.create({
         padding: 5,
         position: 'absolute',
         width: '100%'
+    },
+    editDeleteContainer: {
+        flexDirection: 'row'
     }
 });
 

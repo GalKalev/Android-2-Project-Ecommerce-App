@@ -1,5 +1,5 @@
 import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const PokemonStats = ({ stat, setStat, placeholder, style }) => {
 

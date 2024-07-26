@@ -8,12 +8,16 @@ import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
 import { IP_ADDRESS } from '@env';
+import { useUser } from '../utils/UserContext';
+import Loading from "../components/Loading";
 
 const RegisterScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
+    const[isLoading, setLoading] = useState(false);
+    const {setUser} = useUser();
 
     const navigation = useNavigation();
 
@@ -24,8 +28,9 @@ const RegisterScreen = () => {
             password: password
         };
         try{
+            setLoading(true)
             const response = await axios.post(`http://${IP_ADDRESS}:1400/register`,user);
-            navigation.replace('Main',{user});
+            navigation.replace('Main');
             Alert.alert("Registration successful");
         }catch(error){
             if (error.response) {
@@ -42,11 +47,17 @@ const RegisterScreen = () => {
                 Alert.alert("Registration Error 2", "An error occurred during registration: " + error.message);
               }
         
+        }finally{
+            setLoading(false)
         }
    
     };
 
 
+    if(isLoading){
+        return(<Loading
+        loading={isLoading}/>)
+    }
     return (
         <SafeAreaView style={styles.container}>
             <Logo/>

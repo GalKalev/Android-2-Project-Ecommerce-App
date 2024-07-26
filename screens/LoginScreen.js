@@ -8,12 +8,14 @@ import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
 import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
+import { useUser } from '../utils/UserContext';
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const[isLoading, setLoading] = useState(false)
+    const[isLoading, setLoading] = useState(false);
+    const {setUser} = useUser();
 
     const navigation = useNavigation();
 
@@ -29,7 +31,7 @@ const LoginScreen = () => {
             setLoading(true);
             const response = await axios.post(`http://${IP_ADDRESS}:1400/login`,user);
 
-            navigation.replace('Main',{user});
+            navigation.replace('Main');
         }catch(error){
             if (error.response) {
                 // The request was made and the server responded with a status code outside the range of 2xx
@@ -54,7 +56,7 @@ const LoginScreen = () => {
 
     if(isLoading){
         return(
-            <Loading/>
+            <Loading isLoading={isLoading}/>
         )
     }
 
