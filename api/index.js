@@ -2,7 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const { PORT, IP_ADDRESS } = require('@env');
+// const { PORT, IP_ADDRESS } = require('@env');
+const PORT = process.env.PORT || 1400;
+const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
 
 const app = express();
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
@@ -23,7 +25,7 @@ mongoose.connect(URI, {
 
 
 
-app.listen(1400, () => {
+app.listen(PORT, () => {
   console.log(`Server is running at ${IP_ADDRESS}:${PORT}`);
 });
 
@@ -76,9 +78,11 @@ app.post("/register", async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.debug(`checking if user exists: ${email}, ${password}`)
 
     // Check if the user exist
     const user = await User.findOne({ email });
+    console.debug("user data = "+user);
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -90,7 +94,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    return res.status(201).json({ message: "Login successful" });
+    return res.status(200).json({ message: "Login successful" , userId:user._id,email:user.email,name:user.name});
 
 
   } catch (error) {
@@ -104,14 +108,14 @@ app.post('/login', async (req, res) => {
 // Add new Pokemon to Products list
 app.post('/Pokemon', async (req, res) => {
   try {
-    console.log('addPokemon');
+    console.debug('Trying to add Pokemon');
 
-    const {userId} = req.body;
-    console.log(`userId = ${userId}`)
-
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
+    // const {userId} = req.body;
+    // console.log(`userId = ${userId}`)
+    //
+    // if (!userId || userId === 'undefined') {
+    //   return res.status(400).json({ message: 'User ID is required' });
+    // }
 
     const {
       name,
@@ -129,28 +133,42 @@ app.post('/Pokemon', async (req, res) => {
       amount } = req.body;
 
 
-    if (!name || !url || !img || !gender || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
+    if (!name || !url || !img || !(0<=gender<=1) || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const newPokemon = new Pokemon({
-      user: userId,
       name,
       url,
-      price,
-      image: img,
-      quantity: amount,
-      details: {
-        isShiny,
-        abilities,
-        moves,
-        species,
-        stats,
-        types,
-      },
+      img,
       gender,
-      level
+      level,
+      isShiny,
+      abilities,
+      moves,
+      species,
+      stats,
+      types,
+      price,
+      amount
+      // user: userId,
+      // name,
+      // url,
+      // price,
+      // image: img,
+      // quantity: amount,
+      // details: {
+      //   isShiny,
+      //   abilities,
+      //   moves,
+      //   species,
+      //   stats,
+      //   types,
+      // },
+      // gender,
+      // level
     });
+    console.debug(`new Pokemon object: ${newPokemon}`);
 
 
     await newPokemon.save();

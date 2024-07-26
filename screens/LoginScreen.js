@@ -22,15 +22,10 @@ const LoginScreen = () => {
     const handleLogin = async () => {
         try {
             const loginSuccess = await checkLogin(email, password);
-            if (loginSuccess === 0) {
+            if (loginSuccess.success === true) {
                 navigation.replace('Main');
-            } else if (loginSuccess === 1) {
-                Alert.alert("Login Error", error.response.data.message || "An error occurred during registration");
-            } else if (loginSuccess === 2) {
-                Alert.alert("Login Error ", "No response from the server");
-
             } else {
-                Alert.alert("Login Error ", "An error occurred during login");
+                Alert.alert("Login Error", error.response.data.message || "An error occurred during login");
             }
         } catch (error) {
             Alert.alert("Login Error", "An unexpected error occurred");

@@ -24,7 +24,7 @@ const MultiSelectAdd = ({ data, selected, setSelected, placeholder }) => {
       searchPlaceholder={"Search " + placeholder + "..."}
       value={itemsList}
       onChange={item => {
-        console.log('item: ' + item);
+        console.log('item: ' + item); //TODO: change the log to be more
         setItemsList(item);
         const names = [];
         item.map((i) => {

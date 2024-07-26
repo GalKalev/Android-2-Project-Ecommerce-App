@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
 import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
+import {addPokemon} from "../api/apiServices";
 
 const AddPokemonScreen = () => {
     const [pokemonsList, setPokemonList] = useState([]);
@@ -136,7 +137,6 @@ const AddPokemonScreen = () => {
             return;
         }
 
-        console.log(IP_ADDRESS);
         const image = isShiny ? chosenPokemon.imgShiny : chosenPokemon.imgDefault;
         const stats = {
             hp: selectedHP,
@@ -165,12 +165,18 @@ const AddPokemonScreen = () => {
         }
 
         try {
-            const response = await axios.post(`http://${IP_ADDRESS}:1400/addPokemon`, soldPokemon);
-            Toast.show({
-                type:'success',
-                text1:'Pokemon Is Up For Sale',
-                visibilityTime:2000
-            });
+            const response = addPokemon(soldPokemon);
+            if(response.status === 201){
+                Toast.show({
+                            type:'success',
+                            text1:'Pokemon Is Up For Sale',
+                            visibilityTime:2000
+                        });
+            }
+            else{
+                console.log("not able to add pokemon...")
+                Alert.alert('Error', 'Please try again later')
+            }
         } catch (e) {
             console.log('error uploading pokemon to sell: ' + e.message);
             Alert.alert('Error', 'Please try again later')
