@@ -1,18 +1,25 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import CurrencyPD from './CurrencyPD';
 import { Foundation } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import QuantityModel from './QuantityModel';
 
 const Product = ({ item, setCart, cart, screen }) => {
     const navigation = useNavigation();
 
+    const [quantityModalVisible, setQuantityModalVisible] = useState(false);
+
+
     const handleAddToCart = () => {
         // cart.push(item);
         // console.log('add to..: ' + cart)
+        setQuantityModalVisible(true);
+
+
     }
 
     const handleItemPressed = () => {
@@ -56,7 +63,7 @@ const Product = ({ item, setCart, cart, screen }) => {
 
                     <View style={styles.userNameContainer}>
                         <Ionicons name="person" size={18} color="white" style={{backgroundColor:'black', borderRadius:10}} />
-                        <Text style={styles.userNameText}>{item.user}</Text>
+                        <Text style={styles.userNameText}>{item.user.name}</Text>
                     </View>
                     
 
@@ -82,6 +89,12 @@ const Product = ({ item, setCart, cart, screen }) => {
                     {/* <Text style={styles.addToCardBtnText}>Add To Cart</Text> */}
                     <FontAwesome name="cart-plus" size={22} color="black" />
                 </Pressable>
+                <QuantityModel
+                    item={item}
+                    setModalVisible={setQuantityModalVisible}
+                    modalVisible={quantityModalVisible}
+
+                />
 
 
             </Pressable>

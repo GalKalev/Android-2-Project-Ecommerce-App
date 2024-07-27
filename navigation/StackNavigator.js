@@ -16,6 +16,7 @@ import CheckoutScreen from '../screens/CheckoutScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { useUser } from '../utils/UserContext';
 import { Alert } from 'react-native';
+import SearchProductScreen from '../screens/SearchProductScreen';
 
 
 
@@ -211,14 +212,15 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-         <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-         <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+         {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
+         {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Cart" component={CartScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Checkout" component={CheckoutScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Profile" component={ProductScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="SearchProduct" component={SearchProductScreen} options={{ headerShown: false }} />
 
       </Stack.Navigator>
     </NavigationContainer>

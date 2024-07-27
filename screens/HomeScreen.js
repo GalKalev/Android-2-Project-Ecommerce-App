@@ -9,8 +9,9 @@ import ImageSlider from '../components/ImageSlider'
 import Loading from '../components/Loading';
 import FIlterOptions from '../components/FIlterOptions'
 import Product from '../components/Product';
+
 import { useUser } from '../utils/UserContext';
-import {fetchPokemons} from "../api/apiServices";
+import { fetchPokemons } from "../api/apiServices";
 
 
 const HomeScreen = () => {
@@ -18,7 +19,9 @@ const HomeScreen = () => {
     // TODO: uncomment when all the user info is passed
     // const route = useRoute();
     // console.log("home:", user);
-    const {user} = useUser();
+    const { user } = useUser();
+    const navigator = useNavigation();
+    // console.log('home: ' + JSON.stringify(user));
 
     const [pokemonList, setPokemonList] = useState([])
     const [searchPokemons, setSearchPokemons] = useState([]);
@@ -39,15 +42,14 @@ const HomeScreen = () => {
     // Animation opening/closing the filter
     const animation = useRef(new Animated.Value(0)).current;
 
-
-
     useEffect(() => {
         async function fetchData() {
             try {
                 setIsLoading(true);
 
                 const pokemonsList = await fetchPokemons();
-                if(pokemonsList!=null){
+                if (pokemonsList !== null) {
+
                     const names = pokemonsList.map(poke => poke.name);
                     const pokemonNames = [...new Set(names)];
 
@@ -57,8 +59,9 @@ const HomeScreen = () => {
                     setFilteredPokemons(pokemonsList);
                 }
             } catch (error) {
-                console.log(`Error fetching Pokémon: ${error.message}`);
-            }finally {
+                console.log(`Error fetching Pokémon home screen: ${error.message}`);
+                Alert.alert('Server Error', 'Please try again later');
+            } finally {
                 setIsLoading(false);
             }
         }
@@ -69,6 +72,9 @@ const HomeScreen = () => {
 
     function handleChosenPokemon(name) {
         console.log(`pressed poke name: ${name} `);
+        const pokemonsWithName = pokemonList.filter((poke) => poke.name === name);
+        // console.log(pokemonsWithName);
+        navigator.navigate('SearchProduct',{pokemonList: pokemonsWithName, name: presentableWord(name)});
     }
 
 
@@ -84,7 +90,7 @@ const HomeScreen = () => {
 
     function handleBackgroundPress() {
         setIsSearchItemsListVisible(false);
-        // setSearchedPokemon('');
+        setSearchedPokemon('');
     }
 
     function toggleFilterMenu() {
@@ -116,9 +122,9 @@ const HomeScreen = () => {
         ],
     };
 
-    if (isLoading || pokemonList.length === 0) {
+    if (isLoading) {
         return (
-            <Loading  loading={isLoading}/>
+            <Loading loading={isLoading} />
         )
     }
 
@@ -158,10 +164,10 @@ const HomeScreen = () => {
                                         data={searchPokemons}
                                         keyExtractor={(item) => item}
                                         renderItem={({ item }) => (
-                                            <Pressable style={{ flexDirection: 'row' }}
+                                            <Pressable style={{ flexDirection: 'row',alignSelf:'center', padding:6 }}
                                                 onPress={() => handleChosenPokemon(item)}>
-                                                <View style={{ flexDirection: 'column' }}>
-                                                    <Text>{presentableWord(item)}</Text>
+                                                <View style={{ flexDirection: 'column'  }}>
+                                                    <Text style={{ fontSize:18}}>{presentableWord(item)}</Text>
                                                 </View>
                                             </Pressable>
                                         )}
@@ -178,57 +184,51 @@ const HomeScreen = () => {
 
                     <Pressable>
                         <ImageSlider />
-                        <View>
-                            <FIlterOptions
-                                toggleFilterMenu={toggleFilterMenu}
-                                isFilterOpen={isFilterOpen}
-                                setFilter={setFilter}
-                                items={pokemonList}
-                                setLoading={setIsLoading}
-                                filteredItems={filteredPokemon}
-                                setFilteredItems={setFilteredPokemons}
-                                slideIn={slideIn}
-                            />
 
-                            {/* Checking if a pokemon with the filters exist in the shop  */}
-                            {filteredPokemon.length === 0 ? (
-                                <View>
-                                    <Text>No items were found...</Text>
-                                </View>
-                            ) : (
-                                // Filter Options
-
-                                <View style={{ marginTop: 15 }}>
-
-
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
-
-
-
-                                        {filteredPokemon.map((poke, index) => {
-
-                                            return (
-                                                <View key={poke.id}>
-
-                                                    <Product
-                                                        item={poke}
-                                                        screen={'Home Page'}
-                                                        user={user}
-                                                    // setCart={setCart}
-                                                    // cart={cart}
-                                                    />
-                                                </View>
-
-                                            )
-                                        })}
-
+                        {pokemonList.length === 0 ? (
+                            <View>
+                                <Text>Out of products in store!! Sell your Pokemons or come back later</Text>
+                            </View>
+                        ) : (
+                            <View>
+                                <FIlterOptions
+                                    toggleFilterMenu={toggleFilterMenu}
+                                    isFilterOpen={isFilterOpen}
+                                    setFilter={setFilter}
+                                    items={pokemonList}
+                                    setLoading={setIsLoading}
+                                    filteredItems={filteredPokemon}
+                                    setFilteredItems={setFilteredPokemons}
+                                    slideIn={slideIn}
+                                />
+                                {/* Checking if a pokemon with the filters exist in the shop  */}
+                                {filteredPokemon.length === 0 ? (
+                                    <View>
+                                        <Text>No items were found...</Text>
                                     </View>
+                                ) : (
+                                    // Filter Options
+                                    <View style={{ marginTop: 15 }}>
 
-                                </View>
-                            )}
+                                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
+                                            {filteredPokemon.map((poke, index) => {
 
+                                                return (
+                                                    <View key={poke._id}>
 
-                        </View>
+                                                        <Product
+                                                            item={poke}
+                                                            screen={'Home Page'}
+                                                            user={user}
+                                                        />
+                                                    </View>
+                                                )
+                                            })}
+                                        </View>
+                                    </View>
+                                )}
+                            </View>
+                        )}
 
                     </Pressable>
 
@@ -241,6 +241,7 @@ const HomeScreen = () => {
 
     );
 };
+
 
 export default HomeScreen
 

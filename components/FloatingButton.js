@@ -15,31 +15,14 @@ const FloatingButton = (props) => {
         name: 'bt_add_pokemon',
         position: 1
     },
-    {
-        text: 'Add Item',
-        icon: require('..\\images\\pokemon_ball_icon.png'),
-        name: 'bt_add_Item',
-        position: 2
-    },
-    {
-        text: 'Add Berry',
-        icon: require('..\\images\\berry_icon.png'),
-        name: 'bt_add_berry',
-        position: 3
-    }
+    
 ];
 
 // Handle action button press
 const handlePress = (name) => {
     switch (name) {
         case 'bt_add_pokemon':
-            navigation.navigate('AddPokemon');
-            break;
-        case 'bt_add_Item':
-            Alert.alert('Add Item', 'Navigate to add item screen');
-            break;
-        case 'bt_add_berry':
-            Alert.alert('Add Berry', 'Navigate to add berry screen');
+            navigation.navigate('AddPokemon', {item: null});
             break;
         default:
             break;

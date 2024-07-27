@@ -4,7 +4,8 @@ import Toast from "react-native-toast-message";
 import {Alert} from "react-native";
 // const { PORT, IP_ADDRESS } = require('@env');
 
-const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+// const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+const API_URL = `http://${IP_ADDRESS}:1400`;//`http://192.168.68.113:1400`;
 console.log(`API URL: ${API_URL}`);
 
 // Function to handle login
@@ -265,11 +266,11 @@ export async function fetchPokemons() {
         const getPokemons = await axios.get(`${API_URL}/Pokemon`);
         if(getPokemons.status===200){
             const pokemonList = getPokemons.data;
-            console.log(`Pokemons list fetched: ${pokemonList}`);
+            // console.log(`Pokemons list fetched: ${pokemonList}`);
             return pokemonList;
         }
         else{
-            return null;
+            return null
         }
 
     } catch (error) {
@@ -280,10 +281,10 @@ export async function fetchPokemons() {
 
 export async function addPokemon(pokemon){
     try {
-        console.debug(pokemon);
+        // console.debug(pokemon);
         const response = await axios.post(`${API_URL}/pokemon`, pokemon);
         console.log("pokemon added successfully");
-        return response.status;
+        return response;
     } catch (error) {
         console.log('error uploading pokemon to sell: ' + error.message);
         throw error;

@@ -1,6 +1,6 @@
 import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useRoute, useNavigation } from '@react-navigation/native'
+import { useRoute, useNavigation, CommonActions } from '@react-navigation/native'
 import ExpandableList from '../components/ExpandableList ';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -141,10 +141,14 @@ const ProfileScreen = () => {
 
     const handleLogOut = () => {
         Alert.alert('Log out?', 'press OK to log out', [
-            // TODO: uncomment the OK button
             {
                 text: 'OK',
-                onPress: () => navigator.reset('Register')
+                onPress: () => navigator.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: 'Register' }],
+                    })
+                ),
             },
             {
                 text: 'CANCEL',
@@ -199,14 +203,14 @@ const ProfileScreen = () => {
                                     abilities: ['static'],
                                     moves: ['mega-punch', 'thunder-punch', 'slam'],
                                     species: ['pikachu'],
-                                    stats: {
+                                    stats: [{
                                         hp: 50,
                                         attack: 30,
                                         defense: 40,
                                         specialAttack: 60,
                                         specialDefense: 70,
                                         speed: 20
-                                    },
+                                    }],
                                     types: ['electric'],
                                     price: 8000,
                                     quantity: 2,
@@ -226,14 +230,14 @@ const ProfileScreen = () => {
                                     abilities: ['blaze', 'solar-power'],
                                     moves: ['flamethrower', 'fly', 'dragon-claw'],
                                     species: ['charizard'],
-                                    stats: {
+                                    stats: [{
                                         hp: 78,
                                         attack: 84,
                                         defense: 78,
                                         specialAttack: 109,
                                         specialDefense: 85,
                                         speed: 100
-                                    },
+                                    }],
                                     types: ['fire', 'flying'],
                                     price: 15000,
                                     quantity: 1
@@ -253,14 +257,14 @@ const ProfileScreen = () => {
                                     abilities: ['overgrow', 'chlorophyll'],
                                     moves: ['swords-dance', 'bind'],
                                     species: ['venusaur'],
-                                    stats: {
+                                    stats: [{
                                         hp: 20,
                                         attack: 30,
                                         defense: 40,
                                         specialAttack: 15,
                                         specialDefense: 23,
                                         speed: 17
-                                    },
+                                    }],
                                     types: ['grass', 'poison'],
                                     price: 1000,
                                     quantity: 4
@@ -291,14 +295,14 @@ const ProfileScreen = () => {
                                     abilities: ['damp', 'cloud-nine'],
                                     moves: ['water-gun', 'confusion', 'tail-whip'],
                                     species: ['psyduck'],
-                                    stats: {
+                                    stats: [{
                                         hp: 60,
                                         attack: 48,
                                         defense: 50,
                                         specialAttack: 65,
                                         specialDefense: 50,
                                         speed: 55
-                                    },
+                                    }],
                                     types: ['water'],
                                     price: 3000,
                                     quantity: 1
@@ -318,14 +322,14 @@ const ProfileScreen = () => {
                                     abilities: ['rock-head', 'sturdy'],
                                     moves: ['rock-throw', 'dig', 'iron-tail'],
                                     species: ['onix'],
-                                    stats: {
+                                    stats: [{
                                         hp: 35,
                                         attack: 45,
                                         defense: 160,
                                         specialAttack: 30,
                                         specialDefense: 45,
                                         speed: 70
-                                    },
+                                    }],
                                     types: ['rock', 'ground'],
                                     price: 5000,
                                     quantity: 1
@@ -345,14 +349,14 @@ const ProfileScreen = () => {
                                     abilities: ['torrent'],
                                     moves: ['bubble', 'peck', 'growl'],
                                     species: ['piplup'],
-                                    stats: {
+                                    stats: [{
                                         hp: 53,
                                         attack: 51,
                                         defense: 53,
                                         specialAttack: 61,
                                         specialDefense: 56,
                                         speed: 40
-                                    },
+                                    }],
                                     types: ['water'],
                                     price: 2000,
                                     quantity: 1
@@ -372,14 +376,14 @@ const ProfileScreen = () => {
                                     abilities: ['blaze'],
                                     moves: ['ember', 'scratch', 'growl'],
                                     species: ['torchic'],
-                                    stats: {
+                                    stats: [{
                                         hp: 45,
                                         attack: 60,
                                         defense: 40,
                                         specialAttack: 70,
                                         specialDefense: 50,
                                         speed: 45
-                                    },
+                                    }],
                                     types: ['fire'],
                                     price: 1500,
                                     quantity: 2
@@ -399,14 +403,14 @@ const ProfileScreen = () => {
                                     abilities: ['blaze'],
                                     moves: ['scratch', 'ember', 'tail-whip'],
                                     species: ['fennekin'],
-                                    stats: {
+                                    stats: [{
                                         hp: 40,
                                         attack: 45,
                                         defense: 40,
                                         specialAttack: 62,
                                         specialDefense: 60,
                                         speed: 60
-                                    },
+                                    }],
                                     types: ['fire'],
                                     price: 2500,
                                     quantity: 1
@@ -437,14 +441,14 @@ const ProfileScreen = () => {
                                     abilities: ['intimidate', 'shed-skin'],
                                     moves: ['poison-sting', 'bite', 'wrap'],
                                     species: ['ekans'],
-                                    stats: {
+                                    stats: [{
                                         hp: 35,
                                         attack: 60,
                                         defense: 44,
                                         specialAttack: 40,
                                         specialDefense: 54,
                                         speed: 55
-                                    },
+                                    }],
                                     types: ['poison'],
                                     price: 2000,
                                     quantity: 1
@@ -464,14 +468,14 @@ const ProfileScreen = () => {
                                     abilities: ['levitate'],
                                     moves: ['smog', 'tackle', 'sludge'],
                                     species: ['koffing'],
-                                    stats: {
+                                    stats: [{
                                         hp: 40,
                                         attack: 65,
                                         defense: 95,
                                         specialAttack: 60,
                                         specialDefense: 45,
                                         speed: 35
-                                    },
+                                    }],
                                     types: ['poison'],
                                     price: 1500,
                                     quantity: 2
@@ -503,14 +507,14 @@ const ProfileScreen = () => {
                         abilities: ['static'],
                         moves: ['mega-punch', 'thunder-punch', 'slam'],
                         species: ['pikachu'],
-                        stats: {
+                        stats: [{
                             hp: 50,
                             attack: 30,
                             defense: 40,
                             specialAttack: 60,
                             specialDefense: 70,
                             speed: 20
-                        },
+                        }],
                         types: ['electric'],
                         price: 8000,
                         quantity: 2,
@@ -529,14 +533,14 @@ const ProfileScreen = () => {
                         abilities: ['overgrow'],
                         moves: ['tackle', 'vine-whip', 'razor-leaf'],
                         species: ['bulbasaur'],
-                        stats: {
+                        stats: [{
                             hp: 45,
                             attack: 49,
                             defense: 49,
                             specialAttack: 65,
                             specialDefense: 65,
                             speed: 45
-                        },
+                        }],
                         types: ['grass', 'poison'],
                         price: 6000,
                         quantity: 3,
@@ -555,14 +559,14 @@ const ProfileScreen = () => {
                         abilities: ['blaze'],
                         moves: ['scratch', 'ember', 'dragon-rage'],
                         species: ['charmander'],
-                        stats: {
+                        stats: [{
                             hp: 39,
                             attack: 52,
                             defense: 43,
                             specialAttack: 60,
                             specialDefense: 50,
                             speed: 65
-                        },
+                        }],
                         types: ['fire'],
                         price: 7000,
                         quantity: 1,
@@ -581,14 +585,14 @@ const ProfileScreen = () => {
                         abilities: ['torrent'],
                         moves: ['water-gun', 'bubble', 'tackle'],
                         species: ['squirtle'],
-                        stats: {
+                        stats: [{
                             hp: 44,
                             attack: 48,
                             defense: 65,
                             specialAttack: 50,
                             specialDefense: 64,
                             speed: 43
-                        },
+                        }],
                         types: ['water'],
                         price: 6500,
                         quantity: 2,
@@ -607,14 +611,14 @@ const ProfileScreen = () => {
                         abilities: ['cute-charm'],
                         moves: ['pound', 'sing', 'double-slap'],
                         species: ['jigglypuff'],
-                        stats: {
+                        stats: [{
                             hp: 115,
                             attack: 45,
                             defense: 20,
                             specialAttack: 45,
                             specialDefense: 25,
                             speed: 20
-                        },
+                        }],
                         types: ['normal', 'fairy'],
                         price: 5000,
                         quantity: 4,

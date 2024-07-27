@@ -9,7 +9,7 @@ export const useUser = () => {
 
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState({userId: 1,name:'K', email:'k@k.com'});
+    const [user, setUser] = useState({"userId":"667ae8ba2cc3de3b7f81f7c7","email":"K@k.com","name":"K"});
     const [cart, setCart] = useState({ products: [], totalPrice: 0 });
 
     return (

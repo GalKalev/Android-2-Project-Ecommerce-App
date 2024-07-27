@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Pressable, SafeAreaView, StyleSheet, Platform, ScrollView, Image, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign, Foundation } from '@expo/vector-icons';
@@ -10,6 +10,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useUser } from '../utils/UserContext';
 import { Alert } from 'react-native';
+import QuantityModel from '../components/QuantityModel';
 
 
 
@@ -19,16 +20,15 @@ const ProductScreen = () => {
     const { item, prevScreen } = route.params;
     const { user } = useUser();
 
+    const [quantityModalVisible, setQuantityModalVisible] = useState(false);
+
     const screenWidth = Dimensions.get('window').width;
 
     // Product's stats data for chart
-    const data = Object.values(item.stats);
+    const data = Object.values(item.stats[0]);
     const labels = ["Hp", "Attack", "Defense", "Sp. Attack", "Sp. Defense", "Speed"];
 
     const backgroundShiny = require('..\\images\\shiny_background.png');
-
-
-
 
     const handleBackPress = () => {
         navigation.goBack();
@@ -90,7 +90,7 @@ const ProductScreen = () => {
                         <View style={styles.nameGenderLevelContainer}>
                             <View style={styles.userNameContainer}>
                                 <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
-                                <Text style={styles.userNameText}>{item.user}</Text>
+                                <Text style={styles.userNameText}>{item.user.name}</Text>
                             </View>
 
                             <Text style={styles.level}>LV: {item.level}</Text>
@@ -152,7 +152,7 @@ const ProductScreen = () => {
 
             
             {/* If the user uploaded the product, they can not add to cart but can edit or delete the product  */}
-            {user.id === item.user.id ? (
+            {user.userId === item.user._id ? (
                 <View style={[styles.addToCartContainer, { flexDirection: 'row', backgroundColor: 'white', borderColor: 'black', borderTopWidth: 1 }]}>
                     <Pressable style={{ width: '50%', alignItems: 'center', backgroundColor: 'black', borderColor: 'black', borderRightWidth: 1 }} onPress={handleEditItem}>
                         <Text style={{ alignSelf: 'center', color: 'white', fontSize: 17, padding: 10, }}>EDIT</Text>
@@ -172,6 +172,13 @@ const ProductScreen = () => {
                         <Text style={{ color: 'white', fontSize: 17, marginRight: 5 }}>ADD TO CART</Text>
                         <Text style={{ color: 'white' }}>({item.quantity} left)</Text>
                     </Pressable>
+
+                    <QuantityModel
+                    item={item}
+                    setModalVisible={setQuantityModalVisible}
+                    modalVisible={quantityModalVisible}
+
+                />
                 </View>
             )}
 

@@ -2,9 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
+
 // const { PORT, IP_ADDRESS } = require('@env');
-const PORT = process.env.PORT || 1400;
-const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
+// const PORT = process.env.PORT || 1400;
+const PORT = 1400;
+// const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
+const IP_ADDRESS = '10.0.0.25'
 
 const app = express();
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
@@ -13,7 +16,6 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//TODO: username: galA and password: gal318657632 to env
 mongoose.connect(URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -65,7 +67,7 @@ app.post("/register", async (req, res) => {
 
     return res.status(201).json({
       message:
-          "Registration successful. Please check your email for verification.",
+        "Registration successful. Please check your email for verification.",
     });
   } catch (error) {
     console.log("Error during registration:", error); // Debugging statement
@@ -82,7 +84,7 @@ app.post('/login', async (req, res) => {
 
     // Check if the user exist
     const user = await User.findOne({ email });
-    console.debug("user data = "+user);
+    console.debug("user data = " + user);
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -94,7 +96,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid password' });
     }
 
-    return res.status(200).json({ message: "Login successful" , userId:user._id,email:user.email,name:user.name});
+    return res.status(200).json({ message: "Login successful", userId: user._id, email: user.email, name: user.name });
 
 
   } catch (error) {
@@ -118,6 +120,7 @@ app.post('/Pokemon', async (req, res) => {
     // }
 
     const {
+      user,
       name,
       url,
       img,
@@ -130,14 +133,29 @@ app.post('/Pokemon', async (req, res) => {
       stats,
       types,
       price,
-      amount } = req.body;
+      quantity } = req.body;
+    console.log('User:', user);
+    console.log('Name:', name);
+    console.log('URL:', url);
+    console.log('Image:', img);
+    console.log('Gender:', gender);
+    console.log('Level:', level);
+    console.log('Is Shiny:', isShiny);
+    console.log('Abilities:', abilities);
+    console.log('Moves:', moves);
+    console.log('Species:', species);
+    console.log('Stats:', stats);
+    console.log('Types:', types);
+    console.log('Price:', price);
+    console.log('Quantity:', quantity);
 
 
-    if (!name || !url || !img || !(0<=gender<=1) || !level || !isShiny || !abilities || !moves || !species || !stats || !types || !price || !amount) {
+    if (!user || !name || !url || !img || !(0 <= gender <= 1) || !level || !abilities || !moves || !species || !stats || !types || !price || !quantity) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const newPokemon = new Pokemon({
+    const newPokemon = new Product({
+      user,
       name,
       url,
       img,
@@ -150,23 +168,7 @@ app.post('/Pokemon', async (req, res) => {
       stats,
       types,
       price,
-      amount
-      // user: userId,
-      // name,
-      // url,
-      // price,
-      // image: img,
-      // quantity: amount,
-      // details: {
-      //   isShiny,
-      //   abilities,
-      //   moves,
-      //   species,
-      //   stats,
-      //   types,
-      // },
-      // gender,
-      // level
+      quantity
     });
     console.debug(`new Pokemon object: ${newPokemon}`);
 
@@ -182,15 +184,17 @@ app.post('/Pokemon', async (req, res) => {
 })
 
 // Get all Available Pokemons in Store
-app.get('/Pokemon',async (req,res)=>{
-  try{
+app.get('/Pokemon', async (req, res) => {
+  try {
     console.debug("trying fetching Pokemons");
-    const products = await Product.find({});
+    // const products = await Product.find({});
+    const products = await Product.find({}).populate('user', 'name'); // Only include the username field
+    // console.log(products[0]);
     return res.status(200).json(products);
-  } catch (error){
+  } catch (error) {
 
     console.log(`Error fetching Pokemons: ${error.message}`);
-    return res.status(500).json({message:"Fetching products failed"});
+    return res.status(500).json({ message: "Fetching products failed" });
   }
 })
 
@@ -233,7 +237,7 @@ app.post('/cart/add', async (req, res) => {
     res.status(201).json({ message: `${cart.products.length} products added successfully` });
   } catch (error) {
     console.log(`Error adding product to cart: ${error}`);
-    res.status(500).json({message:`Failed to add product to cart`});
+    res.status(500).json({ message: `Failed to add product to cart` });
 
   }
 })
