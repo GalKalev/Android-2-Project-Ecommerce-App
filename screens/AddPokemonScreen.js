@@ -8,15 +8,15 @@ import { presentableWord } from '../utils/consts';
 import Checkbox from 'expo-checkbox';
 import { Pokemon } from '../classes/Pokemon';
 import MultiSelectAdd from '../components/MultiSelectAdd';
-import PokemonStats from '../components/PokemonStats';
+import PokemonInput from '../components/PokemonInput';
 import { Foundation } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
 import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
 import { useUser } from '../utils/UserContext';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import {addPokemon} from "../api/apiServices";
+import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
+import { addPokemon } from "../api/apiServices";
 
 
 const AddPokemonScreen = () => {
@@ -39,14 +39,14 @@ const AddPokemonScreen = () => {
     const [selectedAbilities, setSelectedAbilities] = useState([]);
     const [pokemonMoves, setPokemonMoves] = useState([]);
     const [selectedPokemonMoves, setSelectedPokemonMoves] = useState([]);
-    const [selectedHP, setSelectedHP] = useState(0);
-    const [selectedAttack, setSelectedAttack] = useState(0);
-    const [selectedDefense, setSelectedDefense] = useState(0);
-    const [selectedSpecialAttack, setSelectedSpecialAttack] = useState(0);
-    const [selectedSpecialDefense, setSelectedSpecialDefense] = useState(0);
-    const [selectedSpeed, setSelectedSpeed] = useState(0);
-    const [price, setPrice] = useState(0);
-    const [amount, setAmount] = useState(0);
+    const [selectedHP, setSelectedHP] = useState(null);
+    const [selectedAttack, setSelectedAttack] = useState(null);
+    const [selectedDefense, setSelectedDefense] = useState(null);
+    const [selectedSpecialAttack, setSelectedSpecialAttack] = useState(null);
+    const [selectedSpecialDefense, setSelectedSpecialDefense] = useState(null);
+    const [selectedSpeed, setSelectedSpeed] = useState(null);
+    const [price, setPrice] = useState(null);
+    const [quantity, setQuantity] = useState(null);
 
     function handleSearchInput(txt) {
         setSearchPokemon(txt);
@@ -88,10 +88,8 @@ const AddPokemonScreen = () => {
                 types: types
             };
 
-            // console.log(pokemon);
 
             setChosenPokemon(pokemon);
-            setSelectedAbilities(abilities[0]);
 
         } catch (error) {
             console.log(`Error fetching Pokémon: ${error.message}`);
@@ -104,27 +102,20 @@ const AddPokemonScreen = () => {
         fetchChosenPokemon(poke);
     }
 
-    function handleLevelChange(lvl) {
-        if (lvl > 100) {
-            Alert.alert('Incorrect Level', 'Pokemon level are between 0 to 100.');
-            return;
-        }
-        setPokemonLevel(lvl);
-    }
 
     const validateInput = () => {
         const regex = /^[1-9]\d*$/;
 
         const isPositiveInteger = (value) => regex.test(value);
         const isValidAbility = (abilities) => abilities.length > 0;
-        const isValidLevel = (level) => isPositiveInteger(level) && level <= 100;
+        const isValidLevel = (level) => (level) && level <= 100;
 
         if (!isValidAbility(selectedAbilities)) {
             Alert.alert('Invalid Input', 'Abilities must be selected');
             return false;
         }
 
-        const stats = [selectedAttack, selectedDefense, selectedHP, selectedSpecialAttack, selectedSpecialDefense, amount];
+        const stats = [selectedAttack, selectedDefense, selectedHP, selectedSpecialAttack, selectedSpecialDefense];
 
         for (let stat of stats) {
             if (!isPositiveInteger(stat)) {
@@ -138,13 +129,21 @@ const AddPokemonScreen = () => {
             return false;
         }
 
+        if (!isPositiveInteger(price)) {
+            Alert.alert('Invalid Input', 'Pokemon price must be above 0');
+            return false
+        }
+
+        if (!isPositiveInteger(quantity)) {
+            Alert.alert('Invalid Input', 'Pokemon quantity must be above 0');
+            return false;
+        }
+
         return true;
     };
 
-    async function submitPokemon() {
-        if (item) {
-            //TODO: keep the id and not make a new pokemon
-        }
+    async function handleSubmitPokemon() {
+
         if (!validateInput()) {
             return;
         }
@@ -173,29 +172,47 @@ const AddPokemonScreen = () => {
             stats: stats,
             types: chosenPokemon.types,
             price: price,
-            amount: amount
+            quantity: quantity
 
         }
 
         try {
-            const response = addPokemon(soldPokemon);
-            if(response.status === 201){
+
+            let response;
+            if (item) {
+                // TODO: sending the pokemon id so it will not create a new one (??)
+                const editPokemon = { pokemon: soldPokemon, pokemonId: item._id }
+                // console.log(JSON.stringify(editPokemon));
+                //TODO: create route editPokemon
+                // const response = await editPokemon(soldPokemon);
+            } else {
+                response = await addPokemon(soldPokemon);
+            }
+            if (response.status === 201) {
                 Toast.show({
-                            type:'success',
-                            text1:'Pokemon Is Up For Sale',
-                            visibilityTime:2000
-                        });
-              navigator.reset('Main');
+                    type: 'success',
+                    text1: 'Pokemon Is Up For Sale',
+                    visibilityTime: 2000
+                });
+                navigator.dispatch(
+                    CommonActions.reset({
+                        index: 0,
+                        routes: [{ name: 'Main' }],
+                    })
+                );
             }
-            else{
-                Throw error;
+            else {
+                throw Error('error uploading pokemon to sell');
             }
+
+
         } catch (e) {
             console.log('error uploading pokemon to sell: ' + e.message);
             Alert.alert('Error', 'Please try again later')
         }
 
     }
+
 
     useEffect(() => {
         async function fetchPokemons() {
@@ -224,25 +241,25 @@ const AddPokemonScreen = () => {
                 });
                 setPokemonList(sortedPokemonData);
                 if (item) {
+
                     setSearchPokemon(item.name);
                     setGender(item.gender);
-                    setSelectedHP(item.stats.hp);
-                    setSelectedAttack(item.stats.attack);
-                    setSelectedDefense(item.stats.defense);
-                    setSelectedSpecialAttack(item.stats.specialAttack);
-                    setSelectedSpecialDefense(item.stats.specialDefense);
-                    setSelectedSpeed(item.stats.speed);
+                    setSelectedHP(item.stats[0].hp);
+                    setSelectedAttack(item.stats[0].attack);
+                    setSelectedDefense(item.stats[0].defense);
+                    setSelectedSpecialAttack(item.stats[0].specialAttack);
+                    setSelectedSpecialDefense(item.stats[0].specialDefense);
+                    setSelectedSpeed(item.stats[0].speed);
                     setSelectedAbilities(item.abilities);
                     setSelectedPokemonMoves(item.moves);
                     setPokemonLevel(item.level);
                     setIsShiny(item.isShiny);
                     setPrice(item.price);
-                    setAmount(item.quantity);
+                    setQuantity(item.quantity);
 
                     // Fetch the Pokémon details if not already fetched
                     handleChosenPokemon(item);
                 }
-                // console.log(item.name);
             } catch (error) {
                 console.log(`Error fetching Pokémon: ${error.message}`);
                 Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
@@ -252,7 +269,7 @@ const AddPokemonScreen = () => {
         }
 
         fetchPokemons();
-    }, [selectedAttack]);
+    }, []);
 
     if (isLoading) {
         return (
@@ -300,7 +317,7 @@ const AddPokemonScreen = () => {
                     <FlatList
                         style={{
                             position: 'absolute',
-                            top: 136, 
+                            top: 136,
                             left: 5,
                             maxHeight: 200,
                             width: 350,
@@ -331,7 +348,6 @@ const AddPokemonScreen = () => {
                             <View style={styles.genderShinyContainer}>
                                 <Pressable style={styles.icon}
                                     onPress={() => {
-                                        console.log(isShiny)
                                         setIsShiny(!isShiny)
                                     }}>
                                     <Ionicons name="sparkles-sharp" size={45} color={isShiny ? "gold" : 'black'} />
@@ -360,16 +376,15 @@ const AddPokemonScreen = () => {
 
                         <View style={styles.sectionContainer}>
                             <Text style={styles.sectionTitle}>Pokemon Level</Text>
-                            <Pressable style={{ alignItems: 'center' }}>
-                                <TextInput
-                                    style={[styles.input]}
-                                    onChangeText={handleLevelChange}
-                                    value={pokemonLevel}
-                                    keyboardType="numeric"
-                                    placeholder={"Enter pokemon's level"}
-                                    placeholderTextColor="#999"
-                                />
-                            </Pressable>
+
+
+                            <PokemonInput
+                                style={styles.input}
+                                setInput={(v) => setPokemonLevel(v.trim())}
+                                input={pokemonLevel}
+                                placeholder={"Enter pokemon's level..."}
+                            />
+
                         </View>
 
 
@@ -395,84 +410,86 @@ const AddPokemonScreen = () => {
                             <Text style={styles.sectionTitle}>Enter Pokemon Stats</Text>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>HP: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedHP(v.trim())}
-                                    stat={selectedHP}
+                                    setInput={(v) => setSelectedHP(v.trim())}
+                                    input={selectedHP}
                                     placeholder={"Enter Pokemon's HP..."}
                                 />
                             </View>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Attack: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedAttack(v.trim())}
-                                    stat={selectedAttack}
+                                    setInput={(v) => setSelectedAttack(v.trim())}
+                                    input={selectedAttack}
                                     placeholder={"Enter Pokemon's Attack..."}
                                 />
                             </View>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Defense: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedDefense(v.trim())}
-                                    stat={selectedDefense}
+                                    setInput={(v) => setSelectedDefense(v.trim())}
+                                    input={selectedDefense}
                                     placeholder={"Enter Pokemon's Defense..."}
                                 />
                             </View>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Defense: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedSpecialDefense(v.trim())}
-                                    stat={selectedSpecialDefense}
+                                    setInput={(v) => setSelectedSpecialDefense(v.trim())}
+                                    input={selectedSpecialDefense}
                                     placeholder={"Enter Pokemon's Special Defense..."}
                                 />
                             </View>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Attack: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedSpecialAttack(v.trim())}
-                                    stat={selectedSpecialAttack}
+                                    setInput={(v) => setSelectedSpecialAttack(v.trim())}
+                                    input={selectedSpecialAttack}
                                     placeholder={"Enter Pokemon's Special Attack..."}
                                 />
                             </View>
                             <View>
                                 <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Speed: </Text>
-                                <PokemonStats
+                                <PokemonInput
                                     style={styles.input}
-                                    setStat={(v) => setSelectedSpeed(v.trim())}
-                                    stat={selectedSpeed}
+                                    setInput={(v) => setSelectedSpeed(v.trim())}
+                                    input={selectedSpeed}
                                     placeholder={"Enter Pokemon's Speed..."}
                                 />
                             </View>
                         </View>
                         <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Enter Amount </Text>
-                            <TextInput
+                            <Text style={styles.sectionTitle}>Enter Quantity </Text>
+
+
+                            <PokemonInput
                                 style={styles.input}
-                                keyboardType='numeric'
-                                value={amount}
-                                onChangeText={(v) => setAmount(v.trim())}
-                                placeholder="Enter Amount Of Pokemon You Want To Sell..."
+                                setInput={(v) => setQuantity(v.trim())}
+                                input={quantity}
+                                placeholder={"Enter quantity Of Pokemon You Want To Sell..."}
                             />
                         </View>
+
                         <View style={styles.sectionContainer}>
                             <View style={{ flexDirection: 'row' }}>
                                 <Text style={styles.sectionTitle}>Enter Price</Text>
-                                <Text style={[styles.sectionTitle, { fontSize: 14, paddingTop: 3, color: '#8E8E8E' }]}>(for each Pokemon)</Text>
+                                <Text style={[styles.sectionTitle, { fontSize: 14, paddingTop: 3, color: '#8E8E8E' }]}>
+                                    (for each Pokemon)
+                                </Text>
                             </View>
 
-                            <View style={{ flexDirection: 'row', alignItems: 'center', }}>
-                                <TextInput
+                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+
+                                <PokemonInput
                                     style={styles.input}
-                                    keyboardType='numeric'
-                                    value={price}
-                                    onChangeText={(v) => setPrice(v.trim())}
-
-                                    placeholder="Enter Pokemon's Price..."
-
+                                    setInput={(v) => setPrice(v.trim())}
+                                    input={price}
+                                    placeholder={"Enter Pokemon's Price..."}
                                 />
                                 <CurrencyPD
                                     style={styles.PDImage}
@@ -481,9 +498,16 @@ const AddPokemonScreen = () => {
 
 
                         </View>
-                        <Pressable onPress={submitPokemon} style={styles.submitButton}>
-                            <Text style={styles.submitButtonText}>Submit</Text>
+
+                        <Pressable onPress={handleSubmitPokemon} style={styles.submitButton}>
+                            {item ? (
+                                <Text style={styles.submitButtonText}>CONFIRM EDIT</Text>
+                            ) : (
+                                <Text style={styles.submitButtonText}>SUBMIT</Text>
+                            )}
                         </Pressable>
+
+
                     </View>
                 ) : (
                     <View>

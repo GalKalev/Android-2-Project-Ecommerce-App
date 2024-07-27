@@ -17,16 +17,18 @@ const RegisterScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
-    const[isLoading, setLoading] = useState(false);
-    const {setUser} = useUser();
+    const [isLoading, setLoading] = useState(false);
+    const { setUser } = useUser();
 
     const navigation = useNavigation();
 
     const handleRegister = async () => {
         try {
-            const registrationStatus = await registerUser(name, email, password);
+            setLoading(true)
+            const registrationStatus = await registerUser(name, email.toLocaleLowerCase().trim(), password);
             if (registrationStatus === 201) {
                 Alert.alert("Registration successful");
+                setUser(registrationStatus.data);
                 navigation.replace('Main'); // Navigate to the main screen
             } else if (registrationStatus === 400) {
                 Alert.alert("Registration Error", "Email already registered or missing fields");
@@ -52,31 +54,31 @@ const RegisterScreen = () => {
                 // Something happened in setting up the request that triggered an Error
                 console.log("Error setting up request: ", error.message);
                 Alert.alert("Registration Error 2", "An error occurred during registration: " + error.message);
-              }
-        
-        }finally{
+            }
+
+        } finally {
             setLoading(false)
 
         }
     };
 
 
-    if(isLoading){
-        return(<Loading
-        loading={isLoading}/>)
+    if (isLoading) {
+        return (<Loading
+            loading={isLoading} />)
     }
     return (
         <SafeAreaView style={styles.container}>
-            <Logo/>
+            <Logo />
 
             <KeyboardAvoidingView>
-            <LogRegForm
+                <LogRegForm
                     isLog={false}
                     email={email}
                     setEmail={setEmail}
                     name={name}
                     setName={setName}
-                    password={password} 
+                    password={password}
                     setPassword={setPassword}
                 />
 

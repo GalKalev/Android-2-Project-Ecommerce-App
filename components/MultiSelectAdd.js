@@ -9,7 +9,20 @@ const MultiSelectAdd = ({ data, selected, setSelected, placeholder }) => {
 
   const configData = data.map((d, index) => ({ label: d, value: index, presentableLabel: presentableWord(d) }));
   const [itemsList, setItemsList] = useState([]);
- 
+
+  useEffect(() => {
+
+    const selectedArray = Array.isArray(selected) ? selected : [selected];
+    const initialSelections = selectedArray.map(item => {
+      const index = configData.findIndex(d => d.label === item);
+      return index !== -1 ? index : null;
+    }).filter(index => index !== null);
+    setItemsList(initialSelections);
+
+
+  }, [selected]);
+
+
   return (
     <MultiSelect
       style={styles.dropdown}

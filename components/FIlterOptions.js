@@ -19,7 +19,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
     const [abilities, setAbilities] = useState([]);
     const [moves, setMoves] = useState([]);
     const [species, setSpecies] = useState([]);
-    const [stats, setStats] = useState({});
     const [types, setTypes] = useState([]);
 
     // Selected filters
@@ -63,9 +62,10 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
         const typesList = items.map(poke => poke.types);
         setTypes(Array.from(new Set(typesList.flat())));
 
-
         setMinPrice(items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price));
         setMaxPrice(items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price));
+        console.log('min: ' + items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price))
+        console.log('max: ' + items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price))
 
     }, []);
 
@@ -129,6 +129,7 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
     }
 
     const handleResetButton = () => {
+        console.log(filteredItems);
         setReset(true);
         setGender(null);
         setIsShiny(null);
@@ -260,19 +261,24 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
                     })}
 
                     {/* Filter the pokemon by price */}
-                    <View style={styles.section}>
-                        <Text style={styles.title}>
-                            Price Range:
-                        </Text>
-                        <RangeSlider
-                            minValue={minPrice}
-                            maxValue={maxPrice}
-                            setSelectedMinValue={setSelectedMinPrice}
-                            setSelectedMaxValue={setSelectedMaxPrice}
-                            reset={reset}
-                            setReset={setReset}
-                        />
-                    </View>
+                    {maxPrice !== minPrice ? (
+                        <View style={styles.section}>
+                            <Text style={styles.title}>
+                                Price Range:
+                            </Text>
+                            <RangeSlider
+                                minValue={minPrice}
+                                maxValue={maxPrice}
+                                setSelectedMinValue={setSelectedMinPrice}
+                                setSelectedMaxValue={setSelectedMaxPrice}
+                                reset={reset}
+                                setReset={setReset}
+                            />
+                        </View>
+                    ) : (
+                        <></>
+                    )}
+
 
                     {/* Apply the filters to the pokemon products or reset the filters */}
                     <View style={styles.applyResetBtnsContainer}>

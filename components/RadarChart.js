@@ -3,14 +3,18 @@ import { View } from 'react-native';
 import Svg, { Circle, Line, Polygon, Text as SvgText, G } from 'react-native-svg';
 
 const RadarChart = ({ data, labels, size }) => {
+    console.log(data);
     const numberOfScales = 5;
     const radius = size / 4;
     const angleStep = (2 * Math.PI) / labels.length;
 
     const maxValue = Math.max(...data);
 
+
     // Normalize the data
     const normalizedData = data.map(value => (value / maxValue) * 100);
+   
+      
 
     const points = normalizedData.map((value, index) => {
         const angle = index * angleStep;
