@@ -510,8 +510,12 @@ const AddPokemonScreen = () => {
 
                     </View>
                 ) : (
-                    <View>
-                        <Text>Pick a Pokémon to enter its settings</Text>
+                    <View style={{marginTop:10}}> 
+                        <Text style={{textAlign:'center',fontSize:18}}>Pick a Pokémon to enter it's details</Text>
+                        <Image
+                        style={{width:'100%', height:300, resizeMode:'contain'}}
+                        source={{uri: 'https://pokemonletsgo.pokemon.com/assets/img/how-to-play/hero-img.png'}}
+                        />
                     </View>
                 )}
             </ScrollView>

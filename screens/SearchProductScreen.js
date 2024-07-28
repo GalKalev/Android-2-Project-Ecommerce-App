@@ -6,6 +6,7 @@ import Product from '../components/Product';
 import { useUser } from '../utils/UserContext';
 import FIlterOptions from '../components/FIlterOptions';
 import Loading from '../components/Loading';
+import NoItems from '../components/NoItems';
 
 const SearchProductScreen = () => {
     const route = useRoute();
@@ -88,7 +89,9 @@ const SearchProductScreen = () => {
 
                     {pokemonList.length === 0 ? (
                         <View>
-                            <Text>Out of products in store!! Sell your Pokemons or come back later</Text>
+                            <NoItems
+                                text={'Out of products in store!! Sell your Pokemons or come back later'}
+                            />
                         </View>
                     ) : (
                         <View>
@@ -105,7 +108,9 @@ const SearchProductScreen = () => {
                             {/* Checking if a pokemon with the filters exist in the shop  */}
                             {filteredPokemon.length === 0 ? (
                                 <View>
-                                    <Text>No items were found...</Text>
+                                    <NoItems
+                                        text={'No items were found...'}
+                                    />
                                 </View>
                             ) : (
                                 // Filter Options

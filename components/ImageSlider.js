@@ -1,38 +1,38 @@
-import { View, Text, Image } from 'react-native'
-import React, { useState } from 'react'
+import { View, Image } from 'react-native';
+import React from 'react';
 import Swiper from 'react-native-swiper';
 
 const ImageSlider = () => {
-    const [userData] = useState([
+    const userData = [
         {
-            img: 'https://st2.depositphotos.com/4345611/11742/v/950/depositphotos_117428044-stock-illustration-pikachu-sale-vector.jpg',
+            img: require('../images/image_slider_one.png'),
+            name: 'delivery',
+        },
+        {
+            img: require('../images/image_slider_two.jpg'),
             name: 'sale',
         },
+       
         {
-            img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4xseyGQiMf__vI6MQQiNEXOG9tyfCjURx4w&s',
-            name: 'pokeballs',
-        },
-        {
-            img: 'https://static1.srcdn.com/wordpress/wp-content/uploads/2021/04/Pokemon-Potions-And-Healing-Items.jpg?q=50&fit=crop&w=1100&h=618&dpr=1.5',
+            img: require('../images/image_slider_three.png'),
             name: 'healing items',
         },
+    ];
 
-    ]);
     return (
-        <View style={{marginTop:20}}>
-            <Swiper showsButtons={true} style={{ height: 200 }} autoplay autoplayTimeout={7}>
-                {userData.map((image) => (
-                    <View key={image} style={{ alignItems: 'center' }}>
+        <View style={{ marginTop: 20, }}>
+            <Swiper showsButtons={true} style={{ height: 200, marginBottom:25 }} autoplay autoplayTimeout={7}>
+                {userData.map((image, index) => (
+                    <View key={index} style={{ alignItems: 'center' }}>
                         <Image
-                            style={{ width: 300, height: 200 }}
-                            source={{ uri: image.img }}
+                            style={{ width: 300, height: 200, resizeMode: 'contain' }}
+                            source={image.img}
                         />
                     </View>
                 ))}
             </Swiper>
-
         </View>
-    )
+    );
 }
 
-export default ImageSlider
+export default ImageSlider;
