@@ -4,7 +4,7 @@ import Svg, { Circle, Line, Polygon, Text as SvgText, G } from 'react-native-svg
 
 const RadarChart = ({ data, labels, size }) => {
     const numberOfScales = 5;
-    const radius = size / 4;
+    const radius = size / 4.2;
     const angleStep = (2 * Math.PI) / labels.length;
 
     const maxValue = Math.max(...data);

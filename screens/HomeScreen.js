@@ -77,7 +77,6 @@ const HomeScreen = () => {
 
 
     function handleChosenPokemon(name) {
-        console.log(`pressed poke name: ${name} `);
         const pokemonsWithName = pokemonList.filter((poke) => poke.name === name);
         // console.log(pokemonsWithName);
         navigator.navigate('SearchProduct', { pokemonList: pokemonsWithName, name: presentableWord(name) });

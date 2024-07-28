@@ -315,17 +315,7 @@ const AddPokemonScreen = () => {
                     </View>
                 ) : (
                     <FlatList
-                        style={{
-                            position: 'absolute',
-                            top: 136,
-                            left: 5,
-                            maxHeight: 200,
-                            width: 350,
-                            borderColor: 'gray',
-                            borderWidth: 1.5,
-                            backgroundColor: 'white',
-                            zIndex: 1
-                        }}
+                        style={styles.searchList}
                         data={filteredPokemons}
                         keyExtractor={(item) => item.name}
                         renderItem={({ item }) => (
@@ -511,7 +501,7 @@ const AddPokemonScreen = () => {
                     </View>
                 ) : (
                     <View style={{marginTop:10}}> 
-                        <Text style={{textAlign:'center',fontSize:18}}>Pick a Pokémon to enter it's details</Text>
+                        <Text style={{textAlign:'center',fontSize:18}}>Search a Pokémon to enter it's details</Text>
                         <Image
                         style={{width:'100%', height:300, resizeMode:'contain'}}
                         source={{uri: 'https://pokemonletsgo.pokemon.com/assets/img/how-to-play/hero-img.png'}}
@@ -563,6 +553,20 @@ const styles = StyleSheet.create({
         paddingLeft: 13,
         marginTop: 12,
 
+    },
+    searchList: {
+        position: 'absolute',
+        top: 0, // Adjust this value based on the height of your input
+        // left: 5,
+        // right: 10,
+        // maxHeight: '100%',
+        alignSelf:'center',
+        top:152,
+        width:'100%',
+        borderColor: 'gray',
+        borderWidth: 1.5,
+        backgroundColor: 'white',
+        zIndex: 1
     },
 
 

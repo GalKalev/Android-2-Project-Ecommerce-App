@@ -1,4 +1,4 @@
-import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, Settings, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute, useNavigation, CommonActions } from '@react-navigation/native'
 import ExpandableList from '../components/ExpandableList ';
@@ -13,6 +13,7 @@ import { presentableWord } from '../utils/consts';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import D3Chart from '../components/D3Chart';
+import UserSettings from '../components/UserSettings';
 
 const ProfileScreen = () => {
 
@@ -484,7 +485,7 @@ const ProfileScreen = () => {
                 ];
 
                 //TODO: get user's sold pokemons (amount and time)
-                const boughtProductsData = dummyOrders.map((order) =>({
+                const boughtProductsData = dummyOrders.map((order) => ({
                     date: new Date(order.createdAt),
                     value: order.totalPrice,
                 }));
@@ -589,8 +590,8 @@ const ProfileScreen = () => {
             title: "Data",
             icon: <Entypo name="line-graph" size={24} color="black" />,
             content:
-                <View style={{paddingLeft:20}}>
-                    <Text style={{textAlign:'center', fontSize:18, fontWeight:'bold'}}>Orders Data</Text>
+                <View style={{ paddingLeft: 20 }}>
+                    <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold' }}>Orders Data</Text>
                     <D3Chart
                         data={boughtData}
                         yAxisName={'Total Price'}
@@ -604,41 +605,11 @@ const ProfileScreen = () => {
             icon: <Ionicons name="settings" size={24} color="black" />,
             content:
                 <View>
-
-                    <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Edit Name</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text>{user.name}</Text>
-                        <Pressable>
-                            <AntDesign name="edit" size={24} color="black" />
-                        </Pressable>
-                    </View>
-                    <Pressable style={styles.logOutBtn} onPress={handleLogOut}>
-                        <Text style={styles.logOutBtnText}>LOG OUT</Text>
-                    </Pressable>
-
-
+                    <UserSettings />
                 </View>
         },
     ];
 
-    const handleLogOut = () => {
-        Alert.alert('Log out?', 'press OK to log out', [
-            {
-                text: 'OK',
-                onPress: () => navigator.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [{ name: 'Register' }],
-                    })
-                ),
-            },
-            {
-                text: 'CANCEL',
-                style: 'cancel'
-            }
-
-        ])
-    }
 
     const handleEditProduct = (product) => {
         navigator.navigate('AddPokemon', { item: product });
@@ -662,7 +633,7 @@ const ProfileScreen = () => {
 
     }
 
-   
+
     if (isLoading) {
         return (
             <Loading
