@@ -36,6 +36,7 @@ const ProductScreen = () => {
 
     const handelAddToCart = () => {
         //TODO: add to cart 
+        setQuantityModalVisible(true);
     }
 
     const handleEditItem = () => {

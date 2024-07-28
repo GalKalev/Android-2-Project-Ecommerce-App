@@ -37,7 +37,6 @@ const StackNavigator = () => {
       try {
         // const cartData = await getCart();
         // setCart(cartData);
-        console.log('cart navi');
         const demeProductsCart = [{
           product: {
             _id: 0,

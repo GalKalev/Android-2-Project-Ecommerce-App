@@ -42,7 +42,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
     const [selectedMaxPrice, setSelectedMaxPrice] = useState(0);
     const [selectedMinPrice, setSelectedMinPrice] = useState(0);
 
-    // 
     const [selectedPriceOrderFilter, setSelectedPriceOrderFilter] = useState('default');
 
     // Set for reset button
@@ -50,6 +49,7 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
 
 
     useEffect(() => {
+        
         const abilitiesList = items.map(poke => poke.abilities);
         setAbilities(Array.from(new Set(abilitiesList.flat())));
 
@@ -62,10 +62,15 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
         const typesList = items.map(poke => poke.types);
         setTypes(Array.from(new Set(typesList.flat())));
 
-        setMinPrice(items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price));
-        setMaxPrice(items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price));
-        console.log('min: ' + items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price))
-        console.log('max: ' + items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price))
+        const minPrice = items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price);
+        const maxPrice = items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price);
+
+        setMinPrice(minPrice);
+        setMaxPrice(maxPrice);
+
+        setSelectedMinPrice(minPrice);
+        setSelectedMaxPrice(maxPrice);
+
 
     }, []);
 
@@ -80,18 +85,7 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
     // Handle function to apply the filters to the pokemons in the shop
     const handleApplyButton = () => {
         setLoading(true);
-        // console.log('_________________')
-        // console.log('selectedAbilities: ' + selectedAbilities);
-        // console.log('selectedMoves: ' + selectedMoves);
-        // console.log('selectedSpecies: ' + selectedSpecies);
-        // console.log('selectedTypes: ' + selectedTypes);
-        // console.log('selectedMaxPrice: ' + selectedMaxPrice);
-        // console.log('selectedMinPrice: ' + selectedMinPrice);
-        // console.log('minLevel: ' + minLevel);
-        // console.log('maxLevel: ' + maxLevel);
-        // console.log('gender: ' + gender);
-        // console.log('isShiny: ' + isShiny);
-
+   
         const applyingFilters = items.filter(poke => {
             const isPriceRange = poke.price >= selectedMinPrice && poke.price <= selectedMaxPrice;
 
@@ -119,17 +113,13 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
                 whatGender;
 
         });
-        // console.log(applyingFilters);
 
         setFilteredItems(applyingFilters);
         setFilter(false);
         setLoading(false);
-
-
     }
 
     const handleResetButton = () => {
-        console.log(filteredItems);
         setReset(true);
         setGender(null);
         setIsShiny(null);
@@ -145,7 +135,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
 
 
     return (
-        // <ScrollView nestedScrollEnabled={true} contentContainerStyle={{ flexGrow: 1, padding: 16 }}>
         <View style={styles.filterContainer}>
 
 
@@ -169,7 +158,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
                     }}
                         selectedValue={selectedPriceOrderFilter}
                         onValueChange={(itemValue, itemIndex) => {
-                            // console.log(itemValue);
                             setSelectedPriceOrderFilter(itemValue)
                             setLoading(true);
                             if (itemValue === 'LtH') {
@@ -179,7 +167,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
                                 setFilteredItems([...filteredItems].sort((i1, i2) => i2.price - i1.price));
                             }
                             setLoading(false);
-                            console.log('over');
                         }
                         }>
                         <Picker.Item label="Order by prices..." value="default" />
@@ -302,7 +289,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
             )}
         </View>
 
-        // </ScrollView> 
     )
 }
 
