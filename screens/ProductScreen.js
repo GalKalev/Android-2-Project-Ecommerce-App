@@ -97,10 +97,10 @@ const ProductScreen = () => {
                             <Text style={styles.level}>LV: {item.level}</Text>
                             <View>
                                 <Text style={styles.name}>{presentableWord(item.name)}</Text>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' , borderColor:'black', borderBottomWidth:1, borderCurve:'continuous', alignItems:'center', justifyContent:'center'}}>
                                     {item.types.map((type, index) => (
                                         <View key={type}>
-                                            <Text>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
+                                            <Text style={{color:'gray'}}>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
                                         </View>
 
                                     ))}
@@ -118,18 +118,18 @@ const ProductScreen = () => {
                         </View>
 
 
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', height: 'auto', paddingBottom: 100 }}>
+                        <View style={{ flexDirection: 'row', justifyContent:'flex-end', height: 'auto', paddingBottom: 80 }}>
                             <View style={styles.statsContainer}>
                                 <RadarChart data={data} labels={labels} size={screenWidth - 120} />
                             </View>
 
                             <View style={styles.abilitiesMovesTypesContainer}>
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
+                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10}}>
                                     <Text style={styles.abilitiesMovesTypesText}>ABILITIES</Text>
                                     {item.abilities.map((ability) => (
                                         <View key={ability} style={[styles.abilitiesMovesList, { borderColor: "#8D32F4", borderWidth: 1 }]}>
                                             <Entypo name="light-bulb" size={20} color="black" />
-                                            <Text style={{ fontSize: 14 }}>{presentableWord(ability)}</Text>
+                                            <Text style={{ fontSize: 14, maxWidth:65 ,textAlign:'center'}}>{presentableWord(ability)}</Text>
                                         </View>
 
                                     ))}
@@ -140,7 +140,7 @@ const ProductScreen = () => {
                                     {item.moves.map((move) => (
                                         <View key={move} style={[styles.abilitiesMovesList, { borderColor: '#6EF432', borderWidth: 1 }]}>
                                             <FontAwesome6 name="hand-back-fist" size={20} color="black" />
-                                            <Text style={{ fontSize: 14 }}>{presentableWord(move)}</Text>
+                                            <Text style={{ fontSize: 14, maxWidth:65 , textAlign:'center'}}>{presentableWord(move)}</Text>
                                         </View>
                                     ))}
                                 </View>
@@ -262,9 +262,11 @@ const styles = StyleSheet.create({
     abilitiesMovesTypesContainer: {
         borderLeftColor: 'black',
         borderLeftWidth: 1,
-        width: 100,
+        // width: 100,
         flexWrap: 'wrap',
-        marginRight: 6
+        marginRight: 6,
+        alignItems:'center',
+        justifyContent:'center',
 
     },
     abilitiesMovesTypesText: {

@@ -32,7 +32,12 @@ const LoginScreen = () => {
             if (loginSuccess.success === true) {
                 setUser(loginSuccess.data);
                 navigation.replace('Main');
-            } else {
+            }else if(loginSuccess.data === null){
+                Alert.alert("Can't find user","Enter correct inputs or register");
+                console.log("user doesn't exist");
+            }
+            else {
+                console.log('error else')
                 throw Error('Login Error');
             }
         } catch (error) {
