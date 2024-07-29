@@ -5,7 +5,8 @@ import {Alert} from "react-native";
 import {useUser} from "../utils/UserContext";
 // const { PORT, IP_ADDRESS } = require('@env');
 
-const API_URL = `http://10.100.102.8:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+// const API_URL = `http://10.100.102.8:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+const API_URL = `http://${IP_ADDRESS}:1400`;//`http://192.168.68.113:1400`;
 console.log(`API URL: ${API_URL}`);
 
 
