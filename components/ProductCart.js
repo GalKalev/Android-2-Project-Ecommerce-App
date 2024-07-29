@@ -136,7 +136,6 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 5,
         alignSelf: 'baseline',
         paddingRight: 3,
         padding: 3,
