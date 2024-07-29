@@ -7,7 +7,7 @@ const cors = require("cors");
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
 // const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
-const IP_ADDRESS = '10.0.0.25'
+const IP_ADDRESS = '10.100.102.8' //'10.0.0.25'
 
 const app = express();
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
@@ -34,7 +34,6 @@ app.listen(PORT, () => {
 const User = require("./models/user");
 const Order = require("./models/order");
 const Product = require("./models/product");
-const Pokemon = require('./models/pokemon');
 const Cart = require('./models/cart');
 
 // app.get("/health", (req, res) => {res.send("hello")})
@@ -203,41 +202,51 @@ app.get('/Pokemon', async (req, res) => {
 // Add Pokemon to user's cart
 app.post('/cart/add', async (req, res) => {
   try {
+    console.log("Trying add to item to cart");
     const { userId, productId, quantity } = req.body;
+    console.debug(`userId=${userId}, productId=${productId}, quantity=${quantity}`);
     if (!userId || !productId || !quantity || quantity < 0) {
+      console.log("something missing...")
       return res.status(400).json({ message: 'Invalid product - missing fields' });
     }
 
     let cart = await Cart.findOne({ user: userId });
     if (!cart) {
+      console.log("no cart for user. creating a new cart.")
       cart = new Cart({ user: userId });
+      console.debug(`cart ${cart.toString()}`);
+      console.debug(`cart products = ${cart['products']}`);
     }
 
     const product = await Product.findById(productId);
     if (!product) {
+      console.log("product not found.");
       return res.status(404).json({ message: 'Product not found' });
     }
 
     // Check if product already in cart. If  so - get its index and add quantity. Else - add the product to cart
     const productIndex = cart.products.findIndex((p => p.product.equals(productId)));
     if (productIndex > -1) {
+      console.log("product already in cart. change quantity")
       cart.products[productIndex].quantity += quantity;
     } else {
+      console.log("adding new product to cart")
       cart.products.push({ product: productId, quantity });
+      console.debug(`new cart = ${cart.toString()}`);
     }
 
     // Update total price
-    cart.totalPrice = cart.products.reduce((prevTotal, item) => {
-      const product = cart.products.find(p => p.product.equals(item.product));
-      return prevTotal + (product ? product.price * item.quantity : 0);
-    }, 0);
+    console.debug("Updating total price");
+    cart.totalPrice = cart.totalPrice + product.price * quantity;
+    console.debug(`total price = ${cart.totalPrice}`);
 
+    console.debug("saving new cart with total price of "+ cart.totalPrice )
     await cart.save();
 
-    res.status(201).json({ message: `${cart.products.length} products added successfully` });
+    return res.status(201).json({ message: `${cart.products.length} products added successfully` });
   } catch (error) {
     console.log(`Error adding product to cart: ${error}`);
-    res.status(500).json({ message: `Failed to add product to cart` });
+    return res.status(500).json({ message: `Failed to add product to cart` });
 
   }
 })
@@ -246,11 +255,14 @@ app.post('/cart/add', async (req, res) => {
 app.get('/cart/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log(`Trying fetching cart for user ${userId}`);
     const cart = await Cart.findOne({ user: userId }).populate('products.product');
 
-    if (!cart) {
-      return res.status(404).json({ message: 'Cart not found' });
-    }
+    // if (!cart) {
+    //   return res.status(200).json({ message: 'Cart not found' });
+    // }
+    return res.status(200).json(cart);
+    //TODO: continue cart fetching
   } catch (error) {
     console.log(`Error get cart: ${error}`);
     return res.status(500).json({ message: 'Failed to retrieve cart' })

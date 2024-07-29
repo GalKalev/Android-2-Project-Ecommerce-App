@@ -62,6 +62,7 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
         const typesList = items.map(poke => poke.types);
         setTypes(Array.from(new Set(typesList.flat())));
 
+
         const minPrice = items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price);
         const maxPrice = items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price);
 
@@ -70,7 +71,6 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
 
         setSelectedMinPrice(minPrice);
         setSelectedMaxPrice(maxPrice);
-
 
     }, []);
 
