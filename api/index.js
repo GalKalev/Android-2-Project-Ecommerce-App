@@ -47,6 +47,7 @@ app.post("/register", async (req, res) => {
       console.log("undefined values");
       return res.status(400).json({ message: "Name, email, or password are missing" });
     }
+    console.log(name, email, password);
 
     // Check if the email is already registered
     const existingUser = await User.findOne({ email: email });
@@ -257,7 +258,7 @@ app.get('/cart/:userId', async (req, res) => {
     const { userId } = req.params;
     console.log(`Trying fetching cart for user ${userId}`);
     const cart = await Cart.findOne({ user: userId }).populate('products.product');
-
+    
     // if (!cart) {
     //   return res.status(200).json({ message: 'Cart not found' });
     // }

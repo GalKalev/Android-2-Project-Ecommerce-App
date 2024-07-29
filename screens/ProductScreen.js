@@ -146,7 +146,7 @@ const ProductScreen = () => {
 
                             <View style={styles.abilitiesMovesTypesContainer}>
 
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
+                                <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
 
 
 

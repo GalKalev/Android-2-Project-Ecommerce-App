@@ -8,7 +8,7 @@ import CurrencyPD from '../components/CurrencyPD';
 
 const CartScreen = () => {
     const { user, cart, setCart } = useUser();
-    const [totalPrice, setTotalPrice] = useState(0);
+    // const [totalPrice, setTotalPrice] = useState(0);
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
 
@@ -17,14 +17,18 @@ const CartScreen = () => {
     useEffect(() => {
         try {
             setLoading(true);
-            let tPrice = 0;
-            let tProducts = 0;
-            cart.products.forEach(product => {
-                tPrice += product.product.price * product.quantity;
-                tProducts += product.quantity;
-            });
-            setTotalProducts(tProducts);
-            setTotalPrice(tPrice);
+            if (cart?.products?.length) {//
+                // let tPrice = 0;
+                let tProducts = 0;
+                cart.products.forEach(product => {
+                    // tPrice += product.product.price * product.quantity;
+                    tProducts += product.quantity;
+                });
+                setTotalProducts(tProducts);
+                // setTotalPrice(tPrice);
+            }
+
+
         } catch (e) {
             console.error(e);
         } finally {
@@ -36,14 +40,14 @@ const CartScreen = () => {
         const newCartProducts = cart.products.filter(product => product !== item);
         const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
         const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
-    
+
         setCart(prevCart => ({
             ...prevCart,
             products: newCartProducts,
             totalPrice: newTotalPrice,
         }));
         setTotalProducts(newTotalProducts);
-        setTotalPrice(newTotalPrice);
+        // setTotalPrice(newTotalPrice);
     };
 
     const handleCheckout = () => {
@@ -59,7 +63,7 @@ const CartScreen = () => {
             <View style={styles.header}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cart ({totalProducts})</Text>
             </View>
-            {cart.products.length > 0 ? (
+            {cart?.products?.length > 0 ? (//
                 <FlatList
                     data={cart.products}
                     keyExtractor={(item) => item.product._id.toString()}
@@ -89,16 +93,16 @@ const CartScreen = () => {
             )}
             <View style={styles.checkoutContainer}>
                 <Text style={styles.total}>
-                    Total: {cart.totalPrice}
+                    Total: {cart?.totalPrice ? cart.totalPrice : 0}
                 </Text>
                 <CurrencyPD style={styles.currency} />
                 <Pressable
                     style={({ pressed }) => [
                         styles.checkoutButton,
-                        { backgroundColor: cart.products.length > 0 ? (pressed ? '#d3d3d3' : '#FEBE10') : '#cccccc' }
+                        { backgroundColor: cart?.products?.length > 0 ? (pressed ? '#d3d3d3' : '#FEBE10') : '#cccccc' }//
                     ]}
                     onPress={handleCheckout}
-                    disabled={cart.products.length === 0}
+                // disabled={cart.products.length === 0}
                 >
                     <Text>CHECKOUT</Text>
                 </Pressable>
