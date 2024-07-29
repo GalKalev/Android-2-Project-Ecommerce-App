@@ -9,7 +9,7 @@ export const useUser = () => {
 
 
 export const UserProvider = ({ children }) => {
-    const [user, setUser] = useState({"userId":"667ae8ba2cc3de3b7f81f7c7","email":"K@k.com","name":"K"}); // {"userId":"66a3558d5774733480c06aa2","email":"Hadarasher@gmail.com","name":"Hadar"});
+    const [user, setUser] = useState({"userId":"66a78066d53f070dbf98ae3f","email":"haahaa@ha.com","name":"haa"}); // {"userId":"66a3558d5774733480c06aa2","email":"Hadarasher@gmail.com","name":"Hadar"});
 
     const [cart, setCart] = useState({ products: [], totalPrice: 0 });
 

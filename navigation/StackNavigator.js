@@ -199,8 +199,7 @@ const StackNavigator = () => {
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
-            tabBarBadge: cart.products.length > 0 ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
-
+              tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
           }}
 
         />
@@ -212,8 +211,8 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-          <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
+          {/*<Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />*/}
+          {/*<Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />*/}
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />

@@ -8,7 +8,7 @@ import {useUser} from "../utils/UserContext";
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
     const [value, setValue] = useState(0);
-    const { user, setCart } = useUser();
+    const { user, cart, setCart } = useUser();
     const handleAddQuantity = () => {
         if (value < item.quantity) {
             setValue(value + 1)
@@ -103,7 +103,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                             </Pressable>
                             <Pressable
                                 style={[styles.button, styles.buttonSubmit]}
-                                onPress={() => handleSubmitQuantity}
+                                onPress={() => handleSubmitQuantity()}
                             >
                                 <Text style={styles.buttonText}>Submit</Text>
                             </Pressable>
