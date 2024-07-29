@@ -47,6 +47,7 @@ app.post("/register", async (req, res) => {
       console.log("undefined values");
       return res.status(400).json({ message: "Name, email, or password are missing" });
     }
+    console.log(name, email, password);
 
     // Check if the email is already registered
     const existingUser = await User.findOne({ email: email });

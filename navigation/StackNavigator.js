@@ -17,7 +17,8 @@ import ProfileScreen from '../screens/ProfileScreen';
 import { useUser } from '../utils/UserContext';
 import { Alert } from 'react-native';
 import SearchProductScreen from '../screens/SearchProductScreen';
-import {getCart} from "../api/apiServices";
+import { getCart } from '../api/apiServices';
+
 
 
 
@@ -200,6 +201,7 @@ const StackNavigator = () => {
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
+
               tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
           }}
 

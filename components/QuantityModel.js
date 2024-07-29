@@ -5,6 +5,7 @@ import {useUser} from "../utils/UserContext";
 
 
 
+
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
     const [value, setValue] = useState(0);
@@ -22,7 +23,6 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
         }
 
     };
-
 
     const handleSubmitQuantity = async () => {
         //add product to cart. Validate products quantities between stock and cart.
@@ -56,8 +56,22 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                 }}
             >
                 <View style={styles.centeredView}>
-                    <View style={styles.modalView}>
-                        <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
+
+                    {item.user._id === user.userId ? (
+                        <View style={styles.modalView}>
+                            <View>
+                                <Text>Can't Add to Cart Your Products</Text>
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose, { alignSelf: 'center' }]}
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                >
+                                    <Text style={styles.buttonText}>Close</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                        ) : (
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
 
 
                         <View style={{ flexDirection: 'row', alignItems:'center'}}>
@@ -65,31 +79,35 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                                 <Text style={styles.buttonText}>+</Text>
                             </Pressable>
 
+
                             <View style={{marginRight:8, marginLeft:8}}>
                                 <Text style={{fontSize:18}}>{value}</Text>
                             </View>
 
 
 
-                            <Pressable style={[styles.button, styles.buttonOption]} onPress={handleReduceQuantity}>
-                                <Text style={styles.buttonText}>-</Text>
-                            </Pressable>
-                        </View>
+                                <Pressable style={[styles.button, styles.buttonOption]} onPress={handleReduceQuantity}>
+                                    <Text style={styles.buttonText}>-</Text>
+                                </Pressable>
+                            </View>
 
-                        <View style={{flexDirection:'row'}}>
-                            <Pressable
-                                style={[styles.button, styles.buttonClose]}
-                                onPress={() => setModalVisible(!modalVisible)}
-                            >
-                                <Text style={styles.buttonText}>Close</Text>
-                            </Pressable>
-                            <Pressable
-                                style={[styles.button, styles.buttonSubmit]}
-                                onPress={() => handleSubmitQuantity()}
-                            >
-                                <Text style={styles.buttonText}>Submit</Text>
-                            </Pressable>
+                            <View style={{ flexDirection: 'row' }}>
+                                <Pressable
+                                    style={[styles.button, styles.buttonClose]}
+                                    onPress={() => setModalVisible(!modalVisible)}
+                                >
+                                    <Text style={styles.buttonText}>Close</Text>
+                                </Pressable>
+                                <Pressable
+                                    style={[styles.button, styles.buttonSubmit]}
+                                    onPress={() => handleSubmitQuantity}
+                                >
+                                    <Text style={styles.buttonText}>Submit</Text>
+                                </Pressable>
+                            </View>
+
                         </View>
+                    )}
 
                     </View>
                 </View>
