@@ -5,12 +5,13 @@ import { AntDesign, Foundation } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import { Ionicons } from '@expo/vector-icons';
 import RadarChart from '../components/RadarChart';
-import {addToCart} from "../api/apiServices";
+import { addToCart } from "../api/apiServices";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useUser } from '../utils/UserContext';
 import { Alert } from 'react-native';
 import QuantityModel from '../components/QuantityModel';
+import CurrencyPD from '../components/CurrencyPD';
 
 
 
@@ -81,55 +82,79 @@ const ProductScreen = () => {
 
                                 <View>
                                     <Image style={styles.image} source={{ uri: item.img }} />
+
+
                                 </View>
                             </ImageBackground>
                         </View>
 
+
                         {/* Product's info */}
 
-                        <View style={styles.nameGenderLevelContainer}>
-                            <View style={styles.userNameContainer}>
-                                <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
-                                <Text style={styles.userNameText}>{item.user.name}</Text>
-                            </View>
+                        <View style={{ borderColor: 'black', borderWidth: 1, paddingBottom: 10 }}>
+                            <View style={styles.nameGenderLevelContainer}>
 
-                            <Text style={styles.level}>LV: {item.level}</Text>
-                            <View>
-                                <Text style={styles.name}>{presentableWord(item.name)}</Text>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' , borderColor:'black', borderBottomWidth:1, borderCurve:'continuous', alignItems:'center', justifyContent:'center'}}>
-                                    {item.types.map((type, index) => (
-                                        <View key={type}>
-                                            <Text style={{color:'gray'}}>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
-                                        </View>
-
-                                    ))}
+                                <View style={styles.userNameContainer}>
+                                    <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
+                                    <Text style={styles.userNameText}>{item.user.name}</Text>
+                                </View>
+                                <View>
+                                    <Text style={styles.level}>LV: {item.level}</Text>
 
 
                                 </View>
+
+                                <View>
+                                    <Text style={styles.name}>{presentableWord(item.name)}</Text>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: 'black', borderBottomWidth: 1, borderCurve: 'continuous', alignItems: 'center', justifyContent: 'center' }}>
+                                        {item.types.map((type, index) => (
+                                            <View key={type}>
+                                                <Text style={{ color: 'gray' }}>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
+                                            </View>
+
+                                        ))}
+
+
+                                    </View>
+
+
+                                </View>
+
+
+                                {item.gender ? (
+                                    <Foundation name="female-symbol" size={35} color="pink" style={styles.gender} />
+                                ) : (
+                                    <Foundation name="male-symbol" size={35} color="blue" style={styles.gender} />
+                                )}
+
                             </View>
-
-                            {item.gender ? (
-                                <Foundation name="female-symbol" size={35} color="pink" style={styles.gender} />
-                            ) : (
-                                <Foundation name="male-symbol" size={35} color="blue" style={styles.gender} />
-                            )}
-
+                            <View style={styles.priceContainer}>
+                                <Text style={{ opacity: 1, fontWeight: 'bold', fontSize: 20 }}>{item.price}</Text>
+                                <CurrencyPD
+                                    style={styles.currency}
+                                />
+                            </View>
                         </View>
 
 
-                        <View style={{ flexDirection: 'row', justifyContent:'flex-end', height: 'auto', paddingBottom: 80 }}>
+
+
+                        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', height: 'auto', paddingBottom: 80 }}>
                             <View style={styles.statsContainer}>
                                 <RadarChart data={data} labels={labels} size={screenWidth - 120} />
                             </View>
 
                             <View style={styles.abilitiesMovesTypesContainer}>
 
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10}}>
+                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
+
+
+
                                     <Text style={styles.abilitiesMovesTypesText}>ABILITIES</Text>
                                     {item.abilities.map((ability) => (
                                         <View key={ability} style={[styles.abilitiesMovesList, { borderColor: "#8D32F4", borderWidth: 1 }]}>
                                             <Entypo name="light-bulb" size={20} color="black" />
-                                            <Text style={{ fontSize: 14, maxWidth:65 ,textAlign:'center'}}>{presentableWord(ability)}</Text>
+                                            <Text style={{ fontSize: 14, maxWidth: 65, textAlign: 'center' }}>{presentableWord(ability)}</Text>
                                         </View>
 
                                     ))}
@@ -140,7 +165,7 @@ const ProductScreen = () => {
                                     {item.moves.map((move) => (
                                         <View key={move} style={[styles.abilitiesMovesList, { borderColor: '#6EF432', borderWidth: 1 }]}>
                                             <FontAwesome6 name="hand-back-fist" size={20} color="black" />
-                                            <Text style={{ fontSize: 14, maxWidth:65 , textAlign:'center'}}>{presentableWord(move)}</Text>
+                                            <Text style={{ fontSize: 14, maxWidth: 65, textAlign: 'center' }}>{presentableWord(move)}</Text>
                                         </View>
                                     ))}
                                 </View>
@@ -151,7 +176,7 @@ const ProductScreen = () => {
 
             </View>
 
-            
+
             {/* If the user uploaded the product, they can not add to cart but can edit or delete the product  */}
             {user.userId === item.user._id ? (
                 <View style={[styles.addToCartContainer, { flexDirection: 'row', backgroundColor: 'white', borderColor: 'black', borderTopWidth: 1 }]}>
@@ -166,7 +191,7 @@ const ProductScreen = () => {
 
                 </View>
             ) : (
-               // Add to cart button
+                // Add to cart button
                 <View style={styles.addToCartContainer}>
                     <Pressable style={{ flexDirection: 'row', alignItems: 'center' }} onPress={handelAddToCart}>
 
@@ -175,11 +200,11 @@ const ProductScreen = () => {
                     </Pressable>
 
                     <QuantityModel
-                    item={item}
-                    setModalVisible={setQuantityModalVisible}
-                    modalVisible={quantityModalVisible}
+                        item={item}
+                        setModalVisible={setQuantityModalVisible}
+                        modalVisible={quantityModalVisible}
 
-                />
+                    />
                 </View>
             )}
 
@@ -222,9 +247,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        borderColor: 'black',
-        borderWidth: 1,
-        padding: 15,
+        // borderColor: 'black',
+        // borderWidth: 1,
+        // padding: 15,
+        paddingRight: 15,
+        paddingLeft: 15,
         paddingTop: 18
     },
     userNameContainer: {
@@ -253,6 +280,19 @@ const styles = StyleSheet.create({
     level: {
         fontSize: 18
     },
+    priceContainer: {
+        marginLeft: 12,
+        marginTop: 5,
+        borderColor: 'red',
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: '#FEB2B2',
+        padding:2,
+        flexDirection: 'row',
+        alignSelf: 'flex-start',
+        alignItems: 'center',
+        justifyContent: 'flex-start'
+    },
     statsContainer: {
         // alignItems: 'center',
         // justifyContent: 'center',
@@ -265,8 +305,8 @@ const styles = StyleSheet.create({
         // width: 100,
         flexWrap: 'wrap',
         marginRight: 6,
-        alignItems:'center',
-        justifyContent:'center',
+        alignItems: 'center',
+        justifyContent: 'center',
 
     },
     abilitiesMovesTypesText: {
@@ -296,6 +336,11 @@ const styles = StyleSheet.create({
     },
     editDeleteContainer: {
         flexDirection: 'row'
+    },
+    currency: {
+        width: 18,
+        height: 18,
+        resizeMode: 'contain',
     }
 });
 
