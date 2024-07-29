@@ -39,7 +39,8 @@ const CartScreen = () => {
     }, []);
 
     const deleteProductCart = (item) => {
-        const newCartProducts = cart.products.filter(product => product.product._id !== item.product._id);
+        //TODO: delete from cart in database
+        const newCartProducts = cart.products.filter(product => product !== item);
         const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
         const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
 

@@ -7,7 +7,8 @@ const cors = require("cors");
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
 // const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
-const IP_ADDRESS = '192.168.68.113' //'10.0.0.25'
+const IP_ADDRESS = '10.0.0.25'
+
 
 const app = express();
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
@@ -267,7 +268,8 @@ app.get('/cart/:userId', async (req, res) => {
         path: 'user',
         select: 'name'
       }
-    });
+    })
+
     // if (!cart) {
     //   return res.status(200).json({ message: 'Cart not found' });
     // }
