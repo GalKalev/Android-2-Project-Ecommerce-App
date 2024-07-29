@@ -3,14 +3,17 @@ import React, { useEffect, useState } from 'react'
 import CurrencyPD from './CurrencyPD'
 import { presentableWord } from '../utils/consts';
 import { Foundation, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../utils/UserContext';
+import QuantityModel from './QuantityModel';
 
 const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart }) => {
     const { cart, setCart } = useUser();
     const navigation = useNavigation();
     const [isAddDisabled, setIsAddDisabled] = useState(false);
     const [itemCartQuantity, setItemCartQuantity] = useState(item.quantity);
+    const [quantityModalVisible, setQuantityModalVisible] = useState(false)
 
     useEffect(() => {
         setIsAddDisabled(item.quantity === item.product.quantity);
@@ -27,27 +30,6 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
 
         setCart({ ...cart, products: newCartProducts, totalPrice: newTotalPrice });
         setTotalProducts(newTotalProducts);
-    };
-
-    const reduceQuantity = () => {
-        if (itemCartQuantity === 1) {
-            Alert.alert('Delete product from cart?', 'Press REMOVE to remove the product from cart, and CANCEL to keep it in cart.', [
-                { text: 'CANCEL', style: 'cancel' },
-                { text: 'REMOVE', onPress: () => deleteProductCart(item) },
-            ]);
-        } else {
-            const newQuantity = itemCartQuantity - 1;
-            setItemCartQuantity(newQuantity);
-            updateCart(newQuantity);
-        }
-    };
-
-    const addQuantity = () => {
-        if (itemCartQuantity < item.product.quantity) {
-            const newQuantity = itemCartQuantity + 1;
-            setItemCartQuantity(newQuantity);
-            updateCart(newQuantity);
-        }
     };
 
     const handleItemPressed = () => {
@@ -90,7 +72,7 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
                         <View>
                             <View style={styles.userNameContainer}>
                                 <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
-                                <Text style={styles.userNameText}>{item.product.user}</Text>
+                                <Text style={styles.userNameText}>{item.product.user.name}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
@@ -103,15 +85,29 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
                     </View>
                 </View>
             </Pressable>
-            <View style={styles.quantityBtns}>
-                <Pressable onPress={reduceQuantity} style={{ padding: 3, paddingLeft: 10 }}>
-                    <Text style={{ fontSize: 17 }}>-</Text>
+
+            {/* Edit quantity buttons */}
+
+            <View style={{ alignItems: 'center', alignSelf: "center", padding: 9, borderRadius: 10,  }}>
+                <Pressable style={{ flexDirection: 'row', marginBottom: 18,borderColor:'black', borderBottomWidth:1, opacity:0.7 }} onPress={() => setQuantityModalVisible(true)}>
+                    <Text style={{ fontSize: 14, }}>QTY: </Text>
+                    <Text style={{ fontSize: 14, }}>{item.quantity}</Text>
+
+                    <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
                 </Pressable>
-                <Text style={{ alignSelf: 'center', fontSize: 17 }}>{itemCartQuantity}</Text>
-                <Pressable onPress={addQuantity} style={{ padding: 3, paddingRight: 10, alignSelf: 'center' }} disabled={isAddDisabled}>
-                    <Text style={{ fontSize: 17, color: isAddDisabled ? 'gray' : 'black' }}>+</Text>
+
+                <Pressable style={{ marginLeft: 10 , alignSelf:'center',}} onPress={() => deleteProductCart(item)}>
+                    <Ionicons name="trash" size={24} color="black" />
                 </Pressable>
+
             </View>
+
+
+            <QuantityModel
+                item={item.product}
+                setModalVisible={setQuantityModalVisible}
+                modalVisible={quantityModalVisible}
+            />
         </View>
     )
 }

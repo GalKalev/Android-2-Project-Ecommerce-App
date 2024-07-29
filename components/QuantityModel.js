@@ -1,5 +1,5 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { addToCart, fetchPokemons, getCart, removeFromCart } from "../api/apiServices";
 import { useUser } from "../utils/UserContext";
 
@@ -7,8 +7,27 @@ import { useUser } from "../utils/UserContext";
 
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
-    const [value, setValue] = useState(0);
+    const [value, setValue] = useState(1);
     const { user, cart, setCart } = useUser();
+
+    useEffect(() => {
+
+        const cartItem = cart.products.find(findProductInCart);
+        if (cartItem) {
+            // console.log(cartItem.quantity);
+            if (cartItem.quantity > item.quantity) {
+                setValue(item.quantity)
+            } else {
+                setValue(cartItem.quantity)
+            }
+
+        }
+
+    }, [])
+    const findProductInCart = (cartItem) => {
+        return cartItem.product._id === item._id
+    }
+
     const handleAddQuantity = () => {
         if (value < item.quantity) {
             setValue(value + 1)
@@ -52,6 +71,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                 console.debug(`fetched from stock`);
                 const itemsInCart = await getCart(user.userId);
                 console.debug(`fetched from cart`);
+                // setCart(itemsInCart);
                 await checkCartAvailability(itemsInStock, itemsInCart);
             }
         } catch (error) {
@@ -87,24 +107,23 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                                 </Pressable>
                             </View>
                         </View>
-                        ) : (
+                    ) : (
                         <View style={styles.modalView}>
                             <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
 
 
-                        <View style={{ flexDirection: 'row', alignItems:'center'}}>
-                            <Pressable style={[styles.button, styles.buttonOption]} onPress={handleAddQuantity}>
-                                <Text style={styles.buttonText}>+</Text>
-                            </Pressable>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Pressable style={[styles.button, {backgroundColor: value === item.quantity ? 'gray':'#2196F3' }] } onPress={handleAddQuantity}>
+                                    <Text style={styles.buttonText}>+</Text>
+                                </Pressable>
 
 
-                            <View style={{marginRight:8, marginLeft:8}}>
-                                <Text style={{fontSize:18}}>{value}</Text>
-                            </View>
+                                <View style={{ marginRight: 8, marginLeft: 8 }}>
+                                    <Text style={{ fontSize: 18 }}>{value}</Text>
+                                </View>
 
 
-
-                                <Pressable style={[styles.button, styles.buttonOption]} onPress={handleReduceQuantity}>
+                                <Pressable style={[styles.button,{backgroundColor: value === 0 ? 'gray':'#2196F3' }]} onPress={handleReduceQuantity}>
                                     <Text style={styles.buttonText}>-</Text>
                                 </Pressable>
                             </View>
@@ -118,7 +137,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                                 </Pressable>
                                 <Pressable
                                     style={[styles.button, styles.buttonSubmit]}
-                                    onPress={() => handleSubmitQuantity}
+                                    onPress={handleSubmitQuantity}
                                 >
                                     <Text style={styles.buttonText}>Submit</Text>
                                 </Pressable>
@@ -127,7 +146,6 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                         </View>
                     )}
 
-                    </View>
                 </View>
 
             </Modal>
