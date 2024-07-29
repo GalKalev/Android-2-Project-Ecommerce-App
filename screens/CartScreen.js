@@ -102,7 +102,9 @@ const CartScreen = () => {
                         { backgroundColor: cart?.products?.length > 0 ? (pressed ? '#d3d3d3' : '#FEBE10') : '#cccccc' }//
                     ]}
                     onPress={handleCheckout}
+
                 // disabled={cart.products.length === 0}
+
                 >
                     <Text>CHECKOUT</Text>
                 </Pressable>
@@ -110,7 +112,6 @@ const CartScreen = () => {
         </SafeAreaView>
     );
 };
-
 const styles = StyleSheet.create({
     cartScreenContainer: {
         paddingTop: Platform.OS === 'android' ? 40 : 0,

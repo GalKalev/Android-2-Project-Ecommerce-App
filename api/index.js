@@ -62,8 +62,12 @@ app.post("/register", async (req, res) => {
     // Save the user to the database
     await newUser.save();
 
-    // Debugging statement to verify data
     console.log("New User Registered:", newUser);
+
+    // Build new cart for user
+    const cart = new Cart({ user: newUser._id });
+    await cart.save();
+    console.log(`New cart for user created`);
 
     return res.status(201).json({
       message:

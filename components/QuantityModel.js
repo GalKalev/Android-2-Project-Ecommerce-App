@@ -7,9 +7,8 @@ import { useUser } from "../utils/UserContext";
 
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
-
     const [value, setValue] = useState(0);
-    const { user, setCart } = useUser();
+    const { user, cart, setCart } = useUser();
     const handleAddQuantity = () => {
         if (value < item.quantity) {
             setValue(value + 1)
@@ -75,6 +74,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                 }}
             >
                 <View style={styles.centeredView}>
+
                     {item.user._id === user.userId ? (
                         <View style={styles.modalView}>
                             <View>
@@ -92,14 +92,15 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                             <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
 
 
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Pressable style={[styles.button, styles.buttonOption]} onPress={handleAddQuantity}>
-                                    <Text style={styles.buttonText}>+</Text>
-                                </Pressable>
+                        <View style={{ flexDirection: 'row', alignItems:'center'}}>
+                            <Pressable style={[styles.button, styles.buttonOption]} onPress={handleAddQuantity}>
+                                <Text style={styles.buttonText}>+</Text>
+                            </Pressable>
 
-                                <View style={{ marginRight: 8, marginLeft: 8 }}>
-                                    <Text style={{ fontSize: 18 }}>{value}</Text>
-                                </View>
+
+                            <View style={{marginRight:8, marginLeft:8}}>
+                                <Text style={{fontSize:18}}>{value}</Text>
+                            </View>
 
 
 
@@ -126,6 +127,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                         </View>
                     )}
 
+                    </View>
                 </View>
 
             </Modal>

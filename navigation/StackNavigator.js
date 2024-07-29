@@ -22,6 +22,7 @@ import { getCart } from '../api/apiServices';
 
 
 
+
 const StackNavigator = () => {
 
   const Stack = createNativeStackNavigator();
@@ -36,9 +37,7 @@ const StackNavigator = () => {
     const fetchCart = async () => {
       setLoading(true)
       try {
-        console.log('stack')
         const cartData = await getCart(user.userId);
-        // console.log(cartData);
         setCart(cartData);
         // const demeProductsCart = [{
         //   product: {
@@ -201,8 +200,8 @@ const StackNavigator = () => {
               ) : (
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
-            tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
 
+              tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
           }}
 
         />
@@ -214,8 +213,8 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
-        {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
+          {/*<Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />*/}
+          {/*<Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />*/}
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />
