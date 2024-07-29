@@ -106,7 +106,7 @@ const ProductScreen = () => {
 
                                 <View>
                                     <Text style={styles.name}>{presentableWord(item.name)}</Text>
-                                    <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: 'black', borderBottomWidth: 1, borderCurve: 'continuous', alignItems: 'center', justifyContent: 'center' }}>
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', borderColor: 'black', borderBottomWidth: 1, borderCurve: 'continuous', justifyContent: 'center' }}>
                                         {item.types.map((type, index) => (
                                             <View key={type}>
                                                 <Text style={{ color: 'gray' }}>{presentableWord(type)} {index < item.types.length - 1 ? ' / ' : ''} </Text>
@@ -146,7 +146,7 @@ const ProductScreen = () => {
 
                             <View style={styles.abilitiesMovesTypesContainer}>
 
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
+                                <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
 
 
 
