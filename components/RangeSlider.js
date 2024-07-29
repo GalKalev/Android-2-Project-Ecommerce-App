@@ -12,8 +12,7 @@ const RangeSlider = ({ minValue, maxValue, setSelectedMinValue, setSelectedMaxVa
   };
 
   useEffect(() => {
-    console.log('range');
-    console.log(minValue);
+
     if (reset) {
       // console.log('reset is true');
       setSliderValues([minValue, maxValue]);

@@ -136,6 +136,7 @@ export const addToCart = async (userId, productId, quantity) => {
     console.log("Add to cart")
     try {
         const response = await axios.post(`${API_URL}/cart/add`, { userId, productId, quantity });
+
         return response.data;
     } catch (error) {
         console.error("Error adding to cart:", error);
@@ -143,7 +144,8 @@ export const addToCart = async (userId, productId, quantity) => {
     }
 };
 
-// // Remove product from cart
+
+// Remove product from cart
 export const removeFromCart = async (userId, productId) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/cart/remove`, { userId, productId });
@@ -154,16 +156,16 @@ export const removeFromCart = async (userId, productId) => {
     }
 };
 
-// // Checkout
-// export const checkout = async (userId) => {
-//     try {
-//         const response = await axios.post(`${API_BASE_URL}/checkout`, {userId: userId});
-//         return response.data;
-//     } catch (error) {
-//         console.error("Error during checkout:", error);
-//         throw error;
-//     }
-// };
+// Checkout
+export const checkout = async (userId) => {
+    try {
+        const response = await axios.post(`${API_BASE_URL}/checkout`, {userId: userId});
+        return response.data;
+    } catch (error) {
+        console.error("Error during checkout:", error);
+        throw error;
+    }
+};
 
 
 

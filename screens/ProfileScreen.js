@@ -1,4 +1,4 @@
-import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, Settings, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useRoute, useNavigation, CommonActions } from '@react-navigation/native'
 import ExpandableList from '../components/ExpandableList ';
@@ -11,6 +11,9 @@ import CurrencyPD from '../components/CurrencyPD';
 import ProductProfile from '../components/ProductProfile';
 import { presentableWord } from '../utils/consts';
 import { useUser } from '../utils/UserContext';
+import Loading from '../components/Loading';
+import D3Chart from '../components/D3Chart';
+import UserSettings from '../components/UserSettings';
 
 const ProfileScreen = () => {
 
@@ -27,158 +30,8 @@ const ProfileScreen = () => {
     const [orders, setOrders] = useState([]);
     const [userProducts, setUserProducts] = useState([]);
 
-    const sections = [
-        // User's previous orders
-        {
-            id: 1,
-            title: "Orders",
-            icon: <MaterialCommunityIcons name="package-variant" size={24} color="black" />,
-            content:
-                <View>
-                    {orders.length > 0 ? (orders.map((order) => {
-                        return (
-                            <View style={{ marginBottom: 20 }} key={order._id}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 17 }}>Payed: {order.totalPrice}</Text>
-                                    <CurrencyPD
-                                        style={styles.currency} />
-                                </View>
-
-                                <ScrollView horizontal>
-                                    {order.products.map((product) => {
-                                        return (
-                                            <ProductProfile
-                                                key={product.product._id}
-                                                product={product.product}
-                                                quantityBought={product.quantity}
-
-                                            />
-                                        )
-                                    })}
-                                </ScrollView>
-                            </View>
-                        )
-                    })
-                    ) : (
-                        <Text>You have not ordered yet</Text>
-                    )}
-                </View>
-
-        },
-
-        // User's products for sale
-        {
-            id: 2,
-            title: "My Products",
-            icon: <MaterialIcons name="sell" size={24} color="black" />,
-            content:
-                <View>
-                    {userProducts.length > 0 ? (
-                        <ScrollView horizontal>
-                            {userProducts.map(product => {
-                                return (
-
-                                    <View key={product._id}>
-                                        <ProductProfile
-
-                                            product={product}
-                                            quantitySold={product.quantity}
-                                        />
-                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-                                            <Pressable onPress={() => handleEditProduct(product)}>
-                                                <AntDesign name="edit" size={24} color="black" />
-                                            </Pressable>
-                                            <Pressable onPress={() => handleDeleteProduct(product)}>
-                                                <Ionicons name="trash" size={24} color="black" />
-                                            </Pressable>
-                                        </View>
-                                    </View>
-
-                                )
-                            })}
-                        </ScrollView>
-                    ) : (
-                        <Text>You can view your sold Pokemons here!</Text>
-                    )}
-
-                </View>
-
-        },
-        // User's data
-        //TODO: build the D3.js here (i think??)
-        {
-            id: 3,
-            title: "Data",
-            icon: <Entypo name="line-graph" size={24} color="black" />,
-            content:
-                <View>
-
-                </View>
-        },
-        // User's setting - can edit their name and log out of the account
-        {
-            id: 4,
-            title: "Settings",
-            icon: <Ionicons name="settings" size={24} color="black" />,
-            content:
-                <View>
-
-                    <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Edit Name</Text>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text>{user.name}</Text>
-                        <Pressable>
-                            <AntDesign name="edit" size={24} color="black" />
-                        </Pressable>
-                    </View>
-                    <Pressable style={styles.logOutBtn} onPress={handleLogOut}>
-                        <Text style={styles.logOutBtnText}>LOG OUT</Text>
-                    </Pressable>
-
-
-                </View>
-        },
-    ];
-
-    const handleLogOut = () => {
-        Alert.alert('Log out?', 'press OK to log out', [
-            {
-                text: 'OK',
-                onPress: () => navigator.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [{ name: 'Register' }],
-                    })
-                ),
-            },
-            {
-                text: 'CANCEL',
-                style: 'cancel'
-            }
-
-        ])
-    }
-
-    const handleEditProduct = (product) => {
-        navigator.navigate('AddPokemon', { item:product });
-    }
-
-    const handleDeleteProduct = (product) => {
-        //TODO: delete product from database
-        Alert.alert(`Delete ${presentableWord(product.name)} from the store?`, 'Click OK to delete', [
-            {
-                text: 'OK',
-                //TODO: delete product from store here 
-                onPress: () => console.log(`delete product: ${product._id}, ${product.name} click`)
-            },
-            {
-                text: 'CANCEL',
-                style: 'cancel'
-            }
-
-        ])
-
-
-    }
+    const [soldData, setSoldData] = useState([]);
+    const [boughtData, setBoughtData] = useState([]);
 
     useEffect(() => {
 
@@ -277,7 +130,8 @@ const ProfileScreen = () => {
                             region: 'Region Dummy',
                             location: 'Location Dummy',
                             houseNo: 5
-                        }
+                        },
+                        createdAt: '2024-04-27T10:13:18.637+00:00'
                     },
                     {
                         _id: 1,
@@ -423,7 +277,8 @@ const ProfileScreen = () => {
                             region: 'Region Dummy 2',
                             location: 'Location Dummy 2',
                             houseNo: 10
-                        }
+                        },
+                        createdAt: '2024-05-15T08:47:22.541+00:00'
                     },
                     {
                         _id: 2,
@@ -488,9 +343,12 @@ const ProfileScreen = () => {
                             region: 'Region Dummy 3',
                             location: 'Location Dummy 3',
                             houseNo: 15
-                        }
+                        },
+                        createdAt: '2024-06-04T17:22:38.832+00:00'
                     }
                 ];
+
+                // const dummyOrders = [];
 
                 //TODO: get user's products from database
                 const dummyUserProducts = [
@@ -626,8 +484,15 @@ const ProfileScreen = () => {
                     },
                 ];
 
+                //TODO: get user's sold pokemons (amount and time)
+                const boughtProductsData = dummyOrders.map((order) => ({
+                    date: new Date(order.createdAt),
+                    value: order.totalPrice,
+                }));
+
                 setOrders(dummyOrders);
                 setUserProducts(dummyUserProducts)
+                setBoughtData(boughtProductsData);
             } catch {
                 console.log('Error fetching profile: ' + e.message);
                 Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
@@ -639,6 +504,143 @@ const ProfileScreen = () => {
         fetchData();
 
     }, []);
+
+
+    const sections = [
+        // User's previous orders
+        {
+            id: 1,
+            title: "Orders",
+            icon: <MaterialCommunityIcons name="package-variant" size={24} color="black" />,
+            content:
+                <View>
+                    {orders.length > 0 ? (orders.map((order) => {
+                        return (
+                            <View style={{ marginBottom: 20 }} key={order._id}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text style={{ fontSize: 17 }}>Payed: {order.totalPrice}</Text>
+                                    <CurrencyPD
+                                        style={styles.currency} />
+                                </View>
+
+                                <ScrollView horizontal>
+                                    {order.products.map((product) => {
+                                        return (
+                                            <ProductProfile
+                                                key={product.product._id}
+                                                product={product.product}
+                                                quantityBought={product.quantity}
+
+                                            />
+                                        )
+                                    })}
+                                </ScrollView>
+                            </View>
+                        )
+                    })
+                    ) : (
+                        <Text style={{ fontSize: 18, textAlign: 'center' }}>You have not ordered any products yet...</Text>
+                    )}
+                </View>
+
+        },
+
+        // User's products for sale
+        {
+            id: 2,
+            title: "My Products",
+            icon: <MaterialIcons name="sell" size={24} color="black" />,
+            content:
+                <View>
+                    {userProducts.length > 0 ? (
+                        <ScrollView horizontal>
+                            {userProducts.map(product => {
+                                return (
+
+                                    <View key={product._id}>
+                                        <ProductProfile
+
+                                            product={product}
+                                            quantitySold={product.quantity}
+                                        />
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+                                            <Pressable onPress={() => handleEditProduct(product)}>
+                                                <AntDesign name="edit" size={24} color="black" />
+                                            </Pressable>
+                                            <Pressable onPress={() => handleDeleteProduct(product)}>
+                                                <Ionicons name="trash" size={24} color="black" />
+                                            </Pressable>
+                                        </View>
+                                    </View>
+
+                                )
+                            })}
+                        </ScrollView>
+                    ) : (
+                        <Text style={{ fontSize: 18, textAlign: 'center' }}>You have not sold any products yet...</Text>
+                    )}
+
+                </View>
+
+        },
+        // User's data
+        //TODO: build the D3.js here (i think??)
+        {
+            id: 3,
+            title: "Data",
+            icon: <Entypo name="line-graph" size={24} color="black" />,
+            content:
+                <View style={{ paddingLeft: 20 }}>
+                    <Text style={{ textAlign: 'center', fontSize: 18, fontWeight: 'bold' }}>Orders Data</Text>
+                    <D3Chart
+                        data={boughtData}
+                        yAxisName={'Total Price'}
+                    />
+                </View>
+        },
+        // User's setting - can edit their name and log out of the account
+        {
+            id: 4,
+            title: "Settings",
+            icon: <Ionicons name="settings" size={24} color="black" />,
+            content:
+                <View>
+                    <UserSettings />
+                </View>
+        },
+    ];
+
+
+    const handleEditProduct = (product) => {
+        navigator.navigate('AddPokemon', { item: product });
+    }
+
+    const handleDeleteProduct = (product) => {
+        //TODO: delete product from database
+        Alert.alert(`Delete ${presentableWord(product.name)} from the store?`, 'Click OK to delete', [
+            {
+                text: 'OK',
+                //TODO: delete product from store here 
+                onPress: () => console.log(`delete product: ${product._id}, ${product.name} click`)
+            },
+            {
+                text: 'CANCEL',
+                style: 'cancel'
+            }
+
+        ])
+
+
+    }
+
+
+    if (isLoading) {
+        return (
+            <Loading
+                loading={isLoading}
+            />
+        )
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -683,13 +685,13 @@ const styles = StyleSheet.create({
     },
     logOutBtn: {
         backgroundColor: '#ff0000',
-        alignItems:'center',
-        padding:5,
-        marginTop:18,
-        borderRadius:5
-    },logOutBtnText:{
-        fontSize:18,
-        fontWeight:'bold'
+        alignItems: 'center',
+        padding: 5,
+        marginTop: 18,
+        borderRadius: 5
+    }, logOutBtnText: {
+        fontSize: 18,
+        fontWeight: 'bold'
     }
 
 })

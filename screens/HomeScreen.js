@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, Keyboard, Animated } from 'react-native';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, RefreshControl, Animated } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign, Feather } from '@expo/vector-icons'; // Assuming you're using Expo icons
 import FloatingButton from '../components/FloatingButton';
@@ -12,6 +12,7 @@ import Product from '../components/Product';
 
 import { useUser } from '../utils/UserContext';
 import { fetchPokemons } from "../api/apiServices";
+import NoItems from '../components/NoItems';
 
 
 const HomeScreen = () => {
@@ -35,6 +36,7 @@ const HomeScreen = () => {
 
     // UseState for loading screen
     const [isLoading, setIsLoading] = useState(false);
+    // const [isRefreshing, setIsRefreshing] = useState(false);
 
     // UseState for filter
     const [isFilterOpen, setFilter] = useState(false);
@@ -42,39 +44,42 @@ const HomeScreen = () => {
     // Animation opening/closing the filter
     const animation = useRef(new Animated.Value(0)).current;
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                setIsLoading(true);
+    const fetchData = useCallback(async () => {
 
-                const pokemonsList = await fetchPokemons();
-                if (pokemonsList !== null) {
+        try {
+            setIsLoading(true);
 
-                    const names = pokemonsList.map(poke => poke.name);
-                    const pokemonNames = [...new Set(names)];
+            const pokemonsList = await fetchPokemons();
+            if (pokemonsList !== null) {
 
-                    setSearchPokemons(pokemonNames);
-                    setPokemonNameList(pokemonNames);
-                    setPokemonList(pokemonsList);
-                    setFilteredPokemons(pokemonsList);
-                }
-            } catch (error) {
-                console.log(`Error fetching Pokémon home screen: ${error.message}`);
-                Alert.alert('Server Error', 'Please try again later');
-            } finally {
-                setIsLoading(false);
+                const names = pokemonsList.map(poke => poke.name);
+                const pokemonNames = [...new Set(names)];
+
+                setSearchPokemons(pokemonNames);
+                setPokemonNameList(pokemonNames);
+                setPokemonList(pokemonsList);
+                setFilteredPokemons(pokemonsList);
             }
+        } catch (error) {
+            console.log(`Error fetching Pokémon home screen: ${error.message}`);
+            Alert.alert('Server Error', 'Please try again later');
+        } finally {
+            setIsLoading(false);
+
         }
+    }, [])
+
+    useEffect(() => {
+
         fetchData();
 
-    }, [])
+    }, [fetchData])
 
 
     function handleChosenPokemon(name) {
-        console.log(`pressed poke name: ${name} `);
         const pokemonsWithName = pokemonList.filter((poke) => poke.name === name);
         // console.log(pokemonsWithName);
-        navigator.navigate('SearchProduct',{pokemonList: pokemonsWithName, name: presentableWord(name)});
+        navigator.navigate('SearchProduct', { pokemonList: pokemonsWithName, name: presentableWord(name) });
     }
 
 
@@ -164,10 +169,10 @@ const HomeScreen = () => {
                                         data={searchPokemons}
                                         keyExtractor={(item) => item}
                                         renderItem={({ item }) => (
-                                            <Pressable style={{ flexDirection: 'row',alignSelf:'center', padding:6 }}
+                                            <Pressable style={{ flexDirection: 'row', alignSelf: 'center', padding: 6 }}
                                                 onPress={() => handleChosenPokemon(item)}>
-                                                <View style={{ flexDirection: 'column'  }}>
-                                                    <Text style={{ fontSize:18}}>{presentableWord(item)}</Text>
+                                                <View style={{ flexDirection: 'column' }}>
+                                                    <Text style={{ fontSize: 18 }}>{presentableWord(item)}</Text>
                                                 </View>
                                             </Pressable>
                                         )}
@@ -179,15 +184,24 @@ const HomeScreen = () => {
                     )}
                 </View>
 
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+                <ScrollView contentContainerStyle={{ flexGrow: 1 }}
+                    showsVerticalScrollIndicator={false}
+                    refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchData} />}
+
+                >
                     {/* Image slider of the shop */}
+
+
 
                     <Pressable>
                         <ImageSlider />
 
+
                         {pokemonList.length === 0 ? (
                             <View>
-                                <Text>Out of products in store!! Sell your Pokemons or come back later</Text>
+                                <NoItems
+                                    text={'Out of products in store!! You can sell your Pokemons or come back later'}
+                                />
                             </View>
                         ) : (
                             <View>
@@ -204,7 +218,9 @@ const HomeScreen = () => {
                                 {/* Checking if a pokemon with the filters exist in the shop  */}
                                 {filteredPokemon.length === 0 ? (
                                     <View>
-                                        <Text>No items were found...</Text>
+                                        <NoItems
+                                            text={'No Products Found...'}
+                                        />
                                     </View>
                                 ) : (
                                     // Filter Options
