@@ -1,43 +1,45 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, FlatList, Image, Alert, SafeAreaView, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, FlatList, Image, SafeAreaView, StyleSheet, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
 import CurrencyPD from '../components/CurrencyPD';
+import {getCart} from "../api/apiServices";
 
 const CartScreen = () => {
-    const { user, cart, setCart } = useUser();
-    // const [totalPrice, setTotalPrice] = useState(0);
+    console.debug("welcome to cart screen");
+    const { user, cart,setCart } = useUser();
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
+    const navigation = useNavigation();
 
-    const navigator = useNavigation();
+
+    // useEffect(() => {
+    //     const fetchCartData = async () => {
+    //         setLoading(true);
+    //         // await refreshCart();
+    //         const cartData = await getCart(user.userId);
+    //         setCart(cartData);
+    //
+    //         setLoading(false);
+    //     };
+    //
+    //     fetchCartData();
+    // }, [user.userId]);
 
     useEffect(() => {
-        try {
-            setLoading(true);
-            if (cart?.products?.length) {//
-                // let tPrice = 0;
-                let tProducts = 0;
-                cart.products.forEach(product => {
-                    // tPrice += product.product.price * product.quantity;
-                    tProducts += product.quantity;
-                });
-                setTotalProducts(tProducts);
-                // setTotalPrice(tPrice);
-            }
-
-
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setLoading(false);
+        if (cart?.products?.length) {
+            let totalProductsCount = 0;
+            cart.products.forEach(product => {
+                totalProductsCount += product.quantity;
+            });
+            setTotalProducts(totalProductsCount);
         }
     }, []);
 
     const deleteProductCart = (item) => {
-        const newCartProducts = cart.products.filter(product => product !== item);
+        const newCartProducts = cart.products.filter(product => product.product._id !== item.product._id);
         const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
         const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
 
@@ -47,11 +49,10 @@ const CartScreen = () => {
             totalPrice: newTotalPrice,
         }));
         setTotalProducts(newTotalProducts);
-        // setTotalPrice(newTotalPrice);
     };
 
     const handleCheckout = () => {
-        navigator.navigate('Checkout', { cart });
+        navigation.navigate('Checkout', { cart });
     };
 
     if (isLoading) {
@@ -63,7 +64,7 @@ const CartScreen = () => {
             <View style={styles.header}>
                 <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cart ({totalProducts})</Text>
             </View>
-            {cart?.products?.length > 0 ? (//
+            {cart?.products?.length > 0 ? (
                 <FlatList
                     data={cart.products}
                     keyExtractor={(item) => item.product._id.toString()}
@@ -99,10 +100,9 @@ const CartScreen = () => {
                 <Pressable
                     style={({ pressed }) => [
                         styles.checkoutButton,
-                        { backgroundColor: cart?.products?.length > 0 ? (pressed ? '#d3d3d3' : '#FEBE10') : '#cccccc' }//
+                        { backgroundColor: cart?.products?.length > 0 ? (pressed ? '#d3d3d3' : '#FEBE10') : '#cccccc' }
                     ]}
                     onPress={handleCheckout}
-                    // disabled={cart.products.length === 0}
                 >
                     <Text>CHECKOUT</Text>
                 </Pressable>
@@ -110,6 +110,7 @@ const CartScreen = () => {
         </SafeAreaView>
     );
 };
+
 const styles = StyleSheet.create({
     cartScreenContainer: {
         paddingTop: Platform.OS === 'android' ? 40 : 0,

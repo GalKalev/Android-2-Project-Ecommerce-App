@@ -2,10 +2,9 @@ import axios from 'axios';
 import { IP_ADDRESS,PORT } from '@env';
 import Toast from "react-native-toast-message";
 import {Alert} from "react-native";
-import {useUser} from "../utils/UserContext";
 // const { PORT, IP_ADDRESS } = require('@env');
 
-const API_URL = `http://10.100.102.8:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
 console.log(`API URL: ${API_URL}`);
 
 
@@ -156,6 +155,25 @@ export const removeFromCart = async (userId, productId) => {
     }
 };
 
+// Validate that all items in cart are still available in stock. If not set new quantity to products in cart
+export const checkCartAvailability= async (stockProducts,cartProducts)=>{
+    try{
+        for(let cartProduct of cartProducts){
+            const stockProduct = stockProducts.find(product=> product._id.equals(cartProduct._id));
+
+            if(!stockProduct){
+                console.debug(`Product ${cartProduct.name} no longer in stock. Removing it from cart`);
+                const retCode = removeFromCart(user.userId,cartProduct._id);
+            }else if(stockProduct.quantity<cartProduct.quantity){
+                console.debug(`Adjusting quantity for ${cartProduct.name} from ${cartProduct.quantity} to ${stockProduct.quantity}`);
+                const retCode = addToCart(user.userId,cartProduct._id,(stockProduct.quantity-cartProduct.quantity));
+            }
+            console.log("Cart updated successfully");
+        }
+    }catch (error){
+        console.log(`Error in checkCartAvailability: ${error}`);
+    }
+}
 // Checkout
 export const checkout = async (userId) => {
     try {

@@ -34,7 +34,8 @@ const StackNavigator = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      setLoading(true)
+      setLoading(true);
+      console.log("insdie useEffect")
       try {
         const cartData = await getCart(user.userId);
         setCart(cartData);
