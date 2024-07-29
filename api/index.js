@@ -7,7 +7,7 @@ const cors = require("cors");
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
 // const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
-const IP_ADDRESS = '10.100.102.8' //'10.0.0.25'
+const IP_ADDRESS = '192.168.68.113' //'10.0.0.25'
 
 const app = express();
 const URI = "mongodb+srv://galA:gal318657632@cluster0.d2vz1zi.mongodb.net/ecommerceApp"
@@ -261,13 +261,17 @@ app.get('/cart/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
     console.log(`Trying fetching cart for user ${userId}`);
-    const cart = await Cart.findOne({ user: userId }).populate('products.product');
-    
+    const cart = await Cart.findOne({ user: userId }).populate({
+      path: 'products.product',
+      populate: {
+        path: 'user',
+        select: 'name'
+      }
+    });
     // if (!cart) {
     //   return res.status(200).json({ message: 'Cart not found' });
     // }
     return res.status(200).json(cart);
-    //TODO: continue cart fetching
   } catch (error) {
     console.log(`Error get cart: ${error}`);
     return res.status(500).json({ message: 'Failed to retrieve cart' })

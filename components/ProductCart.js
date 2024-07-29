@@ -90,7 +90,7 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
                         <View>
                             <View style={styles.userNameContainer}>
                                 <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
-                                <Text style={styles.userNameText}>{item.product.user}</Text>
+                                <Text style={styles.userNameText}>{item.product.user.name}</Text>
                             </View>
                         </View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 5,
         alignSelf: 'baseline',
         paddingRight: 3,
         padding: 3,
