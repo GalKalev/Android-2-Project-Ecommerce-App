@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import Svg, { Circle, Line, Polygon, Text as SvgText, G } from 'react-native-svg';
 
 const RadarChart = ({ data, labels, size }) => {
-    console.log(data);
+    //console.log(data);
     const numberOfScales = 5;
     const radius = size / 4;
     const angleStep = (2 * Math.PI) / labels.length;

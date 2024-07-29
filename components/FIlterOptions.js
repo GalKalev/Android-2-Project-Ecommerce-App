@@ -64,8 +64,8 @@ const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
 
         setMinPrice(items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price));
         setMaxPrice(items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price));
-        console.log('min: ' + items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price))
-        console.log('max: ' + items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price))
+        // console.log('min: ' + items.reduce((min, item) => (item.price < min ? item.price : min), items[0].price))
+        // console.log('max: ' + items.reduce((max, item) => (item.price > max ? item.price : max), items[0].price))
 
     }, []);
 

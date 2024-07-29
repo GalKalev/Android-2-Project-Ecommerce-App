@@ -1,10 +1,13 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useState } from 'react'
+import {addToCart, fetchPokemons, getCart, removeFromCart} from "../api/apiServices";
+import {useUser} from "../utils/UserContext";
 
 
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
     const [value, setValue] = useState(0);
+    const { user, setCart } = useUser();
     const handleAddQuantity = () => {
         if (value < item.quantity) {
             setValue(value + 1)
@@ -18,9 +21,44 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
         }
 
     };
+    const checkCartAvailability= async (stockProducts,cartProducts)=>{
+        // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
+        try{
+            for(let cartProduct of cartProducts){
+                const stockProduct = stockProducts.find(product=> product._id.equals(cartProduct._id));
 
-    const handleSubmitQuantity = () => {
-        //TODO: enter the item to cart
+                if(!stockProduct){
+                    console.debug(`Product ${cartProduct.name} no longer in stock. Removing it from cart`);
+                    const retCode = removeFromCart(user.userId,cartProduct._id);
+                }else if(stockProduct.quantity<cartProduct.quantity){
+                    console.debug(`Adjusting quantity for ${cartProduct.name} from ${cartProduct.quantity} to ${stockProduct.quantity}`);
+                    const retCode = addToCart(user.userId,cartProduct._id,(stockProduct.quantity-cartProduct.quantity));
+                }
+                console.log("Cart updated successfully");
+            }
+        }catch (error){
+            console.log(`Error in checkCartAvailability: ${error}`);
+        }
+    }
+
+    const handleSubmitQuantity = async () => {
+        //add product to cart. Validate products quantities between stock and cart.
+        console.log(`trying to submit new item to cart with ${item._id}`);
+        try {
+            const retStatus = await addToCart(user.userId, item._id, value);
+            if (retStatus.status === 201) {
+            const itemsInStock = await fetchPokemons()
+            console.debug(`fetched from stock`);
+            const itemsInCart =await getCart(user.userId);
+            console.debug(`fetched from cart`);
+            await checkCartAvailability(itemsInStock, itemsInCart);
+            }
+        }catch (error){
+            console.error("Error submit item to cart:", error);
+        }
+        finally {
+            setModalVisible(false);
+        }
     }
 
 
@@ -64,7 +102,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                             </Pressable>
                             <Pressable
                                 style={[styles.button, styles.buttonSubmit]}
-                                onPress={() => handleSubmitQuantity}
+                                onPress={() => handleSubmitQuantity()}
                             >
                                 <Text style={styles.buttonText}>Submit</Text>
                             </Pressable>

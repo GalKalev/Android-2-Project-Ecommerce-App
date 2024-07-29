@@ -35,7 +35,7 @@ const ProductScreen = () => {
     };
 
     const handelAddToCart = () => {
-        //TODO: add to cart 
+        setQuantityModalVisible(true);
     }
 
     const handleEditItem = () => {
@@ -123,7 +123,7 @@ const ProductScreen = () => {
                             </View>
 
                             <View style={styles.abilitiesMovesTypesContainer}>
-                                <View style={{ paddingBottom: 3, borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
+                                <View style={{ borderBottomColor: 'black', borderBottomWidth: 1, paddingBottom: 10 }}>
                                     <Text style={styles.abilitiesMovesTypesText}>ABILITIES</Text>
                                     {item.abilities.map((ability) => (
                                         <View key={ability} style={[styles.abilitiesMovesList, { borderColor: "#8D32F4", borderWidth: 1 }]}>
