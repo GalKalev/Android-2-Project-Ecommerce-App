@@ -7,10 +7,8 @@ import {useUser} from "../utils/UserContext";
 
 const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
 
-    const { user } = useUser();
-
     const [value, setValue] = useState(0);
-    const { user, setCart } = useUser();
+    const { user, cart, setCart } = useUser();
     const handleAddQuantity = () => {
         if (value < item.quantity) {
             setValue(value + 1)
@@ -75,36 +73,26 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                     setModalVisible(!modalVisible);
                 }}
             >
-
                 <View style={styles.centeredView}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
 
-                    {item.user._id === user.userId ? (
-                        <View style={styles.modalView}>
-                            <View>
-                                <Text>Can't Add to Cart Your Products</Text>
-                                <Pressable 
-                                    style={[styles.button, styles.buttonClose, {alignSelf:'center'}]}
-                                    onPress={() => setModalVisible(!modalVisible)}
-                                >
-                                    <Text style={styles.buttonText}>Close</Text>
-                                </Pressable>
+
+                        <View style={{ flexDirection: 'row', alignItems:'center'}}>
+                            <Pressable style={[styles.button, styles.buttonOption]} onPress={handleAddQuantity}>
+                                <Text style={styles.buttonText}>+</Text>
+                            </Pressable>
+
+                            <View style={{marginRight:8, marginLeft:8}}>
+                                <Text style={{fontSize:18}}>{value}</Text>
                             </View>
 
+
+
+                            <Pressable style={[styles.button, styles.buttonOption]} onPress={handleReduceQuantity}>
+                                <Text style={styles.buttonText}>-</Text>
+                            </Pressable>
                         </View>
-                    ) : (
-                        <View style={styles.modalView}>
-                            <Text style={styles.modalText}>Select Quantity (max is {item.quantity})</Text>
-
-
-                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Pressable style={[styles.button, styles.buttonOption]} onPress={handleAddQuantity}>
-                                    <Text style={styles.buttonText}>+</Text>
-                                </Pressable>
-
-                                <View style={{ marginRight: 8, marginLeft: 8 }}>
-                                    <Text style={{ fontSize: 18 }}>{value}</Text>
-                                </View>
-
 
                         <View style={{flexDirection:'row'}}>
                             <Pressable
@@ -119,12 +107,9 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
                             >
                                 <Text style={styles.buttonText}>Submit</Text>
                             </Pressable>
-
                         </View>
-                    )}
 
-
-
+                    </View>
                 </View>
 
             </Modal>
