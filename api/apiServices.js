@@ -5,8 +5,8 @@ import {Alert} from "react-native";
 // const { PORT, IP_ADDRESS } = require('@env');
 
 
-// const API_URL = `http://10.100.102.8:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
-const API_URL = `http://${IP_ADDRESS}:1400`;//`http://192.168.68.113:1400`;
+const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
+// const API_URL = `http://${IP_ADDRESS}:1400`;//`http://192.168.68.113:1400`;
 console.log(`API URL: ${API_URL}`);
 
 
@@ -123,7 +123,7 @@ export async function addPokemon(pokemon){
 // // Get all products in cart
 export const getCart = async (userId) => {
     try {
-        const response = await axios.get(`${API_URL}/cart/${userId}`);//TODO: handle where do I get te userId and what is the syntax
+        const response = await axios.get(`${API_URL}/cart/${userId}`);
         console.log(response.data);
         return response.data;
     }catch(error) {
@@ -147,35 +147,48 @@ export const addToCart = async (userId, productId, quantity) => {
 
 
 // Remove product from cart
-export const removeFromCart = async (userId, productId) => {
+export const removeFromCart = async (userId, productId,price) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/cart/remove`, { userId, productId });
+        console.log(`Trying remove ${productId} from cart for user ${userId}`);
+        const response = await axios.post(`${API_URL}/cart/remove`, { userId, productId,price });
         return response.data;
     } catch (error) {
-        console.error("Error adding to cart:", error);
+        console.error("Error removing to cart:", error);
         throw error;
     }
 };
 
 // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
-export const checkCartAvailability= async (stockProducts,cartProducts)=>{
-    try{
-        for(let cartProduct of cartProducts){
-            const stockProduct = stockProducts.find(product=> product._id.equals(cartProduct._id));
 
-            if(!stockProduct){
-                console.debug(`Product ${cartProduct.name} no longer in stock. Removing it from cart`);
-                const retCode = removeFromCart(user.userId,cartProduct._id);
-            }else if(stockProduct.quantity<cartProduct.quantity){
-                console.debug(`Adjusting quantity for ${cartProduct.name} from ${cartProduct.quantity} to ${stockProduct.quantity}`);
-                const retCode = addToCart(user.userId,cartProduct._id,(stockProduct.quantity-cartProduct.quantity));
+export const checkCartAvailability = async (user, stockProducts, cartProducts) => {
+    try {
+        console.debug("Checking availability for " + JSON.stringify(cartProducts));
+        console.debug(`stock products ${JSON.stringify(stockProducts)}`);
+        for (let cartProduct of cartProducts) {
+            console.debug(`cart product = ${JSON.stringify(cartProduct)}`);
+
+            // Ensure the stockProduct has the _id field correctly defined
+            const stockProduct = stockProducts.find(product => {
+                console.log(`stock product = ${JSON.stringify(product)}`);
+                return product._id === cartProduct.product._id; // Directly compare ids as strings
+            });
+
+            console.debug(`Got ${stockProduct}`);
+
+            if (!stockProduct) {
+                console.debug(`Product ${cartProduct.product.name} no longer in stock. Removing it from cart`);
+                await removeFromCart(user.userId, cartProduct.product._id, cartProduct.quantity); // Ensure removeFromCart handles quantity
+            } else if (stockProduct.quantity < cartProduct.quantity) {
+                console.debug(`Adjusting quantity for ${cartProduct.product.name} from ${cartProduct.quantity} to ${stockProduct.quantity}`);
+                await addToCart(user.userId, cartProduct.product._id, stockProduct.quantity - cartProduct.quantity);
             }
             console.log("Cart updated successfully");
         }
-    }catch (error){
+    } catch (error) {
         console.log(`Error in checkCartAvailability: ${error}`);
     }
-}
+};
+
 // Checkout
 export const checkout = async (userId) => {
     try {

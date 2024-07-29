@@ -49,10 +49,10 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
         try {
             const retStatus = await addToCart(user.userId, item._id, value);
             const itemsInStock = await fetchPokemons()
-            console.debug(`fetched from stock`);
-            const itemsInCart =await getCart(user.userId);
-            console.debug(`fetched from cart`);
-            await checkCartAvailability(itemsInStock, itemsInCart);
+            console.debug(`fetched from stock ${JSON.stringify(itemsInStock)}`);
+            const cartiem =await getCart(user.userId);
+            console.debug(`fetched from cart ${JSON.stringify(cart.products)}`);
+            await checkCartAvailability(user, itemsInStock, cartiem.products);
             const cartData = await getCart(user.userId);
             setCart(cartData);
         }catch (error){

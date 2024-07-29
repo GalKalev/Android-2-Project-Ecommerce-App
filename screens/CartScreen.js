@@ -5,28 +5,13 @@ import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
 import CurrencyPD from '../components/CurrencyPD';
-import {getCart} from "../api/apiServices";
+import {getCart, removeFromCart} from "../api/apiServices";
 
 const CartScreen = () => {
-    console.debug("welcome to cart screen");
     const { user, cart,setCart } = useUser();
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const navigation = useNavigation();
-
-
-    // useEffect(() => {
-    //     const fetchCartData = async () => {
-    //         setLoading(true);
-    //         // await refreshCart();
-    //         const cartData = await getCart(user.userId);
-    //         setCart(cartData);
-    //
-    //         setLoading(false);
-    //     };
-    //
-    //     fetchCartData();
-    // }, [user.userId]);
 
     useEffect(() => {
         if (cart?.products?.length) {
@@ -40,6 +25,7 @@ const CartScreen = () => {
 
     const deleteProductCart = (item) => {
         //TODO: delete from cart in database
+        removeFromCart(user.userId,item.product._id,item.product.price);
         const newCartProducts = cart.products.filter(product => product !== item);
         const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
         const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);

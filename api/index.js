@@ -7,7 +7,7 @@ const cors = require("cors");
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
 // const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
-const IP_ADDRESS = '10.0.0.25'
+const IP_ADDRESS = '192.168.68.113'
 
 
 const app = express();
@@ -89,7 +89,6 @@ app.post('/login', async (req, res) => {
 
     // Check if the user exist
     const user = await User.findOne({ email });
-    console.debug("user data = " + user);
 
     if (!user) {
       return res.status(401).json({ message: 'Invalid email or password' });
@@ -97,7 +96,6 @@ app.post('/login', async (req, res) => {
 
     // Check if the password is correct
     if (user.password !== password) {
-      // TODO: check if the message is correct in terms of security.
       return res.status(401).json({ message: 'Invalid password' });
     }
 
@@ -115,7 +113,7 @@ app.post('/login', async (req, res) => {
 // Add new Pokemon to Products list
 app.post('/Pokemon', async (req, res) => {
   try {
-    console.debug('Trying to add Pokemon');
+    console.log('Trying to add Pokemon');
 
     // const {userId} = req.body;
     // console.log(`userId = ${userId}`)
@@ -191,7 +189,7 @@ app.post('/Pokemon', async (req, res) => {
 // Get all Available Pokemons in Store
 app.get('/Pokemon', async (req, res) => {
   try {
-    console.debug("trying fetching Pokemons");
+    console.log("trying fetching Pokemons");
     // const products = await Product.find({});
     const products = await Product.find({}).populate('user', 'name'); // Only include the username field
     // console.log(products[0]);
@@ -220,8 +218,6 @@ app.post('/cart/add', async (req, res) => {
     if (!cart) {
       console.log("no cart for user. creating a new cart.")
       cart = new Cart({ user: userId });
-      console.debug(`cart ${cart.toString()}`);
-      console.debug(`cart products = ${cart['products']}`);
     }
 
     const product = await Product.findById(productId);
@@ -234,16 +230,21 @@ app.post('/cart/add', async (req, res) => {
     const productIndex = cart.products.findIndex((p => p.product.equals(productId)));
     if (productIndex > -1) {
       console.log("product already in cart. change quantity")
-      cart.products[productIndex].quantity += quantity;
+      cart.products[productIndex].quantity = quantity;
     } else {
       console.log("adding new product to cart")
       cart.products.push({ product: productId, quantity });
-      console.debug(`new cart = ${cart.toString()}`);
     }
 
     // Update total price
     console.debug("Updating total price");
-    cart.totalPrice = cart.totalPrice + product.price * quantity;
+    //cart.totalPrice = cart.totalPrice + product.price * quantity; //TODO: calc totalPrice of cart
+    let totalPrice = 0;
+    for (const item of cart.products) {
+      const itemProduct = item.product.equals(productId) ? product : await Product.findById(item.product);
+      totalPrice += itemProduct.price * item.quantity;
+    }
+    cart.totalPrice = totalPrice;
     console.debug(`total price = ${cart.totalPrice}`);
 
     console.debug("saving new cart with total price of "+ cart.totalPrice )
@@ -283,26 +284,33 @@ app.get('/cart/:userId', async (req, res) => {
 // Remove product from cart
 app.post('/cart/remove', async (req, res) => {
   try {
-    const { userId, productId } = req.body;
+    const { userId, productId, price } = req.body;
+    console.debug(`req body = userID ${userId} and productId ${productId}`);
 
     if (!userId || !productId) {
+      console.debug("missing something, 404")
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
     const cart = await Cart.findOne({ user: userId });
+    console.log(`got cart ${cart}`);
     if (!cart) {
+      console.log("no cart for user");
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    cart.products = cart.products.filter(p => !p.product.equals(productId));
+    const product = cart.products.find(p => p.product._id.equals(productId));
+    console.log(`product found: ${product}`);
+    cart.products = cart.products.filter(p => !p.product._id.equals(productId));
 
+    console.log(cart.products);
     // Update total price
-    cart.totalPrice = cart.products.reduce((total, item) => {
-      const product = cart.products.find(p => p.product.equals(item.product));
-      return total + (product ? product.price * item.quantity : 0);
-    }, 0);
+    cart.totalPrice -= price * product.quantity;
+    console.log(`total price = ${cart.totalPrice}`);
+
 
     await cart.save();
+    console.log("saved cart successfully");
 
     return res.status(200).json({ message: 'Product removed from cart', cart });
   } catch (error) {
