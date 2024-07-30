@@ -321,6 +321,7 @@ app.post('/checkout', async (req, res) => {
     }
 
     const cart = await Cart.findOne({ user: userId });
+    console.debug(`got cart ${cart}`);
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
@@ -342,7 +343,9 @@ app.post('/checkout', async (req, res) => {
         cvv
       }
     });
+    console.debug("made a new order item")
     await order.save();
+    console.debug("saved new order!")
 
     // remove products from stock
     //TODO: logs to see where it falls :(
