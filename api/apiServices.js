@@ -190,9 +190,20 @@ export const checkCartAvailability = async (user, stockProducts, cartProducts) =
 };
 
 // Checkout
-export const checkout = async (userId) => {
+export const checkout = async (userId,region,location, houseNum, cardOwner,cardNumber, expirationDate,cvv) => {
+    console.log("Trying checkout cart");
     try {
-        const response = await axios.post(`${API_BASE_URL}/checkout`, {userId: userId});
+        console.debug(`{${userId}, ${region},${location}, ${houseNum}, ${cardOwner},${cardNumber}, ${expirationDate}, ${cvv}}`);
+        const response = await axios.post(`${API_URL}/checkout`, {
+            userId: userId,
+            region: region,
+            location: location,
+            houseNum: houseNum,
+            cardOwner: cardOwner,
+            cardNumber: cardNumber,
+            expirationDate: expirationDate,
+            cvv: cvv});
+        console.debug(`response = ${response.data}`);
         return response.data;
     } catch (error) {
         console.error("Error during checkout:", error);

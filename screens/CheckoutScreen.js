@@ -10,6 +10,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CurrencyPD from '../components/CurrencyPD';
 import { useUser } from '../utils/UserContext';
+import {checkout} from "../api/apiServices";
 
 const CheckoutScreen = () => {
     const [isLoading, setLoading] = useState(false);
@@ -114,7 +115,7 @@ const CheckoutScreen = () => {
 
     }
 
-    const handleNextStep = () => {
+    const handleNextStep = async () => {
         switch (currentStep) {
             case (0): {
                 if (!selectedRegion || !selectedHouseNum || !selectedLocation) {
@@ -139,17 +140,23 @@ const CheckoutScreen = () => {
                 return;
             }
             case (2): {
-                //TODO: move cart info to orders and delete cart
-                setModalVisible(true);
-                setTimeout(() => {
-                    setModalVisible(false);
-                    //TODO: add user to replace
-                    navigator.replace('Main');
-                    // navigator.replace('Main', {user});
-                }, 4000)
+                setLoading(true);
+                try {
+                    await checkout(user.userId,selectedRegion.label,selectedLocation.label,selectedHouseNum,cardOwner,cardNumber,expirationDate,cvv);
+                    setModalVisible(true);
+                    setTimeout(() => {
+                        setModalVisible(false);
+                        navigator.replace('Main');
+                    }, 4000);
+                } catch (error) {
+                    Alert.alert('Checkout failed', 'Please try again later.');
+                    console.error('Checkout error:', error);
+                } finally {
+                    setLoading(false);
+                }
+                return;
             }
         }
-
     };
 
     const handleBackStep = () => {
@@ -377,7 +384,6 @@ const styles = StyleSheet.create({
     },
     subSectionTitle: {
         fontSize: 17,
-        marginBottom: 4,
         fontWeight: 'bold',
         marginBottom: 7,
         marginTop: 6
