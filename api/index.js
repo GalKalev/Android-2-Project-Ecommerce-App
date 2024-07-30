@@ -377,8 +377,23 @@ app.post('/checkout', async (req, res) => {
   }
 });
 
-app.post('order:userid', async (req, res) => {
-//TODO: complete function
+app.post('/order/:userid', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    console.log(`Trying fetching cart for user ${userId}`);
+    const orders = await Order.find({ user: userId }).populate({
+      path: 'products.product',
+      populate: {
+        path: 'user',
+        select: 'name'
+      }
+    })
+
+    return res.status(200).json(orders);
+  } catch (error) {
+    console.log(`Error get orders: ${error}`);
+    return res.status(500).json({ message: 'Failed to retrieve orders' })
+  }
 });
 
 
