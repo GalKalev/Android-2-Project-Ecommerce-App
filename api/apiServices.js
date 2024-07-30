@@ -145,7 +145,6 @@ export const addToCart = async (userId, productId, quantity) => {
     }
 };
 
-
 // Remove product from cart
 export const removeFromCart = async (userId, productId,price) => {
     try {
@@ -159,7 +158,6 @@ export const removeFromCart = async (userId, productId,price) => {
 };
 
 // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
-
 export const checkCartAvailability = async (user, stockProducts, cartProducts) => {
     try {
         console.debug("Checking availability for " + JSON.stringify(cartProducts));
@@ -210,6 +208,18 @@ export const checkout = async (userId,region,location, houseNum, cardOwner,cardN
         throw error;
     }
 };
+
+// Get all orders for user
+export const gerOrders = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/order/${userId}`);
+        console.log(response.data);
+        return response.data;
+    }catch(error) {
+        console.error("Error fetching orders:", error.status);
+        return error;
+    }
+}
 
 
 
