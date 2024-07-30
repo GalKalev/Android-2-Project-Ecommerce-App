@@ -115,13 +115,6 @@ app.post('/Pokemon', async (req, res) => {
   try {
     console.log('Trying to add Pokemon');
 
-    // const {userId} = req.body;
-    // console.log(`userId = ${userId}`)
-    //
-    // if (!userId || userId === 'undefined') {
-    //   return res.status(400).json({ message: 'User ID is required' });
-    // }
-
     const {
       user,
       name,
@@ -137,20 +130,7 @@ app.post('/Pokemon', async (req, res) => {
       types,
       price,
       quantity } = req.body;
-    console.log('User:', user);
-    console.log('Name:', name);
-    console.log('URL:', url);
-    console.log('Image:', img);
-    console.log('Gender:', gender);
-    console.log('Level:', level);
-    console.log('Is Shiny:', isShiny);
-    console.log('Abilities:', abilities);
-    console.log('Moves:', moves);
-    console.log('Species:', species);
-    console.log('Stats:', stats);
-    console.log('Types:', types);
-    console.log('Price:', price);
-    console.log('Quantity:', quantity);
+
 
 
     if (!user || !name || !url || !img || !(0 <= gender <= 1) || !level || !abilities || !moves || !species || !stats || !types || !price || !quantity) {
@@ -322,11 +302,22 @@ app.post('/cart/remove', async (req, res) => {
 
 //---------- Checkout Methods ----------
 // Checkout cart for user
-app.post('checkout', async (req, res) => {
+app.post('/checkout', async (req, res) => {
+  console.debug("Trying to checkout cart");
   try {
-    const { userId } = req.body;
+    const { userId,
+      region,
+      location,
+      houseNum,
+      cardOwner,
+      cardNumber,
+      expirationDate,
+      cvv} = req.body;
     if (!userId) {
       return res.status(400).json({ message: 'User ID required' });
+    }
+    if(!region||!location || !houseNum || !cardOwner || !cardNumber || !expirationDate || !cvv){
+      return res.status(400).json({ message: 'one or more parameters missing...' });
     }
 
     const cart = await Cart.findOne({ user: userId });
@@ -334,12 +325,46 @@ app.post('checkout', async (req, res) => {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    //TODO: Handle checkout logic (create order, payment details, remove from stock...)
+    // create a new order
+    const order = new Order({
+      user: userId,
+      products: cart.products,
+      totalPrice: cart.totalPrice,
+      shippingAddress: {
+        region,
+        location,
+        houseNum,
+      },
+      paymentDetails: {
+        cardOwner,
+        cardNumber,
+        expirationDate,
+        cvv
+      }
+    });
+    await order.save();
 
-    // Clear the cart
+    // remove products from stock
+    //TODO: logs to see where it falls :(
+    for (const product of cart.products){
+      console.debug(`for product ${product}`);
+      const stockProduct = await Product.findById(product.product._id);
+      console.debug(`found product: ${stockProduct}`);
+      if(stockProduct){
+        if(stockProduct.quantity>product.quantity){
+          stockProduct.quantity-=product.quantity;
+          await stockProduct.save();
+        }else{
+          await Product.findByIdAndDelete(stockProduct._id);
+        }
+      }
+    }
+
+    // clear the cart
     cart.products = [];
     cart.totalPrice = 0;
     await cart.save();
+
 
     return res.status(200).json({ message: 'Checkout successful' });
   } catch (error) {
@@ -347,5 +372,10 @@ app.post('checkout', async (req, res) => {
     return res.status(500).json({ message: 'Checkout failed' });
 
   }
-})
+});
+
+app.post('order:userid', async (req, res) => {
+//TODO: complete function
+});
+
 

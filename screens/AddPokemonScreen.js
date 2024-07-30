@@ -183,7 +183,6 @@ const AddPokemonScreen = () => {
                 // TODO: sending the pokemon id so it will not create a new one (??)
                 const editPokemon = { pokemon: soldPokemon, pokemonId: item._id }
                 // console.log(JSON.stringify(editPokemon));
-                //TODO: create route editPokemon
                 // const response = await editPokemon(soldPokemon);
             } else {
                 response = await addPokemon(soldPokemon);
@@ -556,7 +555,6 @@ const styles = StyleSheet.create({
     },
     searchList: {
         position: 'absolute',
-        top: 0, // Adjust this value based on the height of your input
         // left: 5,
         // right: 10,
         // maxHeight: '100%',

@@ -16,50 +16,44 @@ const orderSchema = new mongoose.Schema({
             quantity: {
                 type: Number,
                 required: true
-            },
-            price: {
-                type: Number,
-                required: true
-            },
-            image: {
-                type: String,
-                required: true
-            },
-        },
+            }
+        }
     ],
     totalPrice: {
         type: Number,
         required: true,
     },
     shippingAddress: {
-        name: {
+        region: {
             type: String,
             required: true,
         },
-        mobileNo: {
+        location: {
             type: String,
             require: true
         },
-        houseNo: {
+        houseNum:{
             type: String,
-            require: true,
-        },
-        street: {
-            type: String,
-            require: true,
-        },
-        landmark: {
-            type: String,
-            require: true
-        },
-        postalCode: {
-            type: String,
-            require: true
+            required: true
         }
     },
-    paymentMethod: {
-        type: String,
-        required: true,
+    paymentDetails: {
+        cardOwner:{
+            type: String,
+            required: true
+        },
+        cardNumber:{
+            type: String,
+            required: true
+        },
+        expirationDate:{
+            type: String,
+            required: true
+        },
+        cvv:{
+            type: String,
+            required: true
+        }
     },
     createdAt: {
         type: Date,
