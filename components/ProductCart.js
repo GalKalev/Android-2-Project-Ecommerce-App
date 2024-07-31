@@ -19,19 +19,6 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
         setIsAddDisabled(item.quantity === item.product.quantity);
     }, [item.quantity, item.product.quantity]);
 
-    const updateCart = (newQuantity) => {
-        const newCartProducts = cart.products.map(product =>
-            product.product._id === item.product._id
-                ? { ...product, quantity: newQuantity }
-                : product
-        );
-        const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
-        const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
-
-        setCart({ ...cart, products: newCartProducts, totalPrice: newTotalPrice });
-        setTotalProducts(newTotalProducts);
-    };
-
     const handleItemPressed = () => {
         navigation.navigate('ProductScreen', { item: item.product, prevScreen: 'My Cart' });
     };
@@ -88,15 +75,15 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
 
             {/* Edit quantity buttons */}
 
-            <View style={{ alignItems: 'center', alignSelf: "center", padding: 9, borderRadius: 10,  }}>
-                <Pressable style={{ flexDirection: 'row', marginBottom: 18,borderColor:'black', borderBottomWidth:1, opacity:0.7 }} onPress={() => setQuantityModalVisible(true)}>
+            <View style={{ alignItems: 'center', alignSelf: "center", padding: 9, borderRadius: 10, }}>
+                <Pressable style={{ flexDirection: 'row', marginBottom: 18, borderColor: 'black', borderBottomWidth: 1, opacity: 0.7 }} onPress={() => setQuantityModalVisible(true)}>
                     <Text style={{ fontSize: 14, }}>QTY: </Text>
                     <Text style={{ fontSize: 14, }}>{item.quantity}</Text>
 
                     <MaterialIcons name="keyboard-arrow-down" size={22} color="black" />
                 </Pressable>
 
-                <Pressable style={{ marginLeft: 10 , alignSelf:'center',}} onPress={() => deleteProductCart(item)}>
+                <Pressable style={{ marginLeft: 10, alignSelf: 'center', }} onPress={() => deleteProductCart(item)}>
                     <Ionicons name="trash" size={24} color="black" />
                 </Pressable>
 

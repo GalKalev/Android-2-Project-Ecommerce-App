@@ -6,8 +6,8 @@ const cors = require("cors");
 // const { PORT, IP_ADDRESS } = require('@env');
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
-// const IP_ADDRESS = process.env.IP_ADDRESS || "192.168.68.113";
-const IP_ADDRESS = '192.168.68.113'
+const IP_ADDRESS = '10.0.0.25' ;
+// const IP_ADDRESS = '192.168.68.113'
 
 
 const app = express();

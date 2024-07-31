@@ -153,6 +153,9 @@ const CheckoutScreen = () => {
     };
 
     const handleBackStep = () => {
+        if(currentStep === 0){
+            navigator.goBack();
+        }
         setCurrentStep(currentStep - 1);
     }
 
@@ -325,10 +328,9 @@ const CheckoutScreen = () => {
             <View style={styles.stepsBtnsContainer}>
 
                 <Pressable style={[
-                    styles.stepBtn,
-                    { backgroundColor: currentStep === 0 ? '#cccccc' : '#FEBE10' }
+                    styles.stepBtn
                 ]}
-                    onPress={handleBackStep} disabled={currentStep === 0 ? true : false}>
+                    onPress={handleBackStep}>
                     <Text>BACK</Text>
                 </Pressable>
                 <Pressable style={[

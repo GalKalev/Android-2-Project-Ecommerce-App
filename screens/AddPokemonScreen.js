@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Pressable, TextInput, Alert, Image, FlatList, ToastAndroid } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, TextInput, Alert, Image, FlatList, ToastAndroid, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchInput from '../components/SearchInput';
@@ -11,6 +11,7 @@ import MultiSelectAdd from '../components/MultiSelectAdd';
 import PokemonInput from '../components/PokemonInput';
 import { Foundation } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
 import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
@@ -48,7 +49,11 @@ const AddPokemonScreen = () => {
     const [price, setPrice] = useState(null);
     const [quantity, setQuantity] = useState(null);
 
+    const [isSearchItemsListVisible, setIsSearchItemsListVisible] = useState();
+
+
     function handleSearchInput(txt) {
+        setIsSearchItemsListVisible(true);
         setSearchPokemon(txt);
         const lowerTxt = txt.toLowerCase();
         const filteredNames = pokemonsList.filter(pokemon => pokemon.name.startsWith(lowerTxt));
@@ -141,6 +146,11 @@ const AddPokemonScreen = () => {
 
         return true;
     };
+
+    function handleBackgroundPress() {
+        setIsSearchItemsListVisible(false);
+    }
+
 
     async function handleSubmitPokemon() {
 
@@ -271,6 +281,11 @@ const AddPokemonScreen = () => {
         fetchPokemons();
     }, []);
 
+    const handleBackPress = () => {
+        navigator.goBack();
+    };
+
+
     if (isLoading) {
         return (
             <Loading loading={isLoading} />
@@ -281,10 +296,18 @@ const AddPokemonScreen = () => {
         <SafeAreaView style={styles.container}>
             {/* <ScrollView stickyHeaderIndices={[0]} contentContainerStyle={styles.scrollViewContent} nestedScrollEnabled> */}
             <View style={[styles.sectionContainer, { backgroundColor: '#F9FEFF' }]}>
+                <View >
+                    <View style={styles.backContainer}>
+                        <Pressable onPress={handleBackPress}>
+                            <AntDesign name="arrowleft" size={20} color="black" />
+                        </Pressable>
+                        <Text style={{ fontSize: 18, marginLeft: 5 }}>| Home Page</Text>
+                    </View>
+                    <Text style={[styles.sectionTitle, { alignSelf: 'center', textShadowColor: 'gray', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5 }]}>
+                        Sell Your Pokemon
+                    </Text>
+                </View>
 
-                <Text style={[styles.sectionTitle, { alignSelf: 'center', textShadowColor: 'gray', textShadowOffset: { width: 1, height: 1 }, textShadowRadius: 5 }]}>
-                    Sell Your Pokemon
-                </Text>
 
                 {item ? (
                     <></>
@@ -303,8 +326,8 @@ const AddPokemonScreen = () => {
 
             </View>
 
-
-            {searchPokemon && (
+            {/* <View style={styles.searchListContainer}> */}
+            {searchPokemon && isSearchItemsListVisible && (
                 filteredPokemons.length === (pokemonsList.length) ? (
                     <></>
                 ) : filteredPokemons.length === 0 ? (
@@ -327,187 +350,192 @@ const AddPokemonScreen = () => {
 
                 )
             )}
+
+            {/* </View> */}
+
             <ScrollView contentContainerStyle={styles.scrollViewContent} nestedScrollEnabled>
-                {chosenPokemon ? (
-                    <View style={styles.sectionContainerTitle}>
-                        <Text style={[styles.detailsTitle, { alignSelf: 'center', marginBottom: 15, textDecorationLine: 'underline' }]}>
-                            Enter {presentableWord(chosenPokemon.name)} Details
-                        </Text>
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Is The Pokemon A Shiny</Text>
-                            <View style={styles.genderShinyContainer}>
-                                <Pressable style={styles.icon}
-                                    onPress={() => {
-                                        setIsShiny(!isShiny)
-                                    }}>
-                                    <Ionicons name="sparkles-sharp" size={45} color={isShiny ? "gold" : 'black'} />
-                                </Pressable>
+                <Pressable onPress={handleBackgroundPress}>
+                    {chosenPokemon ? (
+                        <View style={styles.sectionContainerTitle}>
+                            <Text style={[styles.detailsTitle, { alignSelf: 'center', marginBottom: 15, textDecorationLine: 'underline' }]}>
+                                Enter {presentableWord(chosenPokemon.name)} Details
+                            </Text>
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Is The Pokemon A Shiny</Text>
+                                <View style={styles.genderShinyContainer}>
+                                    <Pressable style={styles.icon}
+                                        onPress={() => {
+                                            setIsShiny(!isShiny)
+                                        }}>
+                                        <Ionicons name="sparkles-sharp" size={45} color={isShiny ? "gold" : 'black'} />
+                                    </Pressable>
+                                </View>
                             </View>
-                        </View>
 
-                        <View style={styles.imageContainer}>
+                            <View style={styles.imageContainer}>
+                                <Image
+                                    style={styles.image}
+                                    source={{ uri: isShiny ? chosenPokemon.imgShiny : chosenPokemon.imgDefault }}
+                                />
+                            </View>
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Choose the gender of the pokemon</Text>
+                                <View style={styles.genderShinyContainer}>
+                                    <Pressable onPress={() => setGender(0)} style={styles.icon}>
+                                        <Foundation name="male-symbol" size={45} color={gender === 0 ? 'blue' : "black"} />
+                                    </Pressable>
+
+                                    <Pressable onPress={() => setGender(1)} style={styles.icon}>
+                                        <Foundation name="female-symbol" size={45} color={gender === 1 ? 'pink' : "black"} />
+                                    </Pressable>
+                                </View>
+                            </View>
+
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Pokemon Level</Text>
+
+
+                                <PokemonInput
+                                    style={styles.input}
+                                    setInput={(v) => setPokemonLevel(v.trim())}
+                                    input={pokemonLevel}
+                                    placeholder={"Enter pokemon's level..."}
+                                />
+
+                            </View>
+
+
+                            <View style={styles.sectionContainer}>
+                                <Text style={[styles.sectionTitle]}>Enter Pokemon Abilities</Text>
+                                <MultiSelectAdd
+                                    data={pokemonAbilities}
+                                    selected={selectedAbilities}
+                                    setSelected={setSelectedAbilities}
+                                    placeholder={'Abilities'}
+                                />
+                            </View>
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Enter Pokemon Moves</Text>
+                                <MultiSelectAdd
+                                    data={pokemonMoves}
+                                    selected={selectedPokemonMoves}
+                                    setSelected={setSelectedPokemonMoves}
+                                    placeholder={'Moves'}
+                                />
+                            </View>
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Enter Pokemon Stats</Text>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>HP: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedHP(v.trim())}
+                                        input={selectedHP}
+                                        placeholder={"Enter Pokemon's HP..."}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Attack: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedAttack(v.trim())}
+                                        input={selectedAttack}
+                                        placeholder={"Enter Pokemon's Attack..."}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Defense: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedDefense(v.trim())}
+                                        input={selectedDefense}
+                                        placeholder={"Enter Pokemon's Defense..."}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Defense: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedSpecialDefense(v.trim())}
+                                        input={selectedSpecialDefense}
+                                        placeholder={"Enter Pokemon's Special Defense..."}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Attack: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedSpecialAttack(v.trim())}
+                                        input={selectedSpecialAttack}
+                                        placeholder={"Enter Pokemon's Special Attack..."}
+                                    />
+                                </View>
+                                <View>
+                                    <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Speed: </Text>
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setSelectedSpeed(v.trim())}
+                                        input={selectedSpeed}
+                                        placeholder={"Enter Pokemon's Speed..."}
+                                    />
+                                </View>
+                            </View>
+                            <View style={styles.sectionContainer}>
+                                <Text style={styles.sectionTitle}>Enter Quantity </Text>
+
+
+                                <PokemonInput
+                                    style={styles.input}
+                                    setInput={(v) => setQuantity(v.trim())}
+                                    input={quantity}
+                                    placeholder={"Enter quantity Of Pokemon You Want To Sell..."}
+                                />
+                            </View>
+
+                            <View style={styles.sectionContainer}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Text style={styles.sectionTitle}>Enter Price</Text>
+                                    <Text style={[styles.sectionTitle, { fontSize: 14, paddingTop: 3, color: '#8E8E8E' }]}>
+                                        (for each Pokemon)
+                                    </Text>
+                                </View>
+
+                                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+
+                                    <PokemonInput
+                                        style={styles.input}
+                                        setInput={(v) => setPrice(v.trim())}
+                                        input={price}
+                                        placeholder={"Enter Pokemon's Price..."}
+                                    />
+                                    <CurrencyPD
+                                        style={styles.PDImage}
+                                    />
+                                </View>
+
+
+                            </View>
+
+                            <Pressable onPress={handleSubmitPokemon} style={styles.submitButton}>
+                                {item ? (
+                                    <Text style={styles.submitButtonText}>CONFIRM EDIT</Text>
+                                ) : (
+                                    <Text style={styles.submitButtonText}>SUBMIT</Text>
+                                )}
+                            </Pressable>
+
+
+                        </View>
+                    ) : (
+                        <View style={{ marginTop: 10 }}>
+                            <Text style={{ textAlign: 'center', fontSize: 18 }}>Search a Pokémon to enter it's details</Text>
                             <Image
-                                style={styles.image}
-                                source={{ uri: isShiny ? chosenPokemon.imgShiny : chosenPokemon.imgDefault }}
+                                style={{ width: '100%', height: 300, resizeMode: 'contain' }}
+                                source={{ uri: 'https://pokemonletsgo.pokemon.com/assets/img/how-to-play/hero-img.png' }}
                             />
                         </View>
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Choose the gender of the pokemon</Text>
-                            <View style={styles.genderShinyContainer}>
-                                <Pressable onPress={() => setGender(0)} style={styles.icon}>
-                                    <Foundation name="male-symbol" size={45} color={gender === 0 ? 'blue' : "black"} />
-                                </Pressable>
-
-                                <Pressable onPress={() => setGender(1)} style={styles.icon}>
-                                    <Foundation name="female-symbol" size={45} color={gender === 1 ? 'pink' : "black"} />
-                                </Pressable>
-                            </View>
-                        </View>
-
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Pokemon Level</Text>
-
-
-                            <PokemonInput
-                                style={styles.input}
-                                setInput={(v) => setPokemonLevel(v.trim())}
-                                input={pokemonLevel}
-                                placeholder={"Enter pokemon's level..."}
-                            />
-
-                        </View>
-
-
-                        <View style={styles.sectionContainer}>
-                            <Text style={[styles.sectionTitle]}>Enter Pokemon Abilities</Text>
-                            <MultiSelectAdd
-                                data={pokemonAbilities}
-                                selected={selectedAbilities}
-                                setSelected={setSelectedAbilities}
-                                placeholder={'Abilities'}
-                            />
-                        </View>
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Enter Pokemon Moves</Text>
-                            <MultiSelectAdd
-                                data={pokemonMoves}
-                                selected={selectedPokemonMoves}
-                                setSelected={setSelectedPokemonMoves}
-                                placeholder={'Moves'}
-                            />
-                        </View>
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Enter Pokemon Stats</Text>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>HP: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedHP(v.trim())}
-                                    input={selectedHP}
-                                    placeholder={"Enter Pokemon's HP..."}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Attack: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedAttack(v.trim())}
-                                    input={selectedAttack}
-                                    placeholder={"Enter Pokemon's Attack..."}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Defense: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedDefense(v.trim())}
-                                    input={selectedDefense}
-                                    placeholder={"Enter Pokemon's Defense..."}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Defense: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedSpecialDefense(v.trim())}
-                                    input={selectedSpecialDefense}
-                                    placeholder={"Enter Pokemon's Special Defense..."}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Special Attack: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedSpecialAttack(v.trim())}
-                                    input={selectedSpecialAttack}
-                                    placeholder={"Enter Pokemon's Special Attack..."}
-                                />
-                            </View>
-                            <View>
-                                <Text style={[styles.sectionTitle, { fontSize: 15 }]}>Speed: </Text>
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setSelectedSpeed(v.trim())}
-                                    input={selectedSpeed}
-                                    placeholder={"Enter Pokemon's Speed..."}
-                                />
-                            </View>
-                        </View>
-                        <View style={styles.sectionContainer}>
-                            <Text style={styles.sectionTitle}>Enter Quantity </Text>
-
-
-                            <PokemonInput
-                                style={styles.input}
-                                setInput={(v) => setQuantity(v.trim())}
-                                input={quantity}
-                                placeholder={"Enter quantity Of Pokemon You Want To Sell..."}
-                            />
-                        </View>
-
-                        <View style={styles.sectionContainer}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <Text style={styles.sectionTitle}>Enter Price</Text>
-                                <Text style={[styles.sectionTitle, { fontSize: 14, paddingTop: 3, color: '#8E8E8E' }]}>
-                                    (for each Pokemon)
-                                </Text>
-                            </View>
-
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-
-                                <PokemonInput
-                                    style={styles.input}
-                                    setInput={(v) => setPrice(v.trim())}
-                                    input={price}
-                                    placeholder={"Enter Pokemon's Price..."}
-                                />
-                                <CurrencyPD
-                                    style={styles.PDImage}
-                                />
-                            </View>
-
-
-                        </View>
-
-                        <Pressable onPress={handleSubmitPokemon} style={styles.submitButton}>
-                            {item ? (
-                                <Text style={styles.submitButtonText}>CONFIRM EDIT</Text>
-                            ) : (
-                                <Text style={styles.submitButtonText}>SUBMIT</Text>
-                            )}
-                        </Pressable>
-
-
-                    </View>
-                ) : (
-                    <View style={{marginTop:10}}> 
-                        <Text style={{textAlign:'center',fontSize:18}}>Search a Pokémon to enter it's details</Text>
-                        <Image
-                        style={{width:'100%', height:300, resizeMode:'contain'}}
-                        source={{uri: 'https://pokemonletsgo.pokemon.com/assets/img/how-to-play/hero-img.png'}}
-                        />
-                    </View>
-                )}
+                    )}
+                </Pressable>
             </ScrollView>
         </SafeAreaView>
     );
@@ -554,19 +582,35 @@ const styles = StyleSheet.create({
         marginTop: 12,
 
     },
+    searchListContainer: {
+        position: 'absolute',
+        top: 80,
+
+        width: '100%',
+        alignSelf: 'center',
+        zIndex: 1
+    },
     searchList: {
         position: 'absolute',
-        top: 0, // Adjust this value based on the height of your input
-        // left: 5,
-        // right: 10,
-        // maxHeight: '100%',
-        alignSelf:'center',
-        top:152,
-        width:'100%',
+        top: 190,
+        maxHeight: 400,
+        alignSelf: 'center',
+        // top: 152,
+        width: '100%',
         borderColor: 'gray',
         borderWidth: 1.5,
         backgroundColor: 'white',
         zIndex: 1
+    },
+
+    backContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingLeft: 5,
+        paddingBottom: 5,
+        borderBottomColor: 'black',
+        borderBottomWidth: 1,
+        margin: 2,
     },
 
 
