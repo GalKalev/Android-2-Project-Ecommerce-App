@@ -95,7 +95,6 @@ const HomeScreen = () => {
 
     function handleBackgroundPress() {
         setIsSearchItemsListVisible(false);
-        setSearchedPokemon('');
     }
 
     function toggleFilterMenu() {
@@ -134,126 +133,126 @@ const HomeScreen = () => {
     }
 
     return (
-        <TouchableWithoutFeedback onPress={handleBackgroundPress}>
-            <SafeAreaView style={styles.homeScreenContainer}>
-                <View>
-                    <Pressable onPress={() => setIsSearchItemsListVisible(true)}>
-                        <SearchInput
-                            styleSearchContainer={styles.searchContainer}
-                            styleSearchBar={styles.searchBar}
-                            stylesInput={styles.input}
-                            handleSearchInput={handleSearchInput}
-                            placeholder={"Search Poke Store..."}
-                            value={searchedPokemon}
-                        />
+        <SafeAreaView style={styles.homeScreenContainer}>
+            <View >
+                <Pressable style={{minHeight:70}} onPress={() => setIsSearchItemsListVisible(true)}>
+                    <SearchInput
+                        styleSearchContainer={styles.searchContainer}
+                        styleSearchBar={styles.searchBar}
+                        stylesInput={styles.input}
+                        handleSearchInput={handleSearchInput}
+                        placeholder={"Search Poke Store..."}
+                        value={searchedPokemon}
+                    />
 
 
-                    </Pressable>
+                </Pressable>
 
                     {/* List of the searched pokemons  */}
-                    {searchPokemonsList && (
+                    {searchPokemonsList && isSearchItemsListVisible && (
                         searchPokemons.length === (pokemonList.length) ? (
                             <></>
                         ) : searchPokemons.length === 0 ? (
-                            <View>
-                                <Text style={[styles.sectionTitle, { alignSelf: 'center', marginTop: 0 }]}>
+                            <View style={[styles.searchList, { alignSelf: 'center', justifyContent: 'center' }]}>
+                                <Text style={{ alignSelf: 'center', marginTop: 0, textAlign: 'center', fontSize: 16 }}>
                                     Pokémon not found...
                                 </Text>
                             </View>
                         ) : (
-                            <View>
-                                {isSearchItemsListVisible && (
-                                    // List of the searched pokemons
-                                    <FlatList
-                                        style={styles.searchList}
-                                        data={searchPokemons}
-                                        keyExtractor={(item) => item}
-                                        renderItem={({ item }) => (
-                                            <Pressable style={{ flexDirection: 'row', alignSelf: 'center', padding: 6 }}
-                                                onPress={() => handleChosenPokemon(item)}>
-                                                <View style={{ flexDirection: 'column' }}>
-                                                    <Text style={{ fontSize: 18 }}>{presentableWord(item)}</Text>
-                                                </View>
-                                            </Pressable>
-                                        )}
-                                    />
 
+                            //  List of the searched pokemons 
+                            <FlatList
+                                // nestedScrollEnabled
+
+                                style={styles.searchList}
+                                data={searchPokemons}
+                                keyExtractor={(item) => item}
+                                renderItem={({ item }) => (
+                                    <Pressable style={{ flexDirection: 'row', alignSelf: 'center', padding: 6 }}
+                                        onPress={() => handleChosenPokemon(item)}>
+                                        <View style={{ flexDirection: 'column' }}>
+                                            <Text style={{ fontSize: 18 }}>{presentableWord(item)}</Text>
+                                        </View>
+                                    </Pressable>
                                 )}
-                            </View>
+                            />
+
+
                         )
                     )}
-                </View>
 
-                <ScrollView contentContainerStyle={{ flexGrow: 1 }}
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchData} />}
+            </View>
 
-                >
-                    {/* Image slider of the shop */}
+            <ScrollView
+                contentContainerStyle={{ flexGrow: 1 }}
+                showsVerticalScrollIndicator={false}
+                refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchData} />}
 
-
-
-                    <Pressable>
-                        <ImageSlider />
+            >
+                {/* Image slider of the shop */}
 
 
-                        {pokemonList.length === 0 ? (
-                            <View>
-                                <NoItems
-                                    text={'Out of products in store!! You can sell your Pokemons or come back later'}
-                                />
-                            </View>
-                        ) : (
-                            <View>
-                                <FIlterOptions
-                                    toggleFilterMenu={toggleFilterMenu}
-                                    isFilterOpen={isFilterOpen}
-                                    setFilter={setFilter}
-                                    items={pokemonList}
-                                    setLoading={setIsLoading}
-                                    filteredItems={filteredPokemon}
-                                    setFilteredItems={setFilteredPokemons}
-                                    slideIn={slideIn}
-                                />
-                                {/* Checking if a pokemon with the filters exist in the shop  */}
-                                {filteredPokemon.length === 0 ? (
-                                    <View>
-                                        <NoItems
-                                            text={'No Products Found...'}
-                                        />
+
+                <Pressable onPress={handleBackgroundPress}>
+                    <ImageSlider />
+
+
+                    {pokemonList.length === 0 ? (
+                        <View>
+                            <NoItems
+                                text={'Out of products in store!! You can sell your Pokemons or come back later'}
+                            />
+                        </View>
+                    ) : (
+                        <View>
+                            <FIlterOptions
+                                toggleFilterMenu={toggleFilterMenu}
+                                isFilterOpen={isFilterOpen}
+                                setFilter={setFilter}
+                                items={pokemonList}
+                                setLoading={setIsLoading}
+                                filteredItems={filteredPokemon}
+                                setFilteredItems={setFilteredPokemons}
+                                slideIn={slideIn}
+                            />
+                            {/* Checking if a pokemon with the filters exist in the shop  */}
+                            {filteredPokemon.length === 0 ? (
+                                <View>
+                                    <NoItems
+                                        text={'No Products Found...'}
+                                    />
+                                </View>
+                            ) : (
+                                // Filter Options
+                                <View style={{ marginTop: 15 }}>
+
+                                    <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
+                                        {filteredPokemon.map((poke, index) => {
+
+                                            return (
+                                                <View key={poke._id}>
+
+                                                    <Product
+                                                        item={poke}
+                                                        screen={'Home Page'}
+                                                        user={user}
+                                                    />
+                                                </View>
+                                            )
+                                        })}
                                     </View>
-                                ) : (
-                                    // Filter Options
-                                    <View style={{ marginTop: 15 }}>
+                                </View>
+                            )}
+                        </View>
+                    )}
 
-                                        <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-evenly' }}>
-                                            {filteredPokemon.map((poke, index) => {
+                </Pressable>
 
-                                                return (
-                                                    <View key={poke._id}>
+            </ScrollView>
 
-                                                        <Product
-                                                            item={poke}
-                                                            screen={'Home Page'}
-                                                            user={user}
-                                                        />
-                                                    </View>
-                                                )
-                                            })}
-                                        </View>
-                                    </View>
-                                )}
-                            </View>
-                        )}
+            <FloatingButton />
+        </SafeAreaView >
 
-                    </Pressable>
-
-                </ScrollView>
-
-                <FloatingButton />
-            </SafeAreaView >
-
-        </TouchableWithoutFeedback>
 
     );
 };
@@ -282,15 +281,14 @@ const styles = StyleSheet.create({
         padding: 10,
         flexDirection: "row",
         alignItems: "center",
+        flex: 1
 
     },
+   
     searchList: {
         position: 'absolute',
-        top: 0, // Adjust this value based on the height of your input
-        // left: 5,
-        // right: 10,
-        // maxHeight: '100%',
-        minHeight: '100%',
+        top: 70,
+        maxHeight: 200,
         width: '100%',
         borderColor: 'gray',
         borderWidth: 1.5,

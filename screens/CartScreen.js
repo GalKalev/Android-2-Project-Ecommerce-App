@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Pressable, FlatList, Image, SafeAreaView, StyleSheet, Platform } from 'react-native';
+import { View, Text, Pressable, FlatList, Image, SafeAreaView, StyleSheet, Platform, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
 import CurrencyPD from '../components/CurrencyPD';
-import {getCart, removeFromCart} from "../api/apiServices";
+import { getCart, removeFromCart } from "../api/apiServices";
+import { presentableWord } from '../utils/consts';
 
 const CartScreen = () => {
-    const { user, cart,setCart } = useUser();
+    const { user, cart, setCart } = useUser();
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const navigation = useNavigation();
@@ -25,17 +26,30 @@ const CartScreen = () => {
 
     const deleteProductCart = (item) => {
         //TODO: delete from cart in database
-        removeFromCart(user.userId,item.product._id,item.product.price);
-        const newCartProducts = cart.products.filter(product => product !== item);
-        const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
-        const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
+        Alert.alert(`Delete ${presentableWord(item.product.name)} from cart?`, 'Press DELETE to confirm changes.', [
+            {
+                text:'CANCEL',
+                style:'cancel'
+            },
+            {
+                text: 'DELETE',
+                onPress: () => {
+                    removeFromCart(user.userId, item.product._id, item.product.price);
+                    const newCartProducts = cart.products.filter(product => product !== item);
+                    const newTotalPrice = newCartProducts.reduce((acc, product) => acc + (product.product.price * product.quantity), 0);
+                    const newTotalProducts = newCartProducts.reduce((acc, product) => acc + product.quantity, 0);
 
-        setCart(prevCart => ({
-            ...prevCart,
-            products: newCartProducts,
-            totalPrice: newTotalPrice,
-        }));
-        setTotalProducts(newTotalProducts);
+                    setCart(prevCart => ({
+                        ...prevCart,
+                        products: newCartProducts,
+                        totalPrice: newTotalPrice,
+                    }));
+                    setTotalProducts(newTotalProducts);
+                }
+            },
+            
+        ])
+
     };
 
     const handleCheckout = () => {
