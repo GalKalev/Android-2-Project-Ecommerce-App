@@ -193,7 +193,6 @@ const AddPokemonScreen = () => {
                 // TODO: sending the pokemon id so it will not create a new one (??)
                 const editPokemon = { pokemon: soldPokemon, pokemonId: item._id }
                 // console.log(JSON.stringify(editPokemon));
-                //TODO: create route editPokemon
                 // const response = await editPokemon(soldPokemon);
             } else {
                 response = await addPokemon(soldPokemon);

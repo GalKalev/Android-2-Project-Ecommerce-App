@@ -145,7 +145,6 @@ export const addToCart = async (userId, productId, quantity) => {
     }
 };
 
-
 // Remove product from cart
 export const removeFromCart = async (userId, productId,price) => {
     try {
@@ -159,7 +158,6 @@ export const removeFromCart = async (userId, productId,price) => {
 };
 
 // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
-
 export const checkCartAvailability = async (user, stockProducts, cartProducts) => {
     try {
         console.debug("Checking availability for " + JSON.stringify(cartProducts));
@@ -190,15 +188,38 @@ export const checkCartAvailability = async (user, stockProducts, cartProducts) =
 };
 
 // Checkout
-export const checkout = async (userId) => {
+export const checkout = async (userId,region,location, houseNum, cardOwner,cardNumber, expirationDate,cvv) => {
+    console.log("Trying checkout cart");
     try {
-        const response = await axios.post(`${API_BASE_URL}/checkout`, {userId: userId});
+        console.debug(`{${userId}, ${region},${location}, ${houseNum}, ${cardOwner},${cardNumber}, ${expirationDate}, ${cvv}}`);
+        const response = await axios.post(`${API_URL}/checkout`, {
+            userId: userId,
+            region: region,
+            location: location,
+            houseNum: houseNum,
+            cardOwner: cardOwner,
+            cardNumber: cardNumber,
+            expirationDate: expirationDate,
+            cvv: cvv});
+        console.debug(`response = ${response.data}`);
         return response.data;
     } catch (error) {
         console.error("Error during checkout:", error);
         throw error;
     }
 };
+
+// Get all orders for user
+export const gerOrders = async (userId) => {
+    try {
+        const response = await axios.get(`${API_URL}/order/${userId}`);
+        console.log(response.data);
+        return response.data;
+    }catch(error) {
+        console.error("Error fetching orders:", error.status);
+        return error;
+    }
+}
 
 
 
