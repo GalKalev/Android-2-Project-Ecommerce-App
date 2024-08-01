@@ -187,7 +187,7 @@ const AddPokemonScreen = () => {
         }
 
         try {
-
+            setIsLoading(true);
             let response;
             if (item) {
                 // TODO: sending the pokemon id so it will not create a new one (??)
@@ -218,6 +218,8 @@ const AddPokemonScreen = () => {
         } catch (e) {
             console.log('error uploading pokemon to sell: ' + e.message);
             Alert.alert('Error', 'Please try again later')
+        }finally{
+            setIsLoading(false);
         }
 
     }

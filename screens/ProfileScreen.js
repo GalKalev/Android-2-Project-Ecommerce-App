@@ -14,6 +14,7 @@ import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import D3Chart from '../components/D3Chart';
 import UserSettings from '../components/UserSettings';
+import {getOrders} from '../api/apiServices'
 
 const ProfileScreen = () => {
 
@@ -348,141 +349,152 @@ const ProfileScreen = () => {
                     }
                 ];
 
+                const resOrders = await getOrders(user.userId);
+                console.log("profile resOrders.data")
+                console.log(resOrders)
+                if(resOrders.data){
+                    const orders = resOrders.data
+                    console.log("profile orders")
+                    console.log(orders[0].products)
+                   
+                    setOrders(orders);
+                }
+
                 // const dummyOrders = [];
 
                 //TODO: get user's products from database
-                const dummyUserProducts = [
-                    {
+                // const dummyUserProducts = [
+                //     {
 
-                        _id: 0,
-                        user: 'K',
-                        name: 'pikachu',
-                        url: 'https://pokeapi.co/api/v2/pokemon/pikachu/',
-                        img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-                        gender: 0,
-                        level: 50,
-                        isShiny: false,
-                        abilities: ['static'],
-                        moves: ['mega-punch', 'thunder-punch', 'slam'],
-                        species: ['pikachu'],
-                        stats: [{
-                            hp: 50,
-                            attack: 30,
-                            defense: 40,
-                            specialAttack: 60,
-                            specialDefense: 70,
-                            speed: 20
-                        }],
-                        types: ['electric'],
-                        price: 8000,
-                        quantity: 2,
+                //         _id: 0,
+                //         user: 'K',
+                //         name: 'pikachu',
+                //         url: 'https://pokeapi.co/api/v2/pokemon/pikachu/',
+                //         img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
+                //         gender: 0,
+                //         level: 50,
+                //         isShiny: false,
+                //         abilities: ['static'],
+                //         moves: ['mega-punch', 'thunder-punch', 'slam'],
+                //         species: ['pikachu'],
+                //         stats: [{
+                //             hp: 50,
+                //             attack: 30,
+                //             defense: 40,
+                //             specialAttack: 60,
+                //             specialDefense: 70,
+                //             speed: 20
+                //         }],
+                //         types: ['electric'],
+                //         price: 8000,
+                //         quantity: 2,
 
-                    },
-                    {
+                //     },
+                //     {
 
-                        _id: 1,
-                        user: 'K',
-                        name: 'bulbasaur',
-                        url: 'https://pokeapi.co/api/v2/pokemon/bulbasaur/',
-                        img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-                        gender: 1,
-                        level: 15,
-                        isShiny: false,
-                        abilities: ['overgrow'],
-                        moves: ['tackle', 'vine-whip', 'razor-leaf'],
-                        species: ['bulbasaur'],
-                        stats: [{
-                            hp: 45,
-                            attack: 49,
-                            defense: 49,
-                            specialAttack: 65,
-                            specialDefense: 65,
-                            speed: 45
-                        }],
-                        types: ['grass', 'poison'],
-                        price: 6000,
-                        quantity: 3,
+                //         _id: 1,
+                //         user: 'K',
+                //         name: 'bulbasaur',
+                //         url: 'https://pokeapi.co/api/v2/pokemon/bulbasaur/',
+                //         img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
+                //         gender: 1,
+                //         level: 15,
+                //         isShiny: false,
+                //         abilities: ['overgrow'],
+                //         moves: ['tackle', 'vine-whip', 'razor-leaf'],
+                //         species: ['bulbasaur'],
+                //         stats: [{
+                //             hp: 45,
+                //             attack: 49,
+                //             defense: 49,
+                //             specialAttack: 65,
+                //             specialDefense: 65,
+                //             speed: 45
+                //         }],
+                //         types: ['grass', 'poison'],
+                //         price: 6000,
+                //         quantity: 3,
 
-                    },
-                    {
+                //     },
+                //     {
 
-                        _id: 2,
-                        user: 'K',
-                        name: 'charmander',
-                        url: 'https://pokeapi.co/api/v2/pokemon/charmander/',
-                        img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
-                        gender: 0,
-                        level: 18,
-                        isShiny: true,
-                        abilities: ['blaze'],
-                        moves: ['scratch', 'ember', 'dragon-rage'],
-                        species: ['charmander'],
-                        stats: [{
-                            hp: 39,
-                            attack: 52,
-                            defense: 43,
-                            specialAttack: 60,
-                            specialDefense: 50,
-                            speed: 65
-                        }],
-                        types: ['fire'],
-                        price: 7000,
-                        quantity: 1,
+                //         _id: 2,
+                //         user: 'K',
+                //         name: 'charmander',
+                //         url: 'https://pokeapi.co/api/v2/pokemon/charmander/',
+                //         img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png',
+                //         gender: 0,
+                //         level: 18,
+                //         isShiny: true,
+                //         abilities: ['blaze'],
+                //         moves: ['scratch', 'ember', 'dragon-rage'],
+                //         species: ['charmander'],
+                //         stats: [{
+                //             hp: 39,
+                //             attack: 52,
+                //             defense: 43,
+                //             specialAttack: 60,
+                //             specialDefense: 50,
+                //             speed: 65
+                //         }],
+                //         types: ['fire'],
+                //         price: 7000,
+                //         quantity: 1,
 
-                    },
-                    {
+                //     },
+                //     {
 
-                        _id: 3,
-                        user: 'K',
-                        name: 'squirtle',
-                        url: 'https://pokeapi.co/api/v2/pokemon/squirtle/',
-                        img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
-                        gender: 1,
-                        level: 20,
-                        isShiny: false,
-                        abilities: ['torrent'],
-                        moves: ['water-gun', 'bubble', 'tackle'],
-                        species: ['squirtle'],
-                        stats: [{
-                            hp: 44,
-                            attack: 48,
-                            defense: 65,
-                            specialAttack: 50,
-                            specialDefense: 64,
-                            speed: 43
-                        }],
-                        types: ['water'],
-                        price: 6500,
-                        quantity: 2,
-                    },
+                //         _id: 3,
+                //         user: 'K',
+                //         name: 'squirtle',
+                //         url: 'https://pokeapi.co/api/v2/pokemon/squirtle/',
+                //         img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
+                //         gender: 1,
+                //         level: 20,
+                //         isShiny: false,
+                //         abilities: ['torrent'],
+                //         moves: ['water-gun', 'bubble', 'tackle'],
+                //         species: ['squirtle'],
+                //         stats: [{
+                //             hp: 44,
+                //             attack: 48,
+                //             defense: 65,
+                //             specialAttack: 50,
+                //             specialDefense: 64,
+                //             speed: 43
+                //         }],
+                //         types: ['water'],
+                //         price: 6500,
+                //         quantity: 2,
+                //     },
 
-                    {
+                //     {
 
-                        _id: 4,
-                        user: 'K',
-                        name: 'jigglypuff',
-                        url: 'https://pokeapi.co/api/v2/pokemon/jigglypuff/',
-                        img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png',
-                        gender: 0,
-                        level: 22,
-                        isShiny: false,
-                        abilities: ['cute-charm'],
-                        moves: ['pound', 'sing', 'double-slap'],
-                        species: ['jigglypuff'],
-                        stats: [{
-                            hp: 115,
-                            attack: 45,
-                            defense: 20,
-                            specialAttack: 45,
-                            specialDefense: 25,
-                            speed: 20
-                        }],
-                        types: ['normal', 'fairy'],
-                        price: 5000,
-                        quantity: 4,
+                //         _id: 4,
+                //         user: 'K',
+                //         name: 'jigglypuff',
+                //         url: 'https://pokeapi.co/api/v2/pokemon/jigglypuff/',
+                //         img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png',
+                //         gender: 0,
+                //         level: 22,
+                //         isShiny: false,
+                //         abilities: ['cute-charm'],
+                //         moves: ['pound', 'sing', 'double-slap'],
+                //         species: ['jigglypuff'],
+                //         stats: [{
+                //             hp: 115,
+                //             attack: 45,
+                //             defense: 20,
+                //             specialAttack: 45,
+                //             specialDefense: 25,
+                //             speed: 20
+                //         }],
+                //         types: ['normal', 'fairy'],
+                //         price: 5000,
+                //         quantity: 4,
 
-                    },
-                ];
+                //     },
+                // ];
 
                 //TODO: get user's sold pokemons (amount and time)
                 const boughtProductsData = dummyOrders.map((order) => ({
@@ -491,7 +503,7 @@ const ProfileScreen = () => {
                 }));
 
                 setOrders(dummyOrders);
-                setUserProducts(dummyUserProducts)
+                // setUserProducts(dummyUserProducts)
                 setBoughtData(boughtProductsData);
             } catch {
                 console.log('Error fetching profile: ' + e.message);
@@ -525,13 +537,16 @@ const ProfileScreen = () => {
 
                                 <ScrollView horizontal>
                                     {order.products.map((product) => {
+                                        console.log('product')
+                                        console.log(product)
                                         return (
-                                            <ProductProfile
-                                                key={product.product._id}
-                                                product={product.product}
-                                                quantityBought={product.quantity}
+                                            <View key={product}></View>
+                                            // <ProductProfile
+                                            //     key={product.product._id}
+                                            //     product={product.product}
+                                            //     quantityBought={product.quantity}
 
-                                            />
+                                            // />
                                         )
                                     })}
                                 </ScrollView>

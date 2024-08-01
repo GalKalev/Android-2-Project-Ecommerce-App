@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, RefreshControl, Animated } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { AntDesign, Feather } from '@expo/vector-icons'; // Assuming you're using Expo icons
@@ -7,22 +7,16 @@ import SearchInput from '../components/SearchInput';
 import { presentableWord } from '../utils/consts';
 import ImageSlider from '../components/ImageSlider'
 import Loading from '../components/Loading';
-import FIlterOptions from '../components/FIlterOptions'
+import FilterOptions from '../components/FilterOptions'
 import Product from '../components/Product';
 
-import { useUser } from '../utils/UserContext';
 import { fetchPokemons } from "../api/apiServices";
 import NoItems from '../components/NoItems';
 
 
 const HomeScreen = () => {
 
-    // TODO: uncomment when all the user info is passed
-    // const route = useRoute();
-    // console.log("home:", user);
-    const { user } = useUser();
     const navigator = useNavigation();
-    // console.log('home: ' + JSON.stringify(user));
 
     const [pokemonList, setPokemonList] = useState([])
     const [searchPokemons, setSearchPokemons] = useState([]);
@@ -44,9 +38,14 @@ const HomeScreen = () => {
     // Animation opening/closing the filter
     const animation = useRef(new Animated.Value(0)).current;
 
+    // Scroll position
+    const scrollViewRef = useRef(null);
+    const [scrollPosition, setScrollPosition] = useState(0);
+
     const fetchData = useCallback(async () => {
 
         try {
+
             setIsLoading(true);
 
             const pokemonsList = await fetchPokemons();
@@ -65,15 +64,24 @@ const HomeScreen = () => {
             Alert.alert('Server Error', 'Please try again later');
         } finally {
             setIsLoading(false);
-
         }
     }, [])
 
     useEffect(() => {
+        console.log('home useEffect active');
 
         fetchData();
 
     }, [fetchData])
+
+    useEffect(() => {
+        console.log('home useEffect2 active');
+        console.log(scrollPosition);
+        if (scrollViewRef.current) {
+            scrollViewRef.current.scrollTo({ y: scrollPosition, animated: false });
+        }
+    }, [isLoading]);
+
 
 
     function handleChosenPokemon(name) {
@@ -135,7 +143,7 @@ const HomeScreen = () => {
     return (
         <SafeAreaView style={styles.homeScreenContainer}>
             <View >
-                <Pressable style={{minHeight:70}} onPress={() => setIsSearchItemsListVisible(true)}>
+                <Pressable style={{ minHeight: 70 }} onPress={() => setIsSearchItemsListVisible(true)}>
                     <SearchInput
                         styleSearchContainer={styles.searchContainer}
                         styleSearchBar={styles.searchBar}
@@ -148,38 +156,38 @@ const HomeScreen = () => {
 
                 </Pressable>
 
-                    {/* List of the searched pokemons  */}
-                    {searchPokemonsList && isSearchItemsListVisible && (
-                        searchPokemons.length === (pokemonList.length) ? (
-                            <></>
-                        ) : searchPokemons.length === 0 ? (
-                            <View style={[styles.searchList, { alignSelf: 'center', justifyContent: 'center' }]}>
-                                <Text style={{ alignSelf: 'center', marginTop: 0, textAlign: 'center', fontSize: 16 }}>
-                                    Pokémon not found...
-                                </Text>
-                            </View>
-                        ) : (
+                {/* List of the searched pokemons  */}
+                {searchPokemonsList && isSearchItemsListVisible && (
+                    searchPokemons.length === (pokemonList.length) ? (
+                        <></>
+                    ) : searchPokemons.length === 0 ? (
+                        <View style={[styles.searchList, { alignSelf: 'center', justifyContent: 'center' }]}>
+                            <Text style={{ alignSelf: 'center', marginTop: 0, textAlign: 'center', fontSize: 16 }}>
+                                Pokémon not found...
+                            </Text>
+                        </View>
+                    ) : (
 
-                            //  List of the searched pokemons 
-                            <FlatList
-                                // nestedScrollEnabled
+                        //  List of the searched pokemons 
+                        <FlatList
+                            // nestedScrollEnabled
 
-                                style={styles.searchList}
-                                data={searchPokemons}
-                                keyExtractor={(item) => item}
-                                renderItem={({ item }) => (
-                                    <Pressable style={{ flexDirection: 'row', alignSelf: 'center', padding: 6 }}
-                                        onPress={() => handleChosenPokemon(item)}>
-                                        <View style={{ flexDirection: 'column' }}>
-                                            <Text style={{ fontSize: 18 }}>{presentableWord(item)}</Text>
-                                        </View>
-                                    </Pressable>
-                                )}
-                            />
+                            style={styles.searchList}
+                            data={searchPokemons}
+                            keyExtractor={(item) => item}
+                            renderItem={({ item }) => (
+                                <Pressable style={{ flexDirection: 'row', alignSelf: 'center', padding: 6 }}
+                                    onPress={() => handleChosenPokemon(item)}>
+                                    <View style={{ flexDirection: 'column' }}>
+                                        <Text style={{ fontSize: 18 }}>{presentableWord(item)}</Text>
+                                    </View>
+                                </Pressable>
+                            )}
+                        />
 
 
-                        )
-                    )}
+                    )
+                )}
 
             </View>
 
@@ -187,6 +195,9 @@ const HomeScreen = () => {
                 contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={isLoading} onRefresh={fetchData} />}
+                ref={scrollViewRef}
+                onScroll={(event) => setScrollPosition(event.nativeEvent.contentOffset.y)}
+                scrollEventThrottle={16}
 
             >
                 {/* Image slider of the shop */}
@@ -205,7 +216,7 @@ const HomeScreen = () => {
                         </View>
                     ) : (
                         <View>
-                            <FIlterOptions
+                            <FilterOptions
                                 toggleFilterMenu={toggleFilterMenu}
                                 isFilterOpen={isFilterOpen}
                                 setFilter={setFilter}
@@ -235,7 +246,8 @@ const HomeScreen = () => {
                                                     <Product
                                                         item={poke}
                                                         screen={'Home Page'}
-                                                        user={user}
+                                                        scrollPosition={scrollPosition}
+                                                        setScrollPosition={setScrollPosition}
                                                     />
                                                 </View>
                                             )
@@ -245,7 +257,6 @@ const HomeScreen = () => {
                             )}
                         </View>
                     )}
-
                 </Pressable>
 
             </ScrollView>
@@ -284,7 +295,7 @@ const styles = StyleSheet.create({
         flex: 1
 
     },
-   
+
     searchList: {
         position: 'absolute',
         top: 70,
@@ -319,10 +330,3 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
 })
-
-
-
-
-
-
-
