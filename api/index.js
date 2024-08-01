@@ -37,9 +37,11 @@ const Order = require("./models/order");
 const Product = require("./models/product");
 const Cart = require('./models/cart');
 
+
 // app.get("/health", (req, res) => {res.send("hello")})
-//---------- Register Method ----------
-app.post("/register", async (req, res) => {
+//---------- User Method ----------
+// register new user
+app.post("/user/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -77,9 +79,8 @@ app.post("/register", async (req, res) => {
   }
 });
 
-
-// ---------- Login Method ----------
-app.post('/login', async (req, res) => {
+// login user
+app.post('/user/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     console.debug(`checking if user exists: ${email}, ${password}`)
@@ -105,6 +106,28 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// user edit username
+app.post('/user/edit',async (req,res)=>{
+  console.log("try to edit user name");
+  try{
+    const { userId, newName} = req.body;
+
+    const user = await User.findById({userId});
+    if(!user){
+      console.log("user not found");
+      return res.status(404).json({message: "user not found"});
+    }
+
+    user.name = newName;
+    await user.save();
+
+    console.log("username edited successfully");
+    return res.status(200).json({message: "username edited successfully"})
+  }catch (error){
+    console.log("ERROR: ",error);
+    return res.status(500).json({message: 'Edit user failed'});
+  }
+})
 
 //---------- Pokemon Stock Methods ----------
 // Add new Pokemon to Products list
@@ -178,6 +201,22 @@ app.get('/Pokemon', async (req, res) => {
   }
 })
 
+// get all Pokemons in stock of specific user seller
+app.get('/Pokemon/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const products = await Product.find({ user: userId });
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found for this user' });
+    }
+
+    return res.status(200).json(products);
+  } catch (error) {
+    console.error('Error fetching products for user:', error);
+    return res.status(500).json({ message: 'Failed to retrieve products' });
+  }
+});
 
 //---------- Cart Methods ----------
 // Add Pokemon to user's cart
@@ -248,9 +287,6 @@ app.get('/cart/:userId', async (req, res) => {
       }
     })
 
-    // if (!cart) {
-    //   return res.status(200).json({ message: 'Cart not found' });
-    // }
     return res.status(200).json(cart);
   } catch (error) {
     console.log(`Error get cart: ${error}`);
@@ -302,31 +338,64 @@ app.post('/cart/remove', async (req, res) => {
 app.post('/checkout', async (req, res) => {
   console.debug("Trying to checkout cart");
   try {
-    const { userId,
-      region,
-      location,
-      houseNum,
-      cardOwner,
-      cardNumber,
-      expirationDate,
-      cvv} = req.body;
+    const { userId, region, location, houseNum, cardOwner, cardNumber, expirationDate, cvv } = req.body;
+
     if (!userId) {
       return res.status(400).json({ message: 'User ID required' });
     }
-    if(!region||!location || !houseNum || !cardOwner || !cardNumber || !expirationDate || !cvv){
-      return res.status(400).json({ message: 'one or more parameters missing...' });
+    if (!region || !location || !houseNum || !cardOwner || !cardNumber || !expirationDate || !cvv) {
+      return res.status(400).json({ message: 'One or more parameters missing...' });
     }
 
-    const cart = await Cart.findOne({ user: userId });
+    const cart = await Cart.findOne({ user: userId }).populate('products.product');
     console.debug(`got cart ${cart}`);
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
+    // build full products list and update stock
+    const productsList = [];
+    for (const cartItem of cart.products) {
+      console.debug(`for product ${cartItem}`);
+      const stockProduct = await Product.findById(cartItem.product._id);
+      console.debug(`found product: ${stockProduct}`);
+      if (stockProduct) {
+        // Check stock and update quantities
+        if (stockProduct.quantity >= cartItem.quantity) {
+          stockProduct.quantity -= cartItem.quantity;
+          await stockProduct.save();
+        } else {
+          return res.status(400).json({ message: `Not enough stock for ${stockProduct.name}` });
+        }
+
+        // Add the product with full details to the order's products list
+        productsList.push({
+          product: {
+            user: stockProduct.user,
+            name: stockProduct.name,
+            url: stockProduct.url,
+            price: stockProduct.price,
+            img: stockProduct.img,
+            quantity: cartItem.quantity, // use quantity from the cart
+            isShiny: stockProduct.isShiny,
+            gender: stockProduct.gender,
+            level: stockProduct.level,
+            abilities: stockProduct.abilities,
+            moves: stockProduct.moves,
+            species: stockProduct.species,
+            stats: stockProduct.stats,
+            types: stockProduct.types,
+            createdAt: stockProduct.createdAt
+          },
+          quantity: cartItem.quantity
+        });
+      }
+    }
+
     // create a new order
     const order = new Order({
       user: userId,
-      products: cart.products,
+      products: productsList,
       totalPrice: cart.totalPrice,
       shippingAddress: {
         region,
@@ -344,28 +413,11 @@ app.post('/checkout', async (req, res) => {
     await order.save();
     console.debug("saved new order!")
 
-    // remove products from stock
-    //TODO: logs to see where it falls :(
-    for (const product of cart.products){
-      console.debug(`for product ${product}`);
-      const stockProduct = await Product.findById(product.product._id);
-      console.debug(`found product: ${stockProduct}`);
-      if(stockProduct){
-        if(stockProduct.quantity>product.quantity){
-          stockProduct.quantity-=product.quantity;
-          await stockProduct.save();
-        }else{
-          await Product.findByIdAndDelete(stockProduct._id);
-        }
-      }
-    }
-
     // clear the cart
     cart.products = [];
     cart.totalPrice = 0;
     await cart.save();
-
-
+    
     return res.status(200).json({ message: 'Checkout successful', success:true });
   } catch (error) {
     console.log('Error during checkout:', error);
@@ -375,6 +427,7 @@ app.post('/checkout', async (req, res) => {
 });
 
 app.get('/order/:userId', async (req, res) => {
+
   try {
     const { userId } = req.params;
     console.log(`Trying fetching order for user ${userId}`);

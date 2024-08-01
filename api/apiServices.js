@@ -19,7 +19,7 @@ export const checkLogin = async(email,password) => {
     console.log(user);
 
     try{
-        const response = await axios.post(`${API_URL}/login`,user);
+        const response = await axios.post(`${API_URL}/user/login`,user);
         if(response.status === 200){
             console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
             const userId = response.data.userId;
@@ -70,6 +70,7 @@ export const registerUser = async (name, email, password) => {
     };
 
     try {
+
         const response = await axios.post(`${API_URL}/register`, user);
         if(response.status === 201){
             console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
@@ -84,6 +85,7 @@ export const registerUser = async (name, email, password) => {
         }
        
         // return response.status; // Return the status code directly
+
     } catch (error) {
         if (error.response) {
             // The request was made and the server responded with a status code outside the range of 2xx
@@ -100,6 +102,18 @@ export const registerUser = async (name, email, password) => {
         }
     }
 };
+
+// Function to edit username
+export const editUsername = async (userId,newUsername)=>{
+    try{
+        const response = await axios.post(`${API_URL}/user/edit`,{userId:userId, newName:newUsername});
+        console.log(response.data);
+        return response.data;
+    }catch(error){
+        console.error("Error edit username:", error.status);
+        return error;
+    }
+}
 
 // Function to get all products
 export async function fetchPokemons() {
@@ -233,5 +247,15 @@ export const getOrders = async (userId) => {
     }
 }
 
-
+// Get all products that user sells
+export const getUserProducts= async (userId)=>{
+    try {
+        const response = await axios.get(`${API_URL}/Pokemon/${userId}`);
+        console.log(response.data);
+        return response.data;
+    }catch(error) {
+        console.error("Error fetching user products:", error.status);
+        return error;
+    }
+}
 
