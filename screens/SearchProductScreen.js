@@ -4,7 +4,7 @@ import { AntDesign, Foundation } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react'
 import Product from '../components/Product';
 import { useUser } from '../utils/UserContext';
-import FIlterOptions from '../components/FIlterOptions';
+import FilterOptions from '../components/FilterOptions';
 import Loading from '../components/Loading';
 import NoItems from '../components/NoItems';
 
@@ -95,7 +95,7 @@ const SearchProductScreen = () => {
                         </View>
                     ) : (
                         <View>
-                            <FIlterOptions
+                            <FilterOptions
                                 toggleFilterMenu={toggleFilterMenu}
                                 isFilterOpen={isFilterOpen}
                                 setFilter={setFilter}

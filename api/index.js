@@ -72,10 +72,7 @@ app.post("/user/register", async (req, res) => {
     await cart.save();
     console.log(`New cart for user created`);
 
-    return res.status(201).json({
-      message:
-        "Registration successful. Please check your email for verification.",
-    });
+    return res.status(201).json({ message: "Register successful", userId: newUser._id, email: newUser.email, name: newUser.name });
   } catch (error) {
     console.log("Error during registration:", error); // Debugging statement
     return res.status(500).json({ message: "Registration failed" });
@@ -420,19 +417,22 @@ app.post('/checkout', async (req, res) => {
     cart.products = [];
     cart.totalPrice = 0;
     await cart.save();
-
-    return res.status(200).json({ message: 'Checkout successful' });
+    
+    return res.status(200).json({ message: 'Checkout successful', success:true });
   } catch (error) {
     console.log('Error during checkout:', error);
-    return res.status(500).json({ message: 'Checkout failed' });
+    return res.status(500).json({ message: 'Checkout failed', success:false });
+
   }
 });
 
-app.get('/order/:userid', async (req, res) => {
+app.get('/order/:userId', async (req, res) => {
+
   try {
     const { userId } = req.params;
-    console.log(`Trying fetching cart for user ${userId}`);
-    const orders = await Order.find({ user: userId }).populate({
+    console.log(`Trying fetching order for user ${userId}`);
+    const orders = await Order.find({ user: userId })
+    .populate({
       path: 'products.product',
       populate: {
         path: 'user',
@@ -440,7 +440,7 @@ app.get('/order/:userid', async (req, res) => {
       }
     })
 
-    return res.status(200).json(orders);
+    return res.status(200).json({data: orders});
   } catch (error) {
     console.log(`Error get orders: ${error}`);
     return res.status(500).json({ message: 'Failed to retrieve orders' })

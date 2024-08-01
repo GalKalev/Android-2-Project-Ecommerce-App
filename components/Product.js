@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import CurrencyPD from './CurrencyPD';
@@ -8,18 +8,13 @@ import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import QuantityModel from './QuantityModel';
 
-const Product = ({ item, setCart, cart, screen }) => {
+const Product = ({ item, screen, scrollPosition, setScrollPosition }) => {
     const navigation = useNavigation();
 
     const [quantityModalVisible, setQuantityModalVisible] = useState(false);
 
-
     const handleAddToCart = () => {
-        // cart.push(item);
-        // console.log('add to..: ' + cart)
         setQuantityModalVisible(true);
-
-
     }
 
     const handleItemPressed = () => {
@@ -62,10 +57,10 @@ const Product = ({ item, setCart, cart, screen }) => {
                     </Text>
 
                     <View style={styles.userNameContainer}>
-                        <Ionicons name="person" size={18} color="white" style={{backgroundColor:'black', borderRadius:10}} />
+                        <Ionicons name="person" size={18} color="white" style={{ backgroundColor: 'black', borderRadius: 10 }} />
                         <Text style={styles.userNameText}>{item.user.name}</Text>
                     </View>
-                    
+
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
                         <View style={styles.priceContainer}>
@@ -80,7 +75,7 @@ const Product = ({ item, setCart, cart, screen }) => {
                             {item.quantity} left
                         </Text>
                     </View>
-                    
+
                 </View>
 
                 <Pressable style={styles.addToCardBtn}
@@ -89,10 +84,13 @@ const Product = ({ item, setCart, cart, screen }) => {
                     {/* <Text style={styles.addToCardBtnText}>Add To Cart</Text> */}
                     <FontAwesome name="cart-plus" size={22} color="black" />
                 </Pressable>
+
                 <QuantityModel
                     item={item}
                     setModalVisible={setQuantityModalVisible}
                     modalVisible={quantityModalVisible}
+                    scrollPosition={scrollPosition}
+                    setScrollPosition={setScrollPosition}
 
                 />
 
@@ -152,20 +150,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 15
     },
-    userNameContainer:{
-        flexDirection:'row',
-        borderRadius:10,
-        borderWidth:1,
-        borderColor:'black',
-        alignItems:'center',
-        justifyContent:'center',
-        marginBottom:5,
-        alignSelf:'flex-end',
-        paddingRight:3
+    userNameContainer: {
+        flexDirection: 'row',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: 'black',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 5,
+        alignSelf: 'flex-end',
+        paddingRight: 3
     },
-    userNameText:{
-        fontSize:15,
-        marginLeft:3
+    userNameText: {
+        fontSize: 15,
+        marginLeft: 3
     },
     priceContainer: {
         flexDirection: 'row',

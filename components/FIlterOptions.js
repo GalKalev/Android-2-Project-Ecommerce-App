@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Foundation } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 
-const FIlterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLoading, filteredItems, setFilteredItems, slideIn }) => {
+const FilterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLoading, filteredItems, setFilteredItems, slideIn }) => {
 
     // Filter options
     const [gender, setGender] = useState(null);
@@ -373,4 +373,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default FIlterOptions
+export default FilterOptions

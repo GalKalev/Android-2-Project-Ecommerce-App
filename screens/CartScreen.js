@@ -25,7 +25,6 @@ const CartScreen = () => {
     }, []);
 
     const deleteProductCart = (item) => {
-        //TODO: delete from cart in database
         Alert.alert(`Delete ${presentableWord(item.product.name)} from cart?`, 'Press DELETE to confirm changes.', [
             {
                 text:'CANCEL',

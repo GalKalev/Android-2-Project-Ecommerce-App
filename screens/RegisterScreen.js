@@ -26,10 +26,11 @@ const RegisterScreen = () => {
         try {
             setLoading(true)
             const registrationStatus = await registerUser(name, email.toLocaleLowerCase().trim(), password);
-            if (registrationStatus === 201) {
-                Alert.alert("Registration successful");
+            console.log('register');
+            console.log(registrationStatus.data);
+            if (registrationStatus.success === true) {
                 setUser(registrationStatus.data);
-                navigation.replace('Main'); // Navigate to the main screen
+                navigation.replace('Main');
             } else if (registrationStatus === 400) {
                 Alert.alert("Registration Error", "Email already registered or missing fields");
             } else if (registrationStatus === 1) {

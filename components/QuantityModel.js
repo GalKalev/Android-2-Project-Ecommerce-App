@@ -2,14 +2,17 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useUser } from "../utils/UserContext";
 import {addToCart, checkCartAvailability, fetchPokemons, getCart, removeFromCart} from "../api/apiServices";
+import Loading from './Loading';
 
 
 
 
-const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
+
+const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, setScrollPosition }) => {
 
     const [value, setValue] = useState(1);
     const { user, cart, setCart } = useUser();
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
 
@@ -47,20 +50,28 @@ const QuantityModel = ({ item, modalVisible, setModalVisible }) => {
         //add product to cart. Validate products quantities between stock and cart.
         console.log(`trying to submit new item to cart with ${item._id}`);
         try {
+            setIsLoading(true)
             const retStatus = await addToCart(user.userId, item._id, value);
             const itemsInStock = await fetchPokemons()
-            console.debug(`fetched from stock ${JSON.stringify(itemsInStock)}`);
+            // console.debug(`fetched from stock ${JSON.stringify(itemsInStock)}`);
             const cartiem =await getCart(user.userId);
-            console.debug(`fetched from cart ${JSON.stringify(cart.products)}`);
+            // console.debug(`fetched from cart ${JSON.stringify(cart.products)}`);
             await checkCartAvailability(user, itemsInStock, cartiem.products);
             const cartData = await getCart(user.userId);
             setCart(cartData);
+           
         }catch (error){
             console.error("Error submit item to cart:", error);
         }
         finally {
             setModalVisible(false);
+            setIsLoading(false);
+            setScrollPosition(scrollPosition)
         }
+    }
+
+    if(isLoading){
+        return <Loading loading={isLoading}/>
     }
 
 

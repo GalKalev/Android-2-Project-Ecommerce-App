@@ -10,7 +10,7 @@ import { EvilIcons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import CurrencyPD from '../components/CurrencyPD';
 import { useUser } from '../utils/UserContext';
-import {checkout} from "../api/apiServices";
+import { checkout } from "../api/apiServices";
 
 const CheckoutScreen = () => {
     const [isLoading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const CheckoutScreen = () => {
     const navigator = useNavigation();
     // const route = useRoute();
     // TODO: add user to params
-    const { cart , user} = useUser()
+    const { cart, user } = useUser()
 
     // First step values
     const [regions, setRegions] = useState([]);
@@ -142,12 +142,21 @@ const CheckoutScreen = () => {
             case (2): {
                 setLoading(true);
                 try {
-                    await checkout(user.userId,selectedRegion.label,selectedLocation.label,selectedHouseNum,cardOwner,cardNumber,expirationDate,cvv);
-                    setModalVisible(true);
-                    setTimeout(() => {
-                        setModalVisible(false);
-                        navigator.replace('Main');
-                    }, 4000);
+                    const resCheckout = await checkout(user.userId, selectedRegion.label, selectedLocation.label, selectedHouseNum, cardOwner, cardNumber, expirationDate, cvv);
+                    console.log("resCheckout.data");
+                    console.log(resCheckout)
+                    if (resCheckout.success) {
+                        cart.totalPrice = 0;
+                        cart.products = [];
+                        setModalVisible(true);
+                        setTimeout(() => {
+                            setModalVisible(false);
+                            navigator.replace('Main');
+                        }, 4000);
+                    }else{
+                        throw Error('Checkout error');
+                    }
+
                 } catch (error) {
                     Alert.alert('Checkout failed', 'Please try again later.');
                     console.error('Checkout error:', error);
@@ -160,7 +169,7 @@ const CheckoutScreen = () => {
     };
 
     const handleBackStep = () => {
-        if(currentStep === 0){
+        if (currentStep === 0) {
             navigator.goBack();
         }
         setCurrentStep(currentStep - 1);

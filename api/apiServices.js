@@ -70,8 +70,22 @@ export const registerUser = async (name, email, password) => {
     };
 
     try {
-        const response = await axios.post(`${API_URL}/user/register`, user);
-        return response.status; // Return the status code directly
+
+        const response = await axios.post(`${API_URL}/register`, user);
+        if(response.status === 201){
+            console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
+            const userId = response.data.userId;
+            const email = response.data.email;
+            const name = response.data.name;
+            return {
+                success: true,
+                data: { userId, email, name },
+                message: "Login successful"
+            };
+        }
+       
+        // return response.status; // Return the status code directly
+
     } catch (error) {
         if (error.response) {
             // The request was made and the server responded with a status code outside the range of 2xx
@@ -107,7 +121,7 @@ export async function fetchPokemons() {
         const getPokemons = await axios.get(`${API_URL}/Pokemon`);
         if(getPokemons.status===200){
             const pokemonList = getPokemons.data;
-            console.log(`Pokemons list fetched: ${pokemonList}`);
+            // console.log(`Pokemons list fetched: ${pokemonList}`);
             return pokemonList;
         }
         else{
@@ -132,11 +146,11 @@ export async function addPokemon(pokemon){
     }
 }
 
-// // Get all products in cart
+// Get all products in cart
 export const getCart = async (userId) => {
     try {
         const response = await axios.get(`${API_URL}/cart/${userId}`);
-        console.log(response.data);
+        // console.log(response.data);
         return response.data;
     }catch(error) {
         console.error("Error fetching cart:", error.status);
@@ -144,7 +158,7 @@ export const getCart = async (userId) => {
     }
 };
 
-// // Add product to cart
+// Add product to cart
 export const addToCart = async (userId, productId, quantity) => {
     console.log("Add to cart")
     try {
@@ -172,14 +186,14 @@ export const removeFromCart = async (userId, productId,price) => {
 // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
 export const checkCartAvailability = async (user, stockProducts, cartProducts) => {
     try {
-        console.debug("Checking availability for " + JSON.stringify(cartProducts));
-        console.debug(`stock products ${JSON.stringify(stockProducts)}`);
+        // console.debug("Checking availability for " + JSON.stringify(cartProducts));
+        // console.debug(`stock products ${JSON.stringify(stockProducts)}`);
         for (let cartProduct of cartProducts) {
-            console.debug(`cart product = ${JSON.stringify(cartProduct)}`);
+            // console.debug(`cart product = ${JSON.stringify(cartProduct)}`);
 
             // Ensure the stockProduct has the _id field correctly defined
             const stockProduct = stockProducts.find(product => {
-                console.log(`stock product = ${JSON.stringify(product)}`);
+                // console.log(`stock product = ${JSON.stringify(product)}`);
                 return product._id === cartProduct.product._id; // Directly compare ids as strings
             });
 
@@ -222,10 +236,10 @@ export const checkout = async (userId,region,location, houseNum, cardOwner,cardN
 };
 
 // Get all orders for user
-export const gerOrders = async (userId) => {
+export const getOrders = async (userId) => {
     try {
+        console.log('services order userid: ' + userId);
         const response = await axios.get(`${API_URL}/order/${userId}`);
-        console.log(response.data);
         return response.data;
     }catch(error) {
         console.error("Error fetching orders:", error.status);
