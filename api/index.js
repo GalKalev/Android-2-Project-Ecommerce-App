@@ -186,6 +186,7 @@ app.post('/Pokemon', async (req, res) => {
   }
 })
 
+
 // Get all Available Pokemons in Store
 app.get('/Pokemon', async (req, res) => {
   try {
@@ -213,6 +214,38 @@ app.get('/Pokemon/:userId', async (req, res) => {
     return res.status(500).json({ message: 'Failed to retrieve products' });
   }
 });
+
+// Update existing Pokemon product
+app.put('/Pokemon/:id', async (req, res) => {
+  try {
+    console.log('Trying to update Pokemon');
+
+    const { productId } = req.params;
+    const updateData = req.body;
+
+    // Ensure required fields are present (adjust based on your requirements)
+    const requiredFields = ['user', 'name', 'url', 'img', 'gender', 'level', 'isShiny', 'abilities', 'moves', 'species', 'stats', 'types', 'price', 'quantity'];
+    const missingFields = requiredFields.filter(field => !(field in updateData));
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({ message: `Missing required fields: ${missingFields.join(', ')}` });
+    }
+
+    const updatedPokemon = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+
+    if (!updatedPokemon) {
+      return res.status(404).json({ message: 'Pokemon not found' });
+    }
+
+    console.log(`Pokemon updated: ${updatedPokemon}`);
+    return res.status(200).json({ message: 'Pokemon updated successfully', data: updatedPokemon });
+
+  } catch (e) {
+    console.log(`Error updating Pokemon: ${e.message}`);
+    return res.status(500).json({ message: 'Updating Pokemon Failed' });
+  }
+});
+
 
 //---------- Cart Methods ----------
 // Add Pokemon to user's cart
