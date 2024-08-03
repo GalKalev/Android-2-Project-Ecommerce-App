@@ -134,6 +134,7 @@ export async function fetchPokemons() {
     }
 }
 
+// Add new Pokemon to products
 export async function addPokemon(pokemon){
     try {
         console.debug(pokemon);
@@ -142,6 +143,18 @@ export async function addPokemon(pokemon){
         return response;
     } catch (error) {
         console.log('error uploading pokemon to sell: ' + error.message);
+        throw error;
+    }
+}
+
+// Function to edit an existing Pokemon
+export async function editPokemon(pokemonId, updatedData) {
+    try {
+        const response = await axios.put(`${API_URL}/Pokemon/${pokemonId}`, updatedData);
+        console.log("Pokemon updated successfully");
+        return response;
+    } catch (error) {
+        console.log('Error updating Pokemon: ' + error.message);
         throw error;
     }
 }
