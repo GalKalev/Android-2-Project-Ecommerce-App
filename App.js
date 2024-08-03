@@ -3,8 +3,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import StackNavigator from './navigation/StackNavigator';
 import { UserProvider } from './utils/UserContext';
 
-import { Provider } from 'react-native-paper';
-import store from './utils/store';
 
 export default function App() {
   return (

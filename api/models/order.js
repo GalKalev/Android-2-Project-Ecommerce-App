@@ -9,8 +9,14 @@ const orderSchema = new mongoose.Schema({
     },
     products: [
         {
-            _id: false,
-            product: {user: {
+            // _id: false,
+            product: {
+                _id:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref:'Product',
+                    required: true
+                },
+                user: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: "User",
                     required: true
@@ -29,10 +35,6 @@ const orderSchema = new mongoose.Schema({
                 },
                 img: {
                     type: String,
-                    required: true
-                },
-                quantity: {
-                    type: Number,
                     required: true
                 },
 

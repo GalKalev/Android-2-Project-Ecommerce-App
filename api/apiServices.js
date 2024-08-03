@@ -251,7 +251,6 @@ export const getOrders = async (userId) => {
 export const getUserProducts= async (userId)=>{
     try {
         const response = await axios.get(`${API_URL}/Pokemon/${userId}`);
-        console.log(response.data);
         return response.data;
     }catch(error) {
         console.error("Error fetching user products:", error.status);

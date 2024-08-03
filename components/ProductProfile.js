@@ -6,8 +6,7 @@ import { presentableWord } from '../utils/consts';
 
 import CurrencyPD from './CurrencyPD';
 
-const ProductProfile = ({ product, quantityBought, quantitySold }) => {
-    
+const ProductProfile = ({ product, quantityBought, quantitySale }) => {
     return (
         <View style={[styles.productContainer, { borderColor: product.isShiny ? 'gold' : 'black' }]} key={product._id}>
             {product.isShiny && (
@@ -38,7 +37,7 @@ const ProductProfile = ({ product, quantityBought, quantitySold }) => {
                     </View>
                 </View>
                 <View style={{ marginTop: 2 }}>
-                    <Text style={[styles.productNamePrice, {fontWeight:'bold'}]}>{presentableWord(product.name)}</Text>
+                    <Text style={[styles.productNamePrice, {fontWeight:'bold', maxWidth:80, textAlign:'center'}]}>{presentableWord(product.name)}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <Text style={styles.productNamePrice}>{product.price} </Text>
                         <CurrencyPD
@@ -48,8 +47,8 @@ const ProductProfile = ({ product, quantityBought, quantitySold }) => {
                         {quantityBought && (
                             <Text>({quantityBought})</Text>
                         )}
-                        {quantitySold && (
-                            <Text>({quantitySold} left)</Text>
+                        {quantitySale && (
+                            <Text>({quantitySale} left)</Text>
                         )}
                     </View>
                 </View>
