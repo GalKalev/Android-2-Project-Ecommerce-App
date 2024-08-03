@@ -385,14 +385,19 @@ app.post('/checkout', async (req, res) => {
     // build full products list and update stock
     const productsList = [];
     for (const cartItem of cart.products) {
-      // console.debug(`for product ${cartItem}`);
       const stockProduct = await Product.findById(cartItem.product._id);
-      // console.debug(`found product: ${stockProduct}`);
       if (stockProduct) {
         // Check stock and update quantities
         if (stockProduct.quantity >= cartItem.quantity) {
           stockProduct.quantity -= cartItem.quantity;
-          await stockProduct.save();
+
+          // Check if the stock is zero after decrementing
+          if (stockProduct.quantity === 0) {
+            await Product.findByIdAndRemove(stockProduct._id);
+            console.log(`Product ${stockProduct.name} removed from stock due to zero quantity`);
+          } else {
+            await stockProduct.save();
+          }
         } else {
           return res.status(400).json({ message: `Not enough stock for ${stockProduct.name}` });
         }
@@ -400,7 +405,7 @@ app.post('/checkout', async (req, res) => {
         // Add the product with full details to the order's products list
         productsList.push({
           product: {
-            _id:stockProduct._id,
+            _id: stockProduct._id,
             user: stockProduct.user,
             name: stockProduct.name,
             url: stockProduct.url,
@@ -451,9 +456,9 @@ app.post('/checkout', async (req, res) => {
   } catch (error) {
     console.log('Error during checkout:', error);
     return res.status(500).json({ message: 'Checkout failed', success: false });
-
   }
 });
+
 
 app.get('/order/:userId', async (req, res) => {
 
