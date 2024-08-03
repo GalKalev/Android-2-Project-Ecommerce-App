@@ -6,7 +6,7 @@ const cors = require("cors");
 // const { PORT, IP_ADDRESS } = require('@env');
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
-const IP_ADDRESS = '10.0.0.25' ;
+const IP_ADDRESS = '10.0.0.25';
 // const IP_ADDRESS = '192.168.68.113'
 
 
@@ -107,25 +107,25 @@ app.post('/user/login', async (req, res) => {
 });
 
 // user edit username
-app.post('/user/edit',async (req,res)=>{
+app.post('/user/edit', async (req, res) => {
   console.log("try to edit user name");
-  try{
-    const { userId, newName} = req.body;
+  try {
+    const { userId, newName } = req.body;
 
-    const user = await User.findById({userId});
-    if(!user){
+    const user = await User.findOne({ _id: userId });
+    if (!user) {
       console.log("user not found");
-      return res.status(404).json({message: "user not found"});
+      return res.status(404).json({ message: "user not found" });
     }
 
     user.name = newName;
     await user.save();
 
     console.log("username edited successfully");
-    return res.status(200).json({message: "username edited successfully"})
-  }catch (error){
-    console.log("ERROR: ",error);
-    return res.status(500).json({message: 'Edit user failed'});
+    return res.status(200).json({ message: "username edited successfully", data:user })
+  } catch (error) {
+    console.log("ERROR: ", error);
+    return res.status(500).json({ message: 'Edit user failed' });
   }
 })
 
@@ -207,11 +207,7 @@ app.get('/Pokemon/:userId', async (req, res) => {
     const { userId } = req.params;
     const products = await Product.find({ user: userId });
 
-    if (products.length === 0) {
-      return res.status(404).json({ message: 'No products found for this user' });
-    }
-
-    return res.status(200).json(products);
+    return res.status(200).json({ data: products });
   } catch (error) {
     console.error('Error fetching products for user:', error);
     return res.status(500).json({ message: 'Failed to retrieve products' });
@@ -263,7 +259,7 @@ app.post('/cart/add', async (req, res) => {
     cart.totalPrice = totalPrice;
     console.debug(`total price = ${cart.totalPrice}`);
 
-    console.debug("saving new cart with total price of "+ cart.totalPrice )
+    console.debug("saving new cart with total price of " + cart.totalPrice)
     await cart.save();
 
     return res.status(201).json({ message: `${cart.products.length} products added successfully` });
@@ -356,9 +352,9 @@ app.post('/checkout', async (req, res) => {
     // build full products list and update stock
     const productsList = [];
     for (const cartItem of cart.products) {
-      console.debug(`for product ${cartItem}`);
+      // console.debug(`for product ${cartItem}`);
       const stockProduct = await Product.findById(cartItem.product._id);
-      console.debug(`found product: ${stockProduct}`);
+      // console.debug(`found product: ${stockProduct}`);
       if (stockProduct) {
         // Check stock and update quantities
         if (stockProduct.quantity >= cartItem.quantity) {
@@ -371,12 +367,12 @@ app.post('/checkout', async (req, res) => {
         // Add the product with full details to the order's products list
         productsList.push({
           product: {
+            _id:stockProduct._id,
             user: stockProduct.user,
             name: stockProduct.name,
             url: stockProduct.url,
             price: stockProduct.price,
             img: stockProduct.img,
-            quantity: cartItem.quantity, // use quantity from the cart
             isShiny: stockProduct.isShiny,
             gender: stockProduct.gender,
             level: stockProduct.level,
@@ -417,11 +413,11 @@ app.post('/checkout', async (req, res) => {
     cart.products = [];
     cart.totalPrice = 0;
     await cart.save();
-    
-    return res.status(200).json({ message: 'Checkout successful', success:true });
+
+    return res.status(200).json({ message: 'Checkout successful', success: true });
   } catch (error) {
     console.log('Error during checkout:', error);
-    return res.status(500).json({ message: 'Checkout failed', success:false });
+    return res.status(500).json({ message: 'Checkout failed', success: false });
 
   }
 });
@@ -432,15 +428,8 @@ app.get('/order/:userId', async (req, res) => {
     const { userId } = req.params;
     console.log(`Trying fetching order for user ${userId}`);
     const orders = await Order.find({ user: userId })
-    .populate({
-      path: 'products.product',
-      populate: {
-        path: 'user',
-        select: 'name'
-      }
-    })
 
-    return res.status(200).json({data: orders});
+    return res.status(200).json({ data: orders });
   } catch (error) {
     console.log(`Error get orders: ${error}`);
     return res.status(500).json({ message: 'Failed to retrieve orders' })

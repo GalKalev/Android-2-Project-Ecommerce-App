@@ -5,6 +5,8 @@ import { useUser } from '../utils/UserContext';
 import { useNavigation, CommonActions } from '@react-navigation/native'
 import { TextInput } from 'react-native-paper';
 import { MaterialIcons } from '@expo/vector-icons';
+import Loading from './Loading';
+import { editUsername } from '../api/apiServices';
 
 
 const UserSettings = () => {
@@ -15,24 +17,36 @@ const UserSettings = () => {
     const [editActive, setEditActive] = useState(false);
     const [newName, setNewName] = useState(user.name);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const handleEditName = () => {
        
         console.log('edit name')
         setEditActive(true);
     }
 
-    const handleApproveName = () => {
-        if(newName === ''){
-            Alert.alert('Name cannot be empty');
-            return;
+    const handleApproveName = async() => {
+        try{
+            setIsLoading(true)
+            if(newName === ''){
+                Alert.alert('Name cannot be empty');
+                return;
+            }
+            setEditActive(false)
+             
+            const editNameRes = await editUsername(user.userId, newName);
+            if(editNameRes.data){
+                const editedUser = {'userId':user.userId, 'name':newName, 'email':user.email};
+                setUser(editedUser);
+            }
+        }catch(e){
+            console.log('Error edit name UserSetting: ' + e.error)
+            Alert.alert('An Error Has Occurred', 'Please try again later');
+        }finally{
+            setIsLoading(false);
         }
-        setEditActive(false)
-        console.log(newName);
-        // const editedUser = {'userId':user.userId, 'name':newName, 'email':user.email};
-        // setUser(editedUser);
-        user.name = newName;
-        console.log(JSON.stringify(user));
-        //TODO: edit user name in database
+        
+       
 
     }
 
@@ -61,6 +75,10 @@ const UserSettings = () => {
             }
 
         ])
+    }
+
+    if(isLoading){
+        return(<Loading loading={isLoading}/>)
     }
 
 

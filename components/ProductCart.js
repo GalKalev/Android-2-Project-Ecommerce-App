@@ -46,7 +46,7 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
                 <View style={{ alignSelf: 'center', marginRight: 4 }}>
                     <View>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-                            <Text style={{ fontSize: 18, marginRight: 7, maxWidth:100, textAlign:'center' }}>{presentableWord(item.product.name)}</Text>
+                            <Text style={{ fontSize: 18, marginRight: 7, maxWidth:100, textAlign:'center',}}>{presentableWord(item.product.name)}</Text>
                             <Text style={{ fontSize: 13, marginRight: 10 }}>LV: {item.product.level}</Text>
                             <View>
                                 {item.gender ? (

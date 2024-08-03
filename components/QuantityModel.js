@@ -1,7 +1,7 @@
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useUser } from "../utils/UserContext";
-import {addToCart, checkCartAvailability, fetchPokemons, getCart, removeFromCart} from "../api/apiServices";
+import { addToCart, checkCartAvailability, fetchPokemons, getCart, removeFromCart } from "../api/apiServices";
 import Loading from './Loading';
 
 
@@ -15,20 +15,23 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
+        
+            const cartItem = cart.products.find(findProductInCart);
+            if (cartItem) {
 
-        const cartItem = cart.products.find(findProductInCart);
-        if (cartItem) {
-            // console.log(cartItem.quantity);
-            if (cartItem.quantity > item.quantity) {
-                setValue(item.quantity)
-            } else {
-                setValue(cartItem.quantity)
-            }
+                if (cartItem.quantity > item.quantity) {
+                    setValue(item.quantity)
+                } else {
+                    setValue(cartItem.quantity)
+                }
+
+            
 
         }
 
     }, [])
     const findProductInCart = (cartItem) => {
+
         return cartItem.product._id === item._id
     }
 
@@ -54,13 +57,13 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
             const retStatus = await addToCart(user.userId, item._id, value);
             const itemsInStock = await fetchPokemons()
             // console.debug(`fetched from stock ${JSON.stringify(itemsInStock)}`);
-            const cartiem =await getCart(user.userId);
+            const cartiem = await getCart(user.userId);
             // console.debug(`fetched from cart ${JSON.stringify(cart.products)}`);
             await checkCartAvailability(user, itemsInStock, cartiem.products);
             const cartData = await getCart(user.userId);
             setCart(cartData);
-           
-        }catch (error){
+
+        } catch (error) {
             console.error("Error submit item to cart:", error);
         }
         finally {
@@ -70,8 +73,8 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
         }
     }
 
-    if(isLoading){
-        return <Loading loading={isLoading}/>
+    if (isLoading) {
+        return <Loading loading={isLoading} />
     }
 
 
@@ -105,7 +108,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
 
 
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                <Pressable style={[styles.button, {backgroundColor: value === item.quantity ? 'gray':'#2196F3' }] } onPress={handleAddQuantity}>
+                                <Pressable style={[styles.button, { backgroundColor: value === item.quantity ? 'gray' : '#2196F3' }]} onPress={handleAddQuantity}>
                                     <Text style={styles.buttonText}>+</Text>
                                 </Pressable>
 
@@ -115,7 +118,7 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
                                 </View>
 
 
-                                <Pressable style={[styles.button,{backgroundColor: value === 0 ? 'gray':'#2196F3' }]} onPress={handleReduceQuantity}>
+                                <Pressable style={[styles.button, { backgroundColor: value === 0 ? 'gray' : '#2196F3' }]} onPress={handleReduceQuantity}>
                                     <Text style={styles.buttonText}>-</Text>
                                 </Pressable>
                             </View>
