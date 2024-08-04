@@ -246,6 +246,34 @@ app.put('/Pokemon/:id', async (req, res) => {
   }
 });
 
+// Remove product from stock
+app.post('/Pokemon/remove', async (req, res) => {
+  try {
+    const { productId } = req.body;
+    console.debug(`req body = productId ${productId}`);
+
+    if (!productId) {
+      console.debug("missing product id, 404")
+      return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const product = await Product.findByIdAndDelete({_id: productId})
+    if (!product) {
+      console.debug("product not found, 404");
+      return res.status(404).json({ message: 'Product not found' });
+    }
+    console.log(`product found and deleted: ${product}`);
+
+
+
+    return res.status(200).json({ message: 'Product removed from stock' });
+  } catch (error) {
+    console.log('Error removing product from stock:', error);
+    return res.status(500).json({ message: 'Failed to remove product from stock' });
+  }
+});
+
+
 
 //---------- Cart Methods ----------
 // Add Pokemon to user's cart
