@@ -13,50 +13,47 @@ import { presentableWord } from '../utils/consts';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import UserSettings from '../components/UserSettings';
-import {getOrders, getUserProducts} from '../api/apiServices'
+import { getOrders, getUserProducts, removePokemon } from '../api/apiServices'
 
 const ProfileScreen = () => {
 
     const { user, setUser } = useUser();
 
-    // TODO: uncomment when user is sent
-    // const route = useRoute();
-    // const {user} = route.params;
     const navigator = useNavigation();
 
-    // const user = { name: 'K', email: 'k@k.com' }
     const [isLoading, setIsLoading] = useState(false);
 
     const [orders, setOrders] = useState([]);
     const [userProducts, setUserProducts] = useState([]);
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            //TODO: get the orders from the database    
+
+            const resOrders = await getOrders(user.userId);
+            if (resOrders.data) {
+                const orders = resOrders.data
+                setOrders(orders);
+            }
+
+            const resUserProducts = await getUserProducts(user.userId);
+
+            if (resUserProducts.data) {
+                const userProducts = resUserProducts.data
+                setUserProducts(userProducts);
+            }
+
+        } catch {
+            console.log('Error fetching profile: ' + e.message);
+            Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     useEffect(() => {
 
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                //TODO: get the orders from the database    
 
-                const resOrders = await getOrders(user.userId);
-                if(resOrders.data){
-                    const orders = resOrders.data
-                    setOrders(orders);
-                }
-
-                const resUserProducts = await getUserProducts(user.userId);
-               
-                if(resUserProducts.data){
-                    const userProducts = resUserProducts.data
-                    setUserProducts(userProducts);
-                }
-
-            } catch {
-                console.log('Error fetching profile: ' + e.message);
-                Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
-            } finally {
-                setIsLoading(false)
-            }
-        }
 
         fetchData();
 
@@ -72,28 +69,28 @@ const ProfileScreen = () => {
             content:
                 <View>
                     {orders?.length > 0 ? (orders.map((order) => (
-                            <View style={{ marginBottom: 20 }} key={order._id}>
-                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: 17 }}>Payed: {order.totalPrice}</Text>
-                                    <CurrencyPD
-                                        style={styles.currency} />
-                                </View>
-
-                                <ScrollView horizontal>
-                                    {order.products.map((product) => {
-                                        
-                                        return (
-                                            <ProductProfile
-                                                key={product.product._id}
-                                                product={product.product}
-                                                quantityBought={product.quantity}
-
-                                            />
-                                        )
-                                    })}
-                                </ScrollView>
+                        <View style={{ marginBottom: 20 }} key={order._id}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={{ fontSize: 17 }}>Payed: {order.totalPrice}</Text>
+                                <CurrencyPD
+                                    style={styles.currency} />
                             </View>
-                        )
+
+                            <ScrollView horizontal>
+                                {order.products.map((product) => {
+
+                                    return (
+                                        <ProductProfile
+                                            key={product.product._id}
+                                            product={product.product}
+                                            quantityBought={product.quantity}
+
+                                        />
+                                    )
+                                })}
+                            </ScrollView>
+                        </View>
+                    )
                     )
                     ) : (
                         <Text style={{ fontSize: 18, textAlign: 'center' }}>You have not ordered any products yet...</Text>
@@ -156,28 +153,32 @@ const ProfileScreen = () => {
         navigator.navigate('AddPokemon', { item: product });
     }
 
-    
+
 
     const handleDeleteProduct = (product) => {
-        //TODO: delete product from database
         Alert.alert(`Delete ${presentableWord(product.name)} from the store?`, 'Click OK to delete', [
             {
                 text: 'OK',
-                //TODO: delete product from store here 
-                onPress: async() => {
-                    try{
+                onPress: async () => {
+                    try {
                         setIsLoading(true)
                         const response = await removePokemon(product._id)
-                        if(response.data){
+                        console.log(response.success);
+                        if (response.success) {
                             fetchData();
+                            // Refresh the products in Home Screen as well
+                            const refreshUser = { 'userId': user.userId, 'name': user.name, 'email': user.email };
+                            setUser(refreshUser);
+                        } else {
+                            throw Error();
                         }
-                    }catch(e){
+                    } catch (e) {
                         console.log('error deleting product: ' + e.message);
                         Alert.alert('Error', 'Please try again later');
-                    }finally{
+                    } finally {
                         setIsLoading(false);
                     }
-                   
+
                 }
             },
             {

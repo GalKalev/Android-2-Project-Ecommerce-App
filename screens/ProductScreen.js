@@ -5,7 +5,7 @@ import { AntDesign, Foundation } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import { Ionicons } from '@expo/vector-icons';
 import RadarChart from '../components/RadarChart';
-import { addToCart } from "../api/apiServices";
+import { addToCart, removePokemon } from "../api/apiServices";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useUser } from '../utils/UserContext';
@@ -13,6 +13,7 @@ import { Alert } from 'react-native';
 import QuantityModel from '../components/QuantityModel';
 import CurrencyPD from '../components/CurrencyPD';
 import { Modal } from 'react-native-paper';
+import Loading from '../components/Loading';
 
 
 
@@ -24,7 +25,9 @@ const ProductScreen = () => {
 
     const [quantityModalVisible, setQuantityModalVisible] = useState(false);
 
-    const [modalVisible,setModalVisible] = useState(false);
+    const [removeModalVisible, setRemoveModalVisible] = useState(false);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const screenWidth = Dimensions.get('window').width;
 
@@ -48,28 +51,30 @@ const ProductScreen = () => {
 
     const handleDeleteItem = () => {
         //TODO: delete product from database
-        Alert.alert(`Delete ${presentableWord(product.name)} from the store?`, 'Click OK to delete', [
+        Alert.alert(`Delete ${presentableWord(item.name)} from the store?`, 'Click OK to delete', [
             {
                 text: 'OK',
                 //TODO: delete product from store here 
-                onPress: async() => {
-                    try{
+                onPress: async () => {
+                    try {
                         setIsLoading(true)
-                        const response = await removePokemon(product._id)
-                        if(response.data){
-                            setModalVisible(true);
+                        const response = await removePokemon(item._id)
+                        if (response.success) {
+                            setRemoveModalVisible(true);
                             setTimeout(() => {
-                                setModalVisible(false);
-                                navigator.replace('Main');
-                            }, 2000); 
+                                setRemoveModalVisible(false);
+                                navigation.replace('Main');
+                            }, 2000);
+                        } else {
+                            throw Error();
                         }
-                    }catch(e){
+                    } catch (e) {
                         console.log('error deleting product: ' + e.message);
                         Alert.alert('Error', 'Please try again later');
-                    }finally{
+                    } finally {
                         setIsLoading(false);
                     }
-                   
+
                 }
             },
             {
@@ -79,6 +84,10 @@ const ProductScreen = () => {
 
         ])
 
+    }
+
+    if (isLoading) {
+        return (<Loading loading={isLoading} />)
     }
 
 
@@ -194,7 +203,7 @@ const ProductScreen = () => {
                             </View>
                         </View>
                     </Pressable>
-   
+
                 </ScrollView>
 
             </View>
@@ -209,22 +218,6 @@ const ProductScreen = () => {
                     <Pressable style={{ width: '50%', alignItems: 'center', backgroundColor: 'orange' }} onPress={handleDeleteItem}>
                         <Text style={{ alignSelf: 'center', color: 'white', fontSize: 17, padding: 10 }}>DELETE</Text>
                     </Pressable>
-
-                    <Modal
-                        transparent={true}
-                        visible={modalVisible}
-                        onRequestClose={() => setModalVisible(false)}
-                    >
-                        <View style={styles.modalOverlay}>
-                            <View style={styles.modalContent}>
-
-                                <Text style={styles.modalTitle}>{presentableWord(item.name)} has been deleted</Text>
-
-                            </View>
-                        </View>
-                    </Modal>
-
-
 
                 </View>
             ) : (
@@ -244,6 +237,20 @@ const ProductScreen = () => {
                     />
                 </View>
             )}
+
+            <Modal
+                transparent={true}
+                visible={removeModalVisible}
+                onRequestClose={() => setRemoveModalVisible(false)}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+
+                        <Text style={styles.modalTitle}>{presentableWord(item.name)} has been deleted</Text>
+
+                    </View>
+                </View>
+            </Modal>
 
 
 
@@ -324,7 +331,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         backgroundColor: '#FEB2B2',
-        padding:2,
+        padding: 2,
         flexDirection: 'row',
         alignSelf: 'flex-start',
         alignItems: 'center',
@@ -388,12 +395,13 @@ const styles = StyleSheet.create({
     modalContent: {
         width: 300,
         padding: 20,
+        height:100,
         backgroundColor: '#fff',
         borderRadius: 10,
         alignItems: 'center',
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
     },

@@ -266,10 +266,10 @@ app.post('/Pokemon/remove', async (req, res) => {
 
 
 
-    return res.status(200).json({ message: 'Product removed from stock' });
+    return res.status(200).json({ message: 'Product removed from stock', success:true });
   } catch (error) {
     console.log('Error removing product from stock:', error);
-    return res.status(500).json({ message: 'Failed to remove product from stock' });
+    return res.status(500).json({ message: 'Failed to remove product from stock', success:false });
   }
 });
 
