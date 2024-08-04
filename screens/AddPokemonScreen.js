@@ -17,7 +17,7 @@ import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
 import { useUser } from '../utils/UserContext';
 import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
-import { addPokemon } from "../api/apiServices";
+import { addPokemon, editPokemon } from "../api/apiServices";
 
 
 const AddPokemonScreen = () => {
@@ -168,7 +168,7 @@ const AddPokemonScreen = () => {
             speed: selectedSpeed
         }
 
-        const soldPokemon = {
+        const pokemon = {
             user: user.userId,
             name: chosenPokemon.name,
             url: chosenPokemon.url,
@@ -191,13 +191,11 @@ const AddPokemonScreen = () => {
             let response;
             if (item) {
                 // TODO: sending the pokemon id so it will not create a new one (??)
-                const editPokemon = { pokemon: soldPokemon, pokemonId: item._id }
-                // console.log(JSON.stringify(editPokemon));
-                // const response = await editPokemon(soldPokemon);
+                response = await editPokemon(item._id,pokemon);
             } else {
-                response = await addPokemon(soldPokemon);
+                response = await addPokemon(pokemon);
             }
-            if (response.status === 201) {
+            if (response.status === 201 || response.status === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Pokemon Is Up For Sale',
