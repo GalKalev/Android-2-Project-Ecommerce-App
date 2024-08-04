@@ -159,6 +159,23 @@ export async function editPokemon(pokemonId, updatedData) {
     }
 }
 
+// Function to remove a product from stock
+export async function removePokemon(productId) {
+    try {
+        const response = await axios.post(`${API_URL}/Pokemon/remove`, { productId });
+        if (response.status === 200) {
+            console.log('Product removed from stock successfully');
+            return response.data;
+        } else {
+            console.error('Failed to remove product from stock');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error removing product from stock:', error.message);
+        throw error;
+    }
+}
+
 // Get all products in cart
 export const getCart = async (userId) => {
     try {
