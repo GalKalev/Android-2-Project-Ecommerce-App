@@ -268,7 +268,6 @@ export const checkout = async (userId,region,location, houseNum, cardOwner,cardN
 // Get all orders for user
 export const getOrders = async (userId) => {
     try {
-        console.log('services order userid: ' + userId);
         const response = await axios.get(`${API_URL}/order/${userId}`);
         return response.data;
     }catch(error) {

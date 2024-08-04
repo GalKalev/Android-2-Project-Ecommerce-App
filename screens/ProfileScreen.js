@@ -156,13 +156,29 @@ const ProfileScreen = () => {
         navigator.navigate('AddPokemon', { item: product });
     }
 
+    
+
     const handleDeleteProduct = (product) => {
         //TODO: delete product from database
         Alert.alert(`Delete ${presentableWord(product.name)} from the store?`, 'Click OK to delete', [
             {
                 text: 'OK',
                 //TODO: delete product from store here 
-                onPress: () => console.log(`delete product: ${product._id}, ${product.name} click`)
+                onPress: async() => {
+                    try{
+                        setIsLoading(true)
+                        const response = await removePokemon(product._id)
+                        if(response.data){
+                            fetchData();
+                        }
+                    }catch(e){
+                        console.log('error deleting product: ' + e.message);
+                        Alert.alert('Error', 'Please try again later');
+                    }finally{
+                        setIsLoading(false);
+                    }
+                   
+                }
             },
             {
                 text: 'CANCEL',

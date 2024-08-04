@@ -6,7 +6,7 @@ const cors = require("cors");
 // const { PORT, IP_ADDRESS } = require('@env');
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
-const IP_ADDRESS = '10.0.0.25';
+const IP_ADDRESS = '10.0.0.13';
 // const IP_ADDRESS = '192.168.68.113'
 
 
@@ -216,7 +216,7 @@ app.get('/Pokemon/:userId', async (req, res) => {
 });
 
 // Update existing Pokemon product
-app.put('/Pokemon/:id', async (req, res) => {
+app.put('/Pokemon/:productId', async (req, res) => {
   try {
     console.log('Trying to update Pokemon');
 
