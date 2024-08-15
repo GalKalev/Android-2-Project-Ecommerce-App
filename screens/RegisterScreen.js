@@ -10,7 +10,7 @@ import LogRegForm from "../components/LogRegForm";
 import { IP_ADDRESS } from '@env';
 import { useUser } from '../utils/UserContext';
 import Loading from "../components/Loading";
-import { registerUser } from "../api/apiServices";
+import { getCart, registerUser } from "../api/apiServices";
 
 const RegisterScreen = () => {
 
@@ -18,7 +18,7 @@ const RegisterScreen = () => {
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
     const [isLoading, setLoading] = useState(false);
-    const { setUser } = useUser();
+    const { setUser,setCart } = useUser();
 
     const navigation = useNavigation();
 
@@ -26,10 +26,10 @@ const RegisterScreen = () => {
         try {
             setLoading(true)
             const registrationStatus = await registerUser(name, email.toLocaleLowerCase().trim(), password);
-            console.log('register');
-            console.log(registrationStatus.data);
             if (registrationStatus.success === true) {
                 setUser(registrationStatus.data);
+                const cartData = await getCart(registrationStatus.data.userId);
+                setCart(cartData);
                 navigation.replace('Main');
             } else if (registrationStatus === 400) {
                 Alert.alert("Registration Error", "Email already registered or missing fields");

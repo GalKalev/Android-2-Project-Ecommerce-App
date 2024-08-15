@@ -49,7 +49,7 @@ const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart 
                             <Text style={{ fontSize: 18, marginRight: 7, maxWidth:100, textAlign:'center',}}>{presentableWord(item.product.name)}</Text>
                             <Text style={{ fontSize: 13, marginRight: 10 }}>LV: {item.product.level}</Text>
                             <View>
-                                {item.gender ? (
+                                {item.product.gender ? (
                                     <Foundation name="female-symbol" size={20} color="pink" style={styles.gender} />
                                 ) : (
                                     <Foundation name="male-symbol" size={20} color="blue" style={styles.gender} />

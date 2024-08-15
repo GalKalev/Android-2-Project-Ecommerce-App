@@ -68,10 +68,12 @@ export const registerUser = async (name, email, password) => {
         email: email,
         password: password
     };
+    console.log("serv: " + user)
 
     try {
 
-        const response = await axios.post(`${API_URL}/register`, user);
+        const response = await axios.post(`${API_URL}/user/register`, user);
+        console.log('api reg res: ' + response);
         if(response.status === 201){
             console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
             const userId = response.data.userId;
