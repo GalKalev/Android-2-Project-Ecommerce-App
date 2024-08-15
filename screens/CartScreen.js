@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, Pressable, FlatList, Image, SafeAreaView, StyleSheet, Platform, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
@@ -14,21 +14,41 @@ const CartScreen = () => {
     const [isLoading, setLoading] = useState(false);
     const navigation = useNavigation();
 
-    useEffect(() => {
-        if (cart?.products?.length) {
-            let totalProductsCount = 0;
-            cart.products.forEach(product => {
-                totalProductsCount += product.quantity;
-            });
-            setTotalProducts(totalProductsCount);
-        }
-    }, []);
+    // useEffect(() => {
+    //     console.log('use effect cart screen')
+    //     if (cart?.products?.length) {
+    //         let totalProductsCount = 0;
+    //         cart.products.forEach(product => {
+    //             totalProductsCount += product.quantity;
+    //         });
+    //         setTotalProducts(totalProductsCount);
+    //     }
+    // }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            console.log('Cart screen focused');
+            if (cart?.products?.length) {
+                let totalProductsCount = 0;
+                cart.products.forEach(product => {
+                    totalProductsCount += product.quantity;
+                });
+                setTotalProducts(totalProductsCount);
+            } else {
+                setTotalProducts(0);
+            }
+
+            return () => {
+                // Cleanup logic if needed when screen is unfocused
+            };
+        }, [cart])
+    );
 
     const deleteProductCart = (item) => {
         Alert.alert(`Delete ${presentableWord(item.product.name)} from cart?`, 'Press DELETE to confirm changes.', [
             {
-                text:'CANCEL',
-                style:'cancel'
+                text: 'CANCEL',
+                style: 'cancel'
             },
             {
                 text: 'DELETE',
@@ -46,7 +66,7 @@ const CartScreen = () => {
                     setTotalProducts(newTotalProducts);
                 }
             },
-            
+
         ])
 
     };

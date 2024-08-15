@@ -33,21 +33,28 @@ const StackNavigator = () => {
   const [totalProducts, setTotalProducts] = useState(0);
 
   useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const cartData = await getCart(user.userId);
-        setCart(cartData);
-       
-      } catch (e) {
-        Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
-        console.log('error fetching cart: ' + e.message);
-      }
-    };
+    console.log('stack use effect')
+    if (user.email != '') {
+      const fetchCart = async () => {
+        try {
+          console.log('fetch cart navi');
+          const cartData = await getCart(user.userId);
 
-    fetchCart();
+          console.log(cart)
+          setCart(cartData);
+
+        } catch (e) {
+          Alert.alert('Server Error', 'Sorry for the trouble.\nPlease try again later');
+          console.log('error fetching cart: ' + e.message);
+        }
+      };
+
+      fetchCart();
+    }
+
   }, []);
 
-  function BottomTabs () {
+  function BottomTabs() {
 
     return (
       <Tab.Navigator>
@@ -102,7 +109,7 @@ const StackNavigator = () => {
                 <AntDesign name="shoppingcart" size={24} color="black" />
               ),
 
-              tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
+            tabBarBadge: cart?.products?.length ? cart.products.reduce((acc, item) => acc + item.quantity, 0) : undefined,
           }}
 
         />
@@ -114,8 +121,8 @@ const StackNavigator = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-          {/* <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} /> */}
-          {/* <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="Register" component={RegisterScreen} options={{ headerShown: false }} />
         <Stack.Screen name="Main" component={BottomTabs} options={{ headerShown: false }} />
         <Stack.Screen name="AddPokemon" component={AddPokemonScreen} options={{ headerShown: false }} />
         <Stack.Screen name="ProductScreen" component={ProductScreen} options={{ headerShown: false }} />

@@ -15,23 +15,22 @@ const QuantityModel = ({ item, modalVisible, setModalVisible, scrollPosition, se
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        
-            const cartItem = cart.products.find(findProductInCart);
-            if (cartItem) {
 
-                if (cartItem.quantity > item.quantity) {
-                    setValue(item.quantity)
-                } else {
-                    setValue(cartItem.quantity)
-                }
 
-            
+        const cartItem = cart.products.find(findProductInCart);
+        if (cartItem) {
+
+            if (cartItem.quantity > item.quantity) {
+                setValue(item.quantity)
+            } else {
+                setValue(cartItem.quantity)
+            }
 
         }
 
+
     }, [])
     const findProductInCart = (cartItem) => {
-
         return cartItem.product._id === item._id
     }
 

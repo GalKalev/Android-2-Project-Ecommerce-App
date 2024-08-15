@@ -6,7 +6,7 @@ const cors = require("cors");
 // const { PORT, IP_ADDRESS } = require('@env');
 // const PORT = process.env.PORT || 1400;
 const PORT = 1400;
-const IP_ADDRESS = '10.0.0.13';
+const IP_ADDRESS = '10.0.0.25';
 // const IP_ADDRESS = '192.168.68.113'
 
 
@@ -237,11 +237,28 @@ app.put('/Pokemon/:productId', async (req, res) => {
       return res.status(404).json({ message: 'Pokemon not found' });
     }
 
+    // Update all carts containing this product
+    const carts = await Cart.find({ 'products.product': productId }).populate('products.product');
+
+    for (const cart of carts) {
+      // Update the product details in each cart
+      for (const item of cart.products) {
+        if (item.product._id.toString() === productId.toString()) {
+          item.product = updatedPokemon;
+        }
+      }
+
+      // Recalculate total price for the cart
+      cart.totalPrice = cart.products.reduce((acc, item) => acc + (item.quantity * item.product.price), 0);
+
+      await cart.save();
+    }
+
     console.log(`Pokemon updated: ${updatedPokemon}`);
     return res.status(200).json({ message: 'Pokemon updated successfully', data: updatedPokemon });
 
   } catch (e) {
-    console.log(`Error updating Pokemon: ${e.message}`);
+    console.log(Error (`updating Pokemon: ${e.message}`));
     return res.status(500).json({ message: 'Updating Pokemon Failed' });
   }
 });
@@ -255,6 +272,14 @@ app.post('/Pokemon/remove', async (req, res) => {
     if (!productId) {
       console.debug("missing product id, 404")
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+
+    const carts = await Cart.find({ 'products.product': productId });
+    for(const cart of carts) {
+      cart.products = cart.products.filter(item => item.product.toString() !== productId.toString());
+      cart.totalPrice = cart.products.reduce((acc, item) => acc + (item.quantity * item.product.price), 0);
+
+      await cart.save();
     }
 
     const product = await Product.findByIdAndDelete({_id: productId})
@@ -272,7 +297,6 @@ app.post('/Pokemon/remove', async (req, res) => {
     return res.status(500).json({ message: 'Failed to remove product from stock', success:false });
   }
 });
-
 
 
 //---------- Cart Methods ----------
@@ -421,7 +445,7 @@ app.post('/checkout', async (req, res) => {
 
           // Check if the stock is zero after decrementing
           if (stockProduct.quantity === 0) {
-            await Product.findByIdAndRemove(stockProduct._id);
+            await Product.findByIdAndDelete(stockProduct._id);
             console.log(`Product ${stockProduct.name} removed from stock due to zero quantity`);
           } else {
             await stockProduct.save();

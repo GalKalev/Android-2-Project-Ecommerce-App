@@ -6,17 +6,18 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
-import { checkLogin } from '../api/apiServices';
+import { checkLogin, getCart } from '../api/apiServices';
 import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
 import { useUser } from '../utils/UserContext';
+
 
 const LoginScreen = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setLoading] = useState(false);
-    const { setUser } = useUser();
+    const { setUser, setCart } = useUser();
 
     const navigation = useNavigation();
 
@@ -31,6 +32,8 @@ const LoginScreen = () => {
             const loginSuccess = await checkLogin(email.toLocaleLowerCase().trim(), password);
             if (loginSuccess.success === true) {
                 setUser(loginSuccess.data);
+                const cartData = await getCart(loginSuccess.data.userId);
+                setCart(cartData);
                 navigation.replace('Main');
             }else if(loginSuccess.data === null){
                 Alert.alert("Can't find user","Enter correct inputs or register");
