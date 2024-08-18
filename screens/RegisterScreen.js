@@ -1,13 +1,8 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, KeyboardAvoidingView, Pressable, Alert } from "react-native";
 import React, { useState } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from '@expo/vector-icons';
-import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
-import { IP_ADDRESS } from '@env';
 import { useUser } from '../utils/UserContext';
 import Loading from "../components/Loading";
 import { getCart, registerUser } from "../api/apiServices";

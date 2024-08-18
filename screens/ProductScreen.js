@@ -5,7 +5,7 @@ import { AntDesign, Foundation } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import { Ionicons } from '@expo/vector-icons';
 import RadarChart from '../components/RadarChart';
-import { addToCart, removePokemon } from "../api/apiServices";
+import { removePokemon } from "../api/apiServices";
 import { FontAwesome6 } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { useUser } from '../utils/UserContext';
@@ -50,11 +50,9 @@ const ProductScreen = () => {
     }
 
     const handleDeleteItem = () => {
-        //TODO: delete product from database
         Alert.alert(`Delete ${presentableWord(item.name)} from the store?`, 'Click OK to delete', [
             {
                 text: 'OK',
-                //TODO: delete product from store here 
                 onPress: async () => {
                     try {
                         setIsLoading(true)
@@ -291,9 +289,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        // borderColor: 'black',
-        // borderWidth: 1,
-        // padding: 15,
         paddingRight: 15,
         paddingLeft: 15,
         paddingTop: 18
@@ -338,15 +333,12 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start'
     },
     statsContainer: {
-        // alignItems: 'center',
-        // justifyContent: 'center',
 
 
     },
     abilitiesMovesTypesContainer: {
         borderLeftColor: 'black',
         borderLeftWidth: 1,
-        // width: 100,
         flexWrap: 'wrap',
         marginRight: 6,
         alignItems: 'center',
@@ -361,9 +353,7 @@ const styles = StyleSheet.create({
     },
     abilitiesMovesList: {
         alignSelf: 'center',
-        // backgroundColor:"#FFE9E9",
         borderRadius: 14,
-        // borderColor:'#FFCBCB',
         borderWidth: 1,
         padding: 2,
         marginBottom: 5,

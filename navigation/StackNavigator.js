@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useNavigation, useRoute, NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
@@ -29,18 +29,12 @@ const StackNavigator = () => {
   const Tab = createBottomTabNavigator();
 
   const { user, cart, setCart } = useUser();
-  const [totalPrice, setTotalPrice] = useState(0);
-  const [totalProducts, setTotalProducts] = useState(0);
 
   useEffect(() => {
-    console.log('stack use effect')
     if (user.email != '') {
       const fetchCart = async () => {
         try {
-          console.log('fetch cart navi');
           const cartData = await getCart(user.userId);
-
-          console.log(cart)
           setCart(cartData);
 
         } catch (e) {

@@ -1,13 +1,9 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Button, Pressable, Alert } from "react-native";
-import React, { useEffect, useState } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
+import { StyleSheet, Text, View, SafeAreaView, KeyboardAvoidingView, Pressable, Alert } from "react-native";
+import React, { useState } from 'react';
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
 import Logo from "../components/Logo";
 import LogRegForm from "../components/LogRegForm";
 import { checkLogin, getCart } from '../api/apiServices';
-import { IP_ADDRESS } from '@env';
 import Loading from "../components/Loading";
 import { useUser } from '../utils/UserContext';
 
@@ -72,7 +68,6 @@ const LoginScreen = () => {
                     setPassword={setPassword}
                 />
 
-                {/* TODO: make this button work */}
                 <View style={styles.buttons}>
                     <Text>Keep me logged in</Text>
                     <Text style={styles.forgotPasswordBtn}>Forgot Password</Text>

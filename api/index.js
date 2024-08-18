@@ -3,8 +3,6 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
-// const { PORT, IP_ADDRESS } = require('@env');
-// const PORT = process.env.PORT || 1400;
 const PORT = 1400;
 const IP_ADDRESS = '10.0.0.25';
 // const IP_ADDRESS = '192.168.68.113'
@@ -38,9 +36,8 @@ const Product = require("./models/product");
 const Cart = require('./models/cart');
 
 
-// app.get("/health", (req, res) => {res.send("hello")})
-//---------- User Method ----------
-// register new user
+//---------- User Methods ----------
+// Register new user
 app.post("/user/register", async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -79,11 +76,10 @@ app.post("/user/register", async (req, res) => {
   }
 });
 
-// login user
+// Login user
 app.post('/user/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.debug(`checking if user exists: ${email}, ${password}`)
 
     // Check if the user exist
     const user = await User.findOne({ email });
@@ -106,7 +102,7 @@ app.post('/user/login', async (req, res) => {
   }
 });
 
-// user edit username
+// User edit username
 app.post('/user/edit', async (req, res) => {
   console.log("try to edit user name");
   try {
@@ -173,7 +169,6 @@ app.post('/Pokemon', async (req, res) => {
       price,
       quantity
     });
-    console.debug(`new Pokemon object: ${newPokemon}`);
 
 
     await newPokemon.save();
@@ -191,9 +186,7 @@ app.post('/Pokemon', async (req, res) => {
 app.get('/Pokemon', async (req, res) => {
   try {
     console.log("trying fetching Pokemons");
-    // const products = await Product.find({});
     const products = await Product.find({}).populate('user', 'name'); // Only include the username field
-    // console.log(products[0]);
     return res.status(200).json(products);
   } catch (error) {
 
@@ -202,7 +195,7 @@ app.get('/Pokemon', async (req, res) => {
   }
 })
 
-// get all Pokemons in stock of specific user seller
+// Get all Pokemons in stock of specific user seller
 app.get('/Pokemon/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
@@ -267,7 +260,6 @@ app.put('/Pokemon/:productId', async (req, res) => {
 app.post('/Pokemon/remove', async (req, res) => {
   try {
     const { productId } = req.body;
-    console.debug(`req body = productId ${productId}`);
 
     if (!productId) {
       console.debug("missing product id, 404")
@@ -305,7 +297,6 @@ app.post('/cart/add', async (req, res) => {
   try {
     console.log("Trying add to item to cart");
     const { userId, productId, quantity } = req.body;
-    console.debug(`userId=${userId}, productId=${productId}, quantity=${quantity}`);
     if (!userId || !productId || !quantity || quantity < 0) {
       console.log("something missing...")
       return res.status(400).json({ message: 'Invalid product - missing fields' });
@@ -334,17 +325,13 @@ app.post('/cart/add', async (req, res) => {
     }
 
     // Update total price
-    console.debug("Updating total price");
-    //cart.totalPrice = cart.totalPrice + product.price * quantity; //TODO: calc totalPrice of cart
     let totalPrice = 0;
     for (const item of cart.products) {
       const itemProduct = item.product.equals(productId) ? product : await Product.findById(item.product);
       totalPrice += itemProduct.price * item.quantity;
     }
     cart.totalPrice = totalPrice;
-    console.debug(`total price = ${cart.totalPrice}`);
 
-    console.debug("saving new cart with total price of " + cart.totalPrice)
     await cart.save();
 
     return res.status(201).json({ message: `${cart.products.length} products added successfully` });
@@ -379,7 +366,6 @@ app.get('/cart/:userId', async (req, res) => {
 app.post('/cart/remove', async (req, res) => {
   try {
     const { userId, productId, price } = req.body;
-    console.debug(`req body = userID ${userId} and productId ${productId}`);
 
     if (!userId || !productId) {
       console.debug("missing something, 404")
@@ -429,12 +415,11 @@ app.post('/checkout', async (req, res) => {
     }
 
     const cart = await Cart.findOne({ user: userId }).populate('products.product');
-    console.debug(`got cart ${cart}`);
     if (!cart) {
       return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // build full products list and update stock
+    // Build full products list and update stock
     const productsList = [];
     for (const cartItem of cart.products) {
       const stockProduct = await Product.findById(cartItem.product._id);
@@ -478,7 +463,7 @@ app.post('/checkout', async (req, res) => {
       }
     }
 
-    // create a new order
+    // Create a new order
     const order = new Order({
       user: userId,
       products: productsList,
@@ -495,11 +480,10 @@ app.post('/checkout', async (req, res) => {
         cvv
       }
     });
-    console.debug("made a new order item")
     await order.save();
     console.debug("saved new order!")
 
-    // clear the cart
+    // Clear the cart
     cart.products = [];
     cart.totalPrice = 0;
     await cart.save();
@@ -512,6 +496,7 @@ app.post('/checkout', async (req, res) => {
 });
 
 
+// Get user's past orders
 app.get('/order/:userId', async (req, res) => {
 
   try {

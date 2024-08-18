@@ -7,7 +7,7 @@ import Loading from '../components/Loading';
 import { Dropdown } from 'react-native-element-dropdown';
 import { presentableWord } from '../utils/consts';
 import { EvilIcons } from '@expo/vector-icons';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import CurrencyPD from '../components/CurrencyPD';
 import { useUser } from '../utils/UserContext';
 import { checkout } from "../api/apiServices";
@@ -17,8 +17,6 @@ const CheckoutScreen = () => {
     const steps = ['Address', 'Payment', 'Confirmation'];
     const [currentStep, setCurrentStep] = useState(0);
     const navigator = useNavigation();
-    // const route = useRoute();
-    // TODO: add user to params
     const { cart, user } = useUser()
 
     // First step values

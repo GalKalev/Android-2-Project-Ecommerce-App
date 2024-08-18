@@ -1,11 +1,10 @@
-import { Alert, Image, ImageBackground, Platform, Pressable, SafeAreaView, ScrollView, Settings, StyleSheet, Text, View } from 'react-native'
+import { Alert, Platform, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useRoute, useNavigation, CommonActions } from '@react-navigation/native'
+import { useNavigation } from '@react-navigation/native'
 import ExpandableList from '../components/ExpandableList ';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
 import ProductProfile from '../components/ProductProfile';
@@ -28,7 +27,6 @@ const ProfileScreen = () => {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            //TODO: get the orders from the database    
 
             const resOrders = await getOrders(user.userId);
             if (resOrders.data) {
@@ -224,7 +222,6 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'android' ? 40 : 0,
         flex: 1,
         backgroundColor: 'white',
-        // padding: 10
     },
     currency: {
         resizeMode: "contain",

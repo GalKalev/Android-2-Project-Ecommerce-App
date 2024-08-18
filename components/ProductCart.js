@@ -1,18 +1,15 @@
-import { Alert, Image, Pressable, StyleSheet, Text, View } from 'react-native'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import CurrencyPD from './CurrencyPD'
 import { presentableWord } from '../utils/consts';
 import { Foundation, Ionicons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useUser } from '../utils/UserContext';
 import QuantityModel from './QuantityModel';
 
-const ProductCart = ({ item, setTotalProducts, totalProducts, deleteProductCart }) => {
-    const { cart, setCart } = useUser();
+const ProductCart = ({ item, deleteProductCart }) => {
     const navigation = useNavigation();
     const [isAddDisabled, setIsAddDisabled] = useState(false);
-    const [itemCartQuantity, setItemCartQuantity] = useState(item.quantity);
     const [quantityModalVisible, setQuantityModalVisible] = useState(false)
 
     useEffect(() => {

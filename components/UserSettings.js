@@ -86,7 +86,6 @@ const UserSettings = () => {
         <View>
             <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Edit Name</Text>
             <View style={{ flexDirection: 'row' }}>
-                {/* <Text>{user.name}</Text> */}
                 <TextInput
                     value={newName}
                     disabled={!editActive}

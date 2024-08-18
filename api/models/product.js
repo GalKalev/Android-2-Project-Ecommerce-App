@@ -83,11 +83,6 @@ const productSchema = new mongoose.Schema({
         required: true
     },
 
-    // details: {
-    //     type: mongoose.Schema.Types.Mixed,
-    //     required:true
-    // }, 
-
     createdAt: {
         type: Date,
         default: Date.now

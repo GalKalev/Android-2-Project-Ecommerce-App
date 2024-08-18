@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native';
+import { View, Pressable, TextInput } from 'react-native';
 import React, { useEffect, useState } from 'react';
 
 const PokemonInput = ({ input, setInput, placeholder, style }) => {

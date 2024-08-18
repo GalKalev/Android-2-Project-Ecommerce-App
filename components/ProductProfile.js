@@ -19,7 +19,6 @@ const ProductProfile = ({ product, quantityBought, quantitySale }) => {
             <View>
                 <View>
 
-
                     <Image
                         source={{ uri: product.img }}
                         style={styles.productImg}

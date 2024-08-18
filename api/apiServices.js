@@ -1,8 +1,5 @@
 import axios from 'axios';
-import { IP_ADDRESS,PORT } from '@env';
-import Toast from "react-native-toast-message";
-import {Alert} from "react-native";
-// const { PORT, IP_ADDRESS } = require('@env');
+import { IP_ADDRESS } from '@env';
 
 
 // const API_URL = `http://192.168.68.113:1400`;//`http://${IP_ADDRESS}:${PORT}`;//`http://192.168.68.113:1400`;
@@ -16,7 +13,6 @@ export const checkLogin = async(email,password) => {
         email: email,
         password: password
     }
-    console.log(user);
 
     try{
         const response = await axios.post(`${API_URL}/user/login`,user);
@@ -68,12 +64,10 @@ export const registerUser = async (name, email, password) => {
         email: email,
         password: password
     };
-    console.log("serv: " + user)
 
     try {
 
         const response = await axios.post(`${API_URL}/user/register`, user);
-        console.log('api reg res: ' + response);
         if(response.status === 201){
             console.log(`login user: ${response.data.userId} , email: ${response.data.email}, name: ${response.data.name}`);
             const userId = response.data.userId;
@@ -86,7 +80,6 @@ export const registerUser = async (name, email, password) => {
             };
         }
        
-        // return response.status; // Return the status code directly
 
     } catch (error) {
         if (error.response) {
@@ -109,7 +102,6 @@ export const registerUser = async (name, email, password) => {
 export const editUsername = async (userId,newUsername)=>{
     try{
         const response = await axios.post(`${API_URL}/user/edit`,{userId:userId, newName:newUsername});
-        console.log(response.data);
         return response.data;
     }catch(error){
         console.error("Error edit username:", error.status);
@@ -123,7 +115,6 @@ export async function fetchPokemons() {
         const getPokemons = await axios.get(`${API_URL}/Pokemon`);
         if(getPokemons.status===200){
             const pokemonList = getPokemons.data;
-            // console.log(`Pokemons list fetched: ${pokemonList}`);
             return pokemonList;
         }
         else{
@@ -139,7 +130,6 @@ export async function fetchPokemons() {
 // Add new Pokemon to products
 export async function addPokemon(pokemon){
     try {
-        console.debug(pokemon);
         const response = await axios.post(`${API_URL}/pokemon`, pokemon);
         console.log("pokemon added successfully");
         return response;
@@ -182,7 +172,6 @@ export async function removePokemon(productId) {
 export const getCart = async (userId) => {
     try {
         const response = await axios.get(`${API_URL}/cart/${userId}`);
-        // console.log(response.data);
         return response.data;
     }catch(error) {
         console.error("Error fetching cart:", error.status);
@@ -192,10 +181,8 @@ export const getCart = async (userId) => {
 
 // Add product to cart
 export const addToCart = async (userId, productId, quantity) => {
-    console.log("Add to cart")
     try {
         const response = await axios.post(`${API_URL}/cart/add`, { userId, productId, quantity });
-
         return response.data;
     } catch (error) {
         console.error("Error adding to cart:", error);
@@ -218,24 +205,16 @@ export const removeFromCart = async (userId, productId,price) => {
 // Validate that all items in cart are still available in stock. If not set new quantity to products in cart
 export const checkCartAvailability = async (user, stockProducts, cartProducts) => {
     try {
-        // console.debug("Checking availability for " + JSON.stringify(cartProducts));
-        // console.debug(`stock products ${JSON.stringify(stockProducts)}`);
         for (let cartProduct of cartProducts) {
-            // console.debug(`cart product = ${JSON.stringify(cartProduct)}`);
 
             // Ensure the stockProduct has the _id field correctly defined
             const stockProduct = stockProducts.find(product => {
-                // console.log(`stock product = ${JSON.stringify(product)}`);
                 return product._id === cartProduct.product._id; // Directly compare ids as strings
             });
 
-            console.debug(`Got ${stockProduct}`);
-
             if (!stockProduct) {
-                console.debug(`Product ${cartProduct.product.name} no longer in stock. Removing it from cart`);
                 await removeFromCart(user.userId, cartProduct.product._id, cartProduct.quantity); // Ensure removeFromCart handles quantity
             } else if (stockProduct.quantity < cartProduct.quantity) {
-                console.debug(`Adjusting quantity for ${cartProduct.product.name} from ${cartProduct.quantity} to ${stockProduct.quantity}`);
                 await addToCart(user.userId, cartProduct.product._id, stockProduct.quantity - cartProduct.quantity);
             }
             console.log("Cart updated successfully");
@@ -249,7 +228,6 @@ export const checkCartAvailability = async (user, stockProducts, cartProducts) =
 export const checkout = async (userId,region,location, houseNum, cardOwner,cardNumber, expirationDate,cvv) => {
     console.log("Trying checkout cart");
     try {
-        console.debug(`{${userId}, ${region},${location}, ${houseNum}, ${cardOwner},${cardNumber}, ${expirationDate}, ${cvv}}`);
         const response = await axios.post(`${API_URL}/checkout`, {
             userId: userId,
             region: region,
@@ -259,7 +237,6 @@ export const checkout = async (userId,region,location, houseNum, cardOwner,cardN
             cardNumber: cardNumber,
             expirationDate: expirationDate,
             cvv: cvv});
-        console.debug(`response = ${response.data}`);
         return response.data;
     } catch (error) {
         console.error("Error during checkout:", error);

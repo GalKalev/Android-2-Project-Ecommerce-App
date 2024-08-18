@@ -9,7 +9,6 @@ const orderSchema = new mongoose.Schema({
     },
     products: [
         {
-            // _id: false,
             product: {
                 _id:{
                     type: mongoose.Schema.Types.ObjectId,

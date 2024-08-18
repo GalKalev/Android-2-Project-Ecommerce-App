@@ -1,7 +1,6 @@
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import React from 'react'
 import { FloatingAction } from "react-native-floating-action";
-import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from "@react-navigation/native";
 
 
@@ -31,7 +30,6 @@ const handlePress = (name) => {
 
 return (
     <View style={styles.container}>
-        {/* Other components can be added here */}
         
         <FloatingAction
             actions={actions}

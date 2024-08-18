@@ -1,19 +1,16 @@
-import { View, Text, ScrollView, StyleSheet, Pressable, TextInput, Alert, Image, FlatList, ToastAndroid, Dimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, Alert, Image, FlatList } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SearchInput from '../components/SearchInput';
 import Loading from '../components/Loading';
 import axios from 'axios';
 import { presentableWord } from '../utils/consts';
-import Checkbox from 'expo-checkbox';
-import { Pokemon } from '../classes/Pokemon';
 import MultiSelectAdd from '../components/MultiSelectAdd';
 import PokemonInput from '../components/PokemonInput';
 import { Foundation } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import CurrencyPD from '../components/CurrencyPD';
-import { IP_ADDRESS } from '@env';
 import Toast from 'react-native-toast-message';
 import { useUser } from '../utils/UserContext';
 import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
@@ -190,7 +187,6 @@ const AddPokemonScreen = () => {
             setIsLoading(true);
             let response;
             if (item) {
-                // TODO: sending the pokemon id so it will not create a new one (??)
                 response = await editPokemon(item._id,pokemon);
             } else {
                 response = await addPokemon(pokemon);
@@ -293,7 +289,6 @@ const AddPokemonScreen = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            {/* <ScrollView stickyHeaderIndices={[0]} contentContainerStyle={styles.scrollViewContent} nestedScrollEnabled> */}
             <View style={[styles.sectionContainer, { backgroundColor: '#F9FEFF' }]}>
                 <View >
                     <View style={styles.backContainer}>
@@ -325,7 +320,6 @@ const AddPokemonScreen = () => {
 
             </View>
 
-            {/* <View style={styles.searchListContainer}> */}
             {searchPokemon && isSearchItemsListVisible && (
                 filteredPokemons.length === (pokemonsList.length) ? (
                     <></>
@@ -350,7 +344,6 @@ const AddPokemonScreen = () => {
                 )
             )}
 
-            {/* </View> */}
 
             <ScrollView contentContainerStyle={styles.scrollViewContent} nestedScrollEnabled>
                 <Pressable onPress={handleBackgroundPress}>
@@ -544,7 +537,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 5,
-        backgroundColor: '#F9FEFF', // Adjust as needed
+        backgroundColor: '#F9FEFF',
     },
     pokemonList: {
         alignItems: 'center',
@@ -594,7 +587,6 @@ const styles = StyleSheet.create({
         top: 190,
         maxHeight: 400,
         alignSelf: 'center',
-        // top: 152,
         width: '100%',
         borderColor: 'gray',
         borderWidth: 1.5,

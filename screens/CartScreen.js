@@ -1,11 +1,11 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, Pressable, FlatList, Image, SafeAreaView, StyleSheet, Platform, Alert } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useUser } from '../utils/UserContext';
 import Loading from '../components/Loading';
 import ProductCart from '../components/ProductCart';
 import CurrencyPD from '../components/CurrencyPD';
-import { getCart, removeFromCart } from "../api/apiServices";
+import { removeFromCart } from "../api/apiServices";
 import { presentableWord } from '../utils/consts';
 
 const CartScreen = () => {
@@ -13,17 +13,6 @@ const CartScreen = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [isLoading, setLoading] = useState(false);
     const navigation = useNavigation();
-
-    // useEffect(() => {
-    //     console.log('use effect cart screen')
-    //     if (cart?.products?.length) {
-    //         let totalProductsCount = 0;
-    //         cart.products.forEach(product => {
-    //             totalProductsCount += product.quantity;
-    //         });
-    //         setTotalProducts(totalProductsCount);
-    //     }
-    // }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -39,7 +28,7 @@ const CartScreen = () => {
             }
 
             return () => {
-                // Cleanup logic if needed when screen is unfocused
+   
             };
         }, [cart])
     );
@@ -87,6 +76,7 @@ const CartScreen = () => {
             {cart?.products?.length > 0 ? (
                 <FlatList
                     data={cart.products}
+                    style={{marginBottom:60}}
                     keyExtractor={(item) => item.product._id.toString()}
                     renderItem={({ item }) => (
                         <ProductCart
