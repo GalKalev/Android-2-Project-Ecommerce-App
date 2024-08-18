@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { presentableWord } from '../utils/consts';
 import CurrencyPD from './CurrencyPD';
@@ -27,8 +27,6 @@ const Product = ({ item, screen, scrollPosition, setScrollPosition }) => {
                     <Ionicons name="sparkles-sharp" size={20} color="gold" style={styles.shinyContainerTop} />
                     <Ionicons name="sparkles-sharp" size={20} color="gold" style={styles.shinyContainerBottom} />
                 </>
-
-
             )}
 
             <Pressable style={{ alignItems: 'center' }}
@@ -81,7 +79,6 @@ const Product = ({ item, screen, scrollPosition, setScrollPosition }) => {
                 <Pressable style={styles.addToCardBtn}
                     onPress={handleAddToCart}
                 >
-                    {/* <Text style={styles.addToCardBtnText}>Add To Cart</Text> */}
                     <FontAwesome name="cart-plus" size={22} color="black" />
                 </Pressable>
 
@@ -106,7 +103,6 @@ const Product = ({ item, screen, scrollPosition, setScrollPosition }) => {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        //  borderColor: item.isShiny ? 'gold' : 'black',
         borderWidth: 2,
         marginTop: 5,
         borderRadius: 4,
@@ -169,7 +165,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         borderColor: 'red',
-        //  borderWidth:1,
         padding: 3,
         paddingRight: 4,
         paddingLeft: 4,

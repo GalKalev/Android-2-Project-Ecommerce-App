@@ -13,8 +13,6 @@ const RadarChart = ({ data, labels, size }) => {
     // Normalize the data
     const normalizedData = data.map(value => (value / maxValue) * 100);
    
-      
-
     const points = normalizedData.map((value, index) => {
         const angle = index * angleStep;
         const x = radius * (value / 100) * Math.cos(angle);

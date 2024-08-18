@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, KeyboardAvoidingView, TextInput, Button, Pressable, Alert } from "react-native";
+import { StyleSheet, Text, View, TextInput } from "react-native";
 import React from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
@@ -72,21 +72,6 @@ const LogRegForm = ({ isLog, email, setEmail, name, setName, password, setPasswo
 
 
 const styles = StyleSheet.create({
-    // container: {
-    //     flex: 1,
-    //     backgroundColor: "white",
-    //     alignItems: "center",
-    // },
-
-    // registerLogo: {
-    //     marginTop: 40
-    // },
-
-    // img: {
-    //     width: 180,
-    //     height: 100
-    // },
-
     textBox: {
         alignItems: "center"
     },
@@ -125,48 +110,6 @@ const styles = StyleSheet.create({
     passwordInput: {
         marginTop: 20
     },
-
-    // buttons: {
-    //     marginTop: 12,
-    //     flexDirection: "row",
-    //     alignItems: "center",
-    //     justifyContent: "space-between"
-    // },
-
-    // forgotPasswordBtn: {
-    //     color: "#007FFF",
-    //     fontWeight: "500"
-    // },
-
-    // registerBtnContainer: {
-    //     marginTop: 80
-    // },
-
-    // registerBtn: {
-    //     width: 200,
-    //     backgroundColor: "#FEBE10",
-    //     borderRadius: 6,
-    //     marginLeft: "auto",
-    //     marginRight: "auto",
-    //     padding: 15
-    // },
-
-    // registerBtnText: {
-    //     textAlign: "center",
-    //     color: "white",
-    //     fontSize: 16,
-    //     fontWeight: "bold",
-    // },
-
-    // signUpContainer: {
-    //     marginTop: 15
-    // },
-
-    // signUpText: {
-    //     textAlign: "center",
-    //     color: "gray",
-    //     fontSize: 16
-    // },
 
     nameInput: {
         marginTop: 20

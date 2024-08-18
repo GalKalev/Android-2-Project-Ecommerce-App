@@ -1,6 +1,6 @@
-import { View, Text, Pressable, TextInput, StyleSheet } from 'react-native'
+import { View, Pressable, TextInput } from 'react-native'
 import React from 'react'
-import { AntDesign, Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 
 const SearchInput = (props) => {
     return (
@@ -13,7 +13,6 @@ const SearchInput = (props) => {
                 <TextInput
                     style={props.stylesInput}
                     value={props.value}
-                    // onFocus={showSearchList}
                     onChangeText={(txt) => props.handleSearchInput(txt)}
                     placeholder={props.placeholder}
                 />

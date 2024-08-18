@@ -1,7 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import StackNavigator from './navigation/StackNavigator';
 import { UserProvider } from './utils/UserContext';
+import Toast, { BaseToast } from 'react-native-toast-message';
 
 
 export default function App() {
@@ -11,17 +11,22 @@ export default function App() {
       <UserProvider>
 
         <StackNavigator />
+        <Toast
+          config={{
+            info: (props) => (
+              <BaseToast
+                {...props}
+                style={{ borderLeftColor: 'black', backgroundColor: 'black' }}
+                text1Style={{ fontSize: 15, color: 'white' }}
+                text2Style={{ fontSize: 15, color: 'white' }}
+              />
+            ),
+          }}
+          position="bottom"
+        />
 
       </UserProvider>
     </>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

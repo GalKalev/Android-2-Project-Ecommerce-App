@@ -4,16 +4,13 @@ import { MultiSelect } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 const MultiSelectFilter = ({ data, setSelected, reset, setReset, placeholder, styleTitle }) => {
-  // console.log(data[0]);
 
   const configData = data.map((name, index) => ({ label: name, value: index }));
-  // console.log(configData[0]);
 
   const [itemsList, setItemsList] = useState([]);
-  // console.log(reset);
+
   useEffect(() => {
     if (reset) {
-      // console.log('reset is true');
       setItemsList([]);
       setReset(false);
     }
@@ -37,17 +34,11 @@ const MultiSelectFilter = ({ data, setSelected, reset, setReset, placeholder, st
 
         onChange={item => {
           setItemsList(item);
-          // console.log(item);
           const names = [];
           item.map((i) => {
-            // console.log(configData[i].label);
             names.push(configData[i].label);
-            // console.log(names);
           });
-          // console.log('names: ' + names);
           setSelected(names);
-
-          // console.log('item: ' + item + ' items list: ' + itemsList + ' selcted: ' + selected);
         }}
 
         renderLeftIcon={() => (

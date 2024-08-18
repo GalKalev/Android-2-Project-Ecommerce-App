@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ScrollView, StyleSheet, Animated } from 'react-native'
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native'
 import React, { useEffect, useState } from 'react'
 // import FilterMenu from '../ignoreComponents/FilterMenu';
 import { Picker } from '@react-native-picker/picker';
@@ -129,7 +129,6 @@ const FilterOptions = ({ toggleFilterMenu, isFilterOpen, setFilter, items, setLo
         setSelectedSpecies([]);
         setFilteredItems(items);
         setSelectedPriceOrderFilter('default')
-        // setReset(false);
     }
 
 
@@ -313,7 +312,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginLeft: 5,
-        // paddingLeft:10,
         paddingLeft: 2,
         borderRadius: 6,
 

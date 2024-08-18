@@ -1,7 +1,6 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, SafeAreaView, StyleSheet, Image, Alert, Platform, FlatList, TouchableWithoutFeedback, RefreshControl, Animated } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { AntDesign, Feather } from '@expo/vector-icons'; // Assuming you're using Expo icons
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { View, Text, Pressable, ScrollView, SafeAreaView, StyleSheet, Alert, Platform, FlatList, RefreshControl, Animated, BackHandler } from 'react-native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import FloatingButton from '../components/FloatingButton';
 import SearchInput from '../components/SearchInput';
 import { presentableWord } from '../utils/consts';
@@ -12,6 +11,7 @@ import Product from '../components/Product';
 
 import { fetchPokemons } from "../api/apiServices";
 import NoItems from '../components/NoItems';
+import Toast from 'react-native-toast-message';
 
 
 const HomeScreen = () => {
@@ -25,12 +25,14 @@ const HomeScreen = () => {
     const [pokemonsNameList, setPokemonNameList] = useState([]);
     const [searchedPokemon, setSearchedPokemon] = useState([]);
 
+    const [backPressedCount, setBackPressedCount] = useState(0);
+
+
     // Set search items list visibility when touching the background
     const [isSearchItemsListVisible, setIsSearchItemsListVisible] = useState();
 
     // UseState for loading screen
     const [isLoading, setIsLoading] = useState(false);
-    // const [isRefreshing, setIsRefreshing] = useState(false);
 
     // UseState for filter
     const [isFilterOpen, setFilter] = useState(false);
@@ -41,6 +43,38 @@ const HomeScreen = () => {
     // Scroll position
     const scrollViewRef = useRef(null);
     const [scrollPosition, setScrollPosition] = useState(0);
+
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (backPressedCount === 1) {
+                    BackHandler.exitApp();
+                    return true;
+                }
+
+                setBackPressedCount(1);
+                Toast.show({
+                    type: 'info',
+                    text1: 'Press back again to exit the Poke Store',
+
+                    visibilityTime: 2000,
+                });
+
+                setTimeout(() => {
+                    setBackPressedCount(0);
+                }, 2000);
+
+                return true;
+            };
+
+            BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+            return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+        }, [backPressedCount])
+    );
+
+
+
 
     const fetchData = useCallback(async () => {
 
@@ -86,7 +120,6 @@ const HomeScreen = () => {
 
     function handleChosenPokemon(name) {
         const pokemonsWithName = pokemonList.filter((poke) => poke.name === name);
-        // console.log(pokemonsWithName);
         navigator.navigate('SearchProduct', { pokemonList: pokemonsWithName, name: presentableWord(name) });
     }
 
@@ -95,9 +128,7 @@ const HomeScreen = () => {
         setIsSearchItemsListVisible(true);
         setSearchPokemonsList(txt);
         const lowerTxt = txt.toLowerCase();
-        // console.log(pokemonsNameList);
         const names = pokemonsNameList.filter(name => name.startsWith(lowerTxt));
-        // console.log(names);
         setSearchPokemons(names);
     }
 
@@ -106,7 +137,6 @@ const HomeScreen = () => {
     }
 
     function toggleFilterMenu() {
-        // setFilter(!isFilterOpen);
         if (isFilterOpen) {
             Animated.timing(animation, {
                 toValue: 0,
@@ -170,8 +200,6 @@ const HomeScreen = () => {
 
                         //  List of the searched pokemons 
                         <FlatList
-                            // nestedScrollEnabled
-
                             style={styles.searchList}
                             data={searchPokemons}
                             keyExtractor={(item) => item}
@@ -201,8 +229,6 @@ const HomeScreen = () => {
 
             >
                 {/* Image slider of the shop */}
-
-
 
                 <Pressable onPress={handleBackgroundPress}>
                     <ImageSlider />

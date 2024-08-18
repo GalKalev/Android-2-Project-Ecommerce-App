@@ -1,5 +1,5 @@
 
-import { View, Text, StyleSheet } from 'react-native'
+import { StyleSheet } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { MultiSelect } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -38,7 +38,7 @@ const MultiSelectAdd = ({ data, selected, setSelected, placeholder }) => {
       searchPlaceholder={"Search " + placeholder + "..."}
       value={itemsList}
       onChange={item => {
-        console.log('item: ' + item); //TODO: change the log to be more
+        console.log('item: ' + item); 
         setItemsList(item);
         const names = [];
         item.map((i) => {

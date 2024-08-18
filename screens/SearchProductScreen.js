@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, SafeAreaView, Pressable, Platform, Animated, ScrollView } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
-import { AntDesign, Foundation } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import React, { useEffect, useRef, useState } from 'react'
 import Product from '../components/Product';
 import { useUser } from '../utils/UserContext';
@@ -35,7 +35,6 @@ const SearchProductScreen = () => {
 
 
     function toggleFilterMenu() {
-        // setFilter(!isFilterOpen);
         if (isFilterOpen) {
             Animated.timing(animation, {
                 toValue: 0,
